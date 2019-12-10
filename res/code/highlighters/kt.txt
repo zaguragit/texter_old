@@ -1,0 +1,6 @@
+declaration -> val var fun package
+visibility -> public private protected
+override -> override
+return -> return
+condition -> if else when
+condition_operator -> or and xor

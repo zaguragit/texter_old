@@ -1,6 +1,6 @@
-package posidon.texter.ui
+package posidon.texter.backend
 
-data class Theme(
+data class SyntaxTheme(
     val textAreaBG: Int = 0x111213,
     val textAreaFG: Int = 0xe1e2e3,
     val textAreaCaret: Int = 0xe1e2e3,
@@ -12,8 +12,8 @@ data class Theme(
     val text: Int = 0xe1e2e3
 )
 
-object Themes {
-    val midnight = Theme(
+object SyntaxThemes {
+    val midnight = SyntaxTheme(
         0x111321,
         0xafd2e0,
         0x89a4c1,
