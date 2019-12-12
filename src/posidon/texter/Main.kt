@@ -1,7 +1,13 @@
 package posidon.texter
 
-fun main() {
-    Window.init()
+fun main(args: Array<String>) {
+    Thread(Main()).start()
+}
+
+class Main : Runnable {
+    override fun run() {
+        Window.init()
+    }
 }
 
 object AppInfo {
