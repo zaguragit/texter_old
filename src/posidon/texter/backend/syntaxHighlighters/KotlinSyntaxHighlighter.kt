@@ -13,7 +13,9 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
     private val funcBreaks = ArrayList<String>()
     private val conditions = ArrayList<String>()
     private val operators = ArrayList<String>()
+    private val exceptions = ArrayList<String>()
     private val undefined = ArrayList<String>()
+    private val lineInfo = ArrayList<String>()
 
     init {
         val text = KotlinSyntaxHighlighter::class.java.getResource("/code/highlighters/kt.txt").readText().split('\n')
@@ -25,64 +27,130 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                 line.startsWith("func_breaks") -> funcBreaks
                 line.startsWith("conditions") -> conditions
                 line.startsWith("operators") -> operators
+                line.startsWith("exceptions") -> exceptions
                 else -> undefined
             }.addAll(items.subList(2, items.size))
         }
     }
 
-    override fun color(doc: StyledDocument, lineStart: Int, line: String, lineI: Int) {
-        var startPos = lineStart
-        val str = StringBuilder()
-        for (i in 0..line.length) {
-            if (i == line.length || line[i] == ' ') {
-                val string = str.toString()
-                doc.setCharacterAttributes(startPos, str.length, when (string) {
-                    in declarations -> {
-                        val sas = SimpleAttributeSet()
-                        StyleConstants.setForeground(sas, Color(0xff3355))
-                        sas
-                    }
-                    in funcMods -> {
-                        val sas = SimpleAttributeSet()
-                        StyleConstants.setForeground(sas, Color(0xA05FFF))
-                        sas
-                    }
-                    in funcBreaks -> {
-                        val sas = SimpleAttributeSet()
-                        StyleConstants.setForeground(sas, Color(0xff8800))
-                        sas
-                    }
-                    in conditions -> {
-                        val sas = SimpleAttributeSet()
-                        StyleConstants.setForeground(sas, Color(0xff8800))
-                        sas
-                    }
-                    in operators -> {
-                        val sas = SimpleAttributeSet()
-                        StyleConstants.setForeground(sas, Color(0x60CCFF))
-                        sas
-                    }
-                    else -> {
-                        when {
-                            string.startsWith('"') && string.endsWith('"') -> {
-                                val sas = SimpleAttributeSet()
-                                StyleConstants.setForeground(sas, Color(0x28A34F))
-                                sas
-                            }
-                            else -> {
-                                val sas = SimpleAttributeSet()
-                                StyleConstants.setForeground(sas, Color(Window.theme.textAreaFG))
-                                StyleConstants.setBackground(sas, Color(Window.theme.textAreaBG))
-                                StyleConstants.setItalic(sas, false)
-                                StyleConstants.setBold(sas, false)
-                                sas
-                            }
+    override fun colorLine(doc: StyledDocument, lineStart: Int, line: String, lineI: Int) {
+        if (line.isNotEmpty()) {
+            var startPos = lineStart
+            val str = StringBuilder()
+            for (i in 0..line.length) {
+                if (i == line.length || line[i] == ' ' || line[i] == '\t') {
+                    val string = str.toString()
+                    doc.setCharacterAttributes(startPos, str.length, when (string) {
+                        in declarations -> {
+                            val sas = SimpleAttributeSet()
+                            StyleConstants.setForeground(sas, Color(0xff3355))
+                            sas
                         }
+                        in funcMods -> {
+                            val sas = SimpleAttributeSet()
+                            StyleConstants.setForeground(sas, Color(0xA05FFF))
+                            sas
+                        }
+                        in funcBreaks -> {
+                            val sas = SimpleAttributeSet()
+                            StyleConstants.setForeground(sas, Color(0xff8800))
+                            sas
+                        }
+                        in conditions -> {
+                            val sas = SimpleAttributeSet()
+                            StyleConstants.setForeground(sas, Color(0xff8800))
+                            sas
+                        }
+                        in operators -> {
+                            val sas = SimpleAttributeSet()
+                            StyleConstants.setForeground(sas, Color(0x60CCFF))
+                            sas
+                        }
+                        in exceptions -> {
+                            val sas = SimpleAttributeSet()
+                            StyleConstants.setForeground(sas, Color(0xFF6649))
+                            sas
+                        }
+                        else -> {
+                            val sas = SimpleAttributeSet()
+                            StyleConstants.setForeground(sas, Color(Window.theme.textAreaFG))
+                            StyleConstants.setBackground(sas, Color(Window.theme.textAreaBG))
+                            StyleConstants.setItalic(sas, false)
+                            StyleConstants.setBold(sas, false)
+                            sas
+                        }
+                    }, false)
+                    startPos += str.length + 1
+                    str.clear()
+                } else str.append(line[i])
+            }
+
+            var stringStart = line.indexOf('"')
+            var stringEnd: Int
+            val stringAttrs = SimpleAttributeSet()
+            StyleConstants.setForeground(stringAttrs, Color(0x28A34F))
+            while (line.substring(stringStart + 1).contains('"')) {
+                stringEnd = line.indexOf('"', stringStart + 1)
+                doc.setCharacterAttributes(
+                    lineStart + stringStart,
+                    stringEnd - stringStart + 1,
+                    stringAttrs,
+                    false
+                )
+                if (line.substring(stringEnd + 1).contains('"'))
+                    stringStart = line.indexOf('"', stringEnd + 1)
+                else break
+            }
+
+            if (line.length > 1) {
+                var commentStart = line.indexOf("/*")
+                var commentEnd: Int
+                val commentAttrs = SimpleAttributeSet()
+                StyleConstants.setForeground(commentAttrs, Color(0x7C7C7C))
+                if (line.contains("/*")) do {
+                    commentEnd = line.indexOf("*/", commentStart + 2)
+                    doc.setCharacterAttributes(
+                        lineStart + commentStart,
+                        commentEnd - commentStart + 2,
+                        commentAttrs,
+                        false
+                    )
+                    if (line.substring(commentEnd + 2).contains("/*")) {
+                        commentStart = line.indexOf("/*", commentEnd + 2)
+                        if (line.substring(commentEnd + 2, commentStart).contains("//")) {
+                            val tmp = line.substring(commentEnd + 2).indexOf("//") + commentEnd + 2
+                            println("aaaaaaaaaaaaaaaa")
+                            doc.setCharacterAttributes(
+                                lineStart + tmp,
+                                line.length - tmp,
+                                commentAttrs,
+                                false
+                            )
+                        }
+                    } else {
+                        if (line.substring(commentEnd + 2).contains("//")) {
+                            val tmp = line.substring(commentEnd + 2).indexOf("//") + commentEnd + 2
+                            println("bbbbbbbbbbbbbbbbb")
+                            doc.setCharacterAttributes(
+                                lineStart + tmp,
+                                line.length - tmp,
+                                commentAttrs,
+                                false
+                            )
+                        }
+                        break
                     }
-                }, false)
-                startPos += str.length + 1
-                str.clear()
-            } else str.append(line[i])
+                } while (line.substring(commentStart + 2).contains("*/"))
+                else if (line.contains("//")) {
+                    commentStart = line.indexOf("//")
+                    doc.setCharacterAttributes(
+                        lineStart + commentStart,
+                        line.length - commentStart,
+                        commentAttrs,
+                        false
+                    )
+                }
+            }
         }
     }
 }

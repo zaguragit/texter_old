@@ -20,14 +20,14 @@ class TextFile(val path: String, var content: List<String>) {
         get() = content.joinToString("\n")
         set(value) { content = value.split("\n") }
 
-    fun color(doc: StyledDocument, caretI: Int) {
+    fun colorLine(doc: StyledDocument, caretI: Int) {
         val lineI = getLineByIndex(caretI)
-        syntaxHighlighter.color(doc, getLineStartByCaret(caretI), content[lineI], lineI)
+        syntaxHighlighter.colorLine(doc, getLineStartByCaret(caretI), content[lineI], lineI)
     }
 
     fun colorAll(doc: StyledDocument) {
         for (lineI in content.indices) {
-            syntaxHighlighter.color(doc, getLineStart(lineI), content[lineI], lineI)
+            syntaxHighlighter.colorLine(doc, getLineStart(lineI), content[lineI], lineI)
         }
     }
 

@@ -7,7 +7,6 @@ import posidon.texter.ui.Theme
 import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
-import java.awt.datatransfer.Transferable
 import java.awt.event.ActionEvent
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
@@ -78,6 +77,7 @@ object Window {
         actionMap.put("paste", object : AbstractAction("paste") {
             override fun actionPerformed(event: ActionEvent?) {
                 replaceSelection(Tools.getClipboardContents(Toolkit.getDefaultToolkit().systemClipboard))
+                currentFile!!.colorAll(styledDocument)
             }
         })
         inputMap.put(KeyStroke.getKeyStroke("control Z"), "undo")
@@ -145,7 +145,7 @@ object Window {
                 undoManager!!.addEdit(it.edit)
                 val tmp = undoManager
                 undoManager = null
-                currentFile!!.color(document, textArea.caretPosition)
+                currentFile!!.colorLine(document, textArea.caretPosition)
                 undoManager = tmp
             }}
 

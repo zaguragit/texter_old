@@ -1,5 +1,6 @@
-declarations -> val var fun package import class object data interface
-func_mods -> public private protected override
+declarations -> val var fun package import class object data interface constructor init const lateinit
+func_mods -> public private protected override typealias tailrec
 func_breaks -> return continue break
 conditions -> if else when for while
 operators -> or and xor as is in
+exceptions -> try catch throw
