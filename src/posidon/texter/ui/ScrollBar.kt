@@ -16,8 +16,8 @@ import kotlin.math.min
 class ScrollBar : BasicScrollBarUI() {
     override fun configureScrollBarColors() {
         LookAndFeel.installColors(scrollbar, "ScrollBar.background", "ScrollBar.foreground")
-        this.thumbColor = Color(Window.theme.scrollBarFG)
-        this.trackColor = Color(Window.theme.scrollBarBG)
+        this.thumbColor = Window.theme.scrollBarFG
+        this.trackColor = Window.theme.scrollBarBG
         this.scrollBarWidth = 10
     }
 

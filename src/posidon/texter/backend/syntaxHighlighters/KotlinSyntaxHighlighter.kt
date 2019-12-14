@@ -73,8 +73,8 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                         }
                         else -> {
                             val sas = SimpleAttributeSet()
-                            StyleConstants.setForeground(sas, Color(Window.theme.textAreaFG))
-                            StyleConstants.setBackground(sas, Color(Window.theme.textAreaBG))
+                            StyleConstants.setForeground(sas, Window.theme.textAreaFG)
+                            StyleConstants.setBackground(sas, Window.theme.textAreaBG)
                             StyleConstants.setItalic(sas, false)
                             StyleConstants.setBold(sas, false)
                             sas
@@ -119,7 +119,6 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                         commentStart = line.indexOf("/*", commentEnd + 2)
                         if (line.substring(commentEnd + 2, commentStart).contains("//")) {
                             val tmp = line.substring(commentEnd + 2).indexOf("//") + commentEnd + 2
-                            println("aaaaaaaaaaaaaaaa")
                             doc.setCharacterAttributes(
                                 lineStart + tmp,
                                 line.length - tmp,
@@ -130,7 +129,6 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                     } else {
                         if (line.substring(commentEnd + 2).contains("//")) {
                             val tmp = line.substring(commentEnd + 2).indexOf("//") + commentEnd + 2
-                            println("bbbbbbbbbbbbbbbbb")
                             doc.setCharacterAttributes(
                                 lineStart + tmp,
                                 line.length - tmp,

@@ -4,6 +4,7 @@ import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
 import posidon.texter.ui.ScrollBar
 import posidon.texter.ui.Theme
+import posidon.texter.ui.Themes
 import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
@@ -92,12 +93,14 @@ object Window {
     private val toolbar = JToolBar(JToolBar.VERTICAL).apply {
         border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
         margin = Insets(0, 0, 0, 0)
+        isFloatable = true
         jFrame.add(this, BorderLayout.EAST)
     }
 
     private val tabs = JToolBar(JToolBar.HORIZONTAL).apply {
         border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
         margin = Insets(0, 0, 0, 0)
+        isFloatable = false
         jFrame.add(this, BorderLayout.NORTH)
     }
 
@@ -113,27 +116,28 @@ object Window {
     public var theme: Theme = Theme()
         set(value) {
             field = value
-            textArea.foreground = Color(theme.textAreaFG)
-            textArea.caretColor = Color(theme.textAreaCaret)
-            textArea.background = Color(theme.textAreaBG)
-            jFrame.background = Color(theme.windowBG)
-            jFrame.contentPane.background = Color(theme.windowBG)
+            textArea.foreground = theme.textAreaFG
+            textArea.caretColor = theme.textAreaCaret
+            textArea.background = theme.textAreaBG
+            jFrame.background = theme.windowBG
+            jFrame.contentPane.background = theme.windowBG
             scroll.verticalScrollBar.setUI(ScrollBar())
             scroll.horizontalScrollBar.setUI(ScrollBar())
-            tabs.background = Color(theme.uiBG)
-            toolbar.background = Color(theme.uiBG)
+            tabs.background = theme.uiBG
+            toolbar.background = theme.uiBG
         }
 
     fun openFile(path: String) {
         val file = TextFile.open(path)
         if (file != null) {
             val tab = JButton(file.name)
-            tab.background = Color(theme.uiBG)
+            tab.background = theme.uiBG
             tab.margin = Insets(0, 0, 0, 0)
             tab.border = BorderFactory.createEmptyBorder(8, 10, 8, 10)
-            tab.foreground = Color(theme.text)
+            tab.foreground = theme.text
             tab.font = uiFont
             tab.isBorderPainted = false
+            tab.isFocusable = false
             tab.layout = BorderLayout()
             val thisUndoManager = UndoManager()
             val document = DefaultStyledDocument()
@@ -151,8 +155,8 @@ object Window {
 
             tab.addActionListener {
                 if (activeTab == null) textArea.isVisible = true
-                else activeTab!!.background = Color(theme.uiBG)
-                tab.background = Color(theme.uiHighlight)
+                else activeTab!!.background = theme.uiBG
+                tab.background = theme.uiHighlight
                 activeTab = tab
                 currentFile = file
                 undoManager = null
@@ -197,34 +201,18 @@ object Window {
 
 
     fun init() {
-        /*JButton(ImageIcon(Window::class.java.getResource("/icons/actions/run.png"))).apply {
+        JButton(ImageIcon(Window::class.java.getResource("/icons/actions/file_menu.png"))).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
             isOpaque = false
             margin = Insets(0, 0, 0, 0)
             background = Color(0x0)
-            addActionListener {
-                /*val chooser = FileChooser(jFrame)
-                if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
-                openFile(chooser.selectedFile.path)*/
-                val chooser = FileDialog(Frame())
-                chooser.isVisible = true
-                if (chooser.file != null) openFile(chooser.directory + chooser.file)
-            }
-            toolbar.add(this)
-        }*/
-
-        JButton("file").apply {
-            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-            isBorderPainted = false
-            isOpaque = false
-            margin = Insets(0, 0, 0, 0)
-            background = Color(0x0)
-            foreground = Color(theme.text)
+            foreground = theme.text
+            isFocusable = false
             val popup = JPopupMenu().apply {
                 border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
                 isBorderPainted = false
-                background = Color(theme.uiHighlight)
+                background = theme.uiHighlight
                 add(JMenuItem().apply {
                     action = object : AbstractAction() {
                         override fun actionPerformed(a: ActionEvent?) {
@@ -241,7 +229,7 @@ object Window {
                     isBorderPainted = false
                     isOpaque = false
                     background = Color(0x0)
-                    foreground = Color(theme.text)
+                    foreground = theme.text
                 })
                 add(JMenuItem().apply {
                     action = object : AbstractAction() {
@@ -256,18 +244,18 @@ object Window {
                     isBorderPainted = false
                     isOpaque = false
                     background = Color(0x0)
-                    foreground = Color(theme.text)
+                    foreground = theme.text
                 })
             }
             addActionListener { popup.show(this, 0, this.height) }
             toolbar.add(this)
         }
 
-        theme = Theme()
+        theme = Themes.dark
         jFrame.isVisible = true
     }
 
-    var title: String
+    private var title: String
         get() = jFrame.title
         set(value) { jFrame.title = value }
 }
