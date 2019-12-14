@@ -4,6 +4,11 @@ import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
 import java.io.IOException
+import javax.swing.JTextPane
+import javax.swing.text.SimpleAttributeSet
+import javax.swing.text.StyleConstants
+import javax.swing.text.TabSet
+import javax.swing.text.TabStop
 
 
 object Tools {

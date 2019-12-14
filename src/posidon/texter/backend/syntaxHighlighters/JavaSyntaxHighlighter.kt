@@ -7,7 +7,7 @@ import javax.swing.text.StyleConstants
 import javax.swing.text.StyledDocument
 import kotlin.math.max
 
-class KotlinSyntaxHighlighter : SyntaxHighlighter() {
+class JavaSyntaxHighlighter : SyntaxHighlighter() {
 
     private val declarations = ArrayList<String>()
     private val mods = ArrayList<String>()
@@ -19,7 +19,7 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
     private val lineInfo = ArrayList<String>()
 
     init {
-        val text = KotlinSyntaxHighlighter::class.java.getResource("/code/highlighters/kt.txt").readText().split('\n')
+        val text = JavaSyntaxHighlighter::class.java.getResource("/code/highlighters/java.txt").readText().split('\n')
         for (line in text) {
             val items = line.split(' ')
             when {

@@ -1,0 +1,6 @@
+declarations -> package import class interface this new
+mods -> public private protected final static
+func_breaks -> return continue break
+conditions -> if else switch for while do
+operators -> instanceof
+exceptions -> try catch throw throws

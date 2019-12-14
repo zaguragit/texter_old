@@ -1,5 +1,6 @@
 package posidon.texter
 
+import posidon.texter.backend.NewLineFilter
 import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
 import posidon.texter.ui.ScrollBar
@@ -14,8 +15,10 @@ import java.awt.event.MouseListener
 import java.io.File
 import javax.swing.*
 import javax.swing.text.*
+import javax.swing.undo.CannotRedoException
 import javax.swing.undo.CannotUndoException
 import javax.swing.undo.UndoManager
+import kotlin.test.todo
 
 object Window {
 
@@ -30,7 +33,6 @@ object Window {
         minimumSize = Dimension(AppInfo.MIN_WIDTH, AppInfo.MIN_HEIGHT)
         isResizable = true
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        setLocationRelativeTo(null)
         transferHandler = object : TransferHandler() {
             override fun importData(info: TransferSupport?): Boolean {
                 if (info != null && info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) try {
@@ -54,14 +56,12 @@ object Window {
         isVisible = false
         actionMap.put("undo", object : AbstractAction("undo") {
             override fun actionPerformed(event: ActionEvent?) {
-                try { if (undoManager != null) undoManager!!.undo() }
-                catch (e: CannotUndoException) {}
+                try { if (undoManager != null) undoManager!!.undo() } catch (e: Exception) {}
             }
         })
         actionMap.put("redo", object : AbstractAction("redo") {
             override fun actionPerformed(event: ActionEvent?) {
-                try { if (undoManager != null) undoManager!!.redo() }
-                catch (e: CannotUndoException) {}
+                try { if (undoManager != null) undoManager!!.redo() } catch (e: Exception) {}
             }
         })
         actionMap.put("cut", object : AbstractAction("cut") {
@@ -78,7 +78,10 @@ object Window {
         actionMap.put("paste", object : AbstractAction("paste") {
             override fun actionPerformed(event: ActionEvent?) {
                 replaceSelection(Tools.getClipboardContents(Toolkit.getDefaultToolkit().systemClipboard))
+                val tmp = undoManager
+                undoManager = null
                 currentFile!!.colorAll(styledDocument)
+                undoManager = tmp
             }
         })
         inputMap.put(KeyStroke.getKeyStroke("control Z"), "undo")
@@ -143,6 +146,7 @@ object Window {
             val document = DefaultStyledDocument()
             document.insertString(0, file.text, SimpleAttributeSet())
             file.colorAll(document)
+            document.documentFilter = NewLineFilter()
             document.addUndoableEditListener { if (undoManager != null) {
                 currentFile!!.text = document.getText(0, document.length)
                 currentFile!!.save()
@@ -152,6 +156,7 @@ object Window {
                 currentFile!!.colorLine(document, textArea.caretPosition)
                 undoManager = tmp
             }}
+
 
             tab.addActionListener {
                 if (activeTab == null) textArea.isVisible = true
@@ -236,7 +241,10 @@ object Window {
                         override fun actionPerformed(a: ActionEvent?) {
                             val chooser = FileDialog(Frame())
                             chooser.isVisible = true
-                            if (chooser.file != null) openFile(chooser.directory + chooser.file)
+                            if (chooser.file != null) {
+                                TextFile.new(chooser.directory + chooser.file)
+                                openFile(chooser.directory + chooser.file)
+                            }
                         }
                     }
                     text = "new"
@@ -252,6 +260,7 @@ object Window {
         }
 
         theme = Themes.dark
+        jFrame.isLocationByPlatform = true
         jFrame.isVisible = true
     }
 

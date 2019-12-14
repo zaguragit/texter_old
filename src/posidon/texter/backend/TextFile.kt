@@ -1,8 +1,7 @@
 package posidon.texter.backend
 
-import posidon.texter.backend.syntaxHighlighters.DefaultSyntaxHighlighter
-import posidon.texter.backend.syntaxHighlighters.SyntaxHighlighter
-import posidon.texter.backend.syntaxHighlighters.KotlinSyntaxHighlighter
+import posidon.texter.backend.syntaxHighlighters.*
+import java.beans.JavaBean
 import java.io.*
 import java.lang.Exception
 import java.nio.file.Files
@@ -10,11 +9,16 @@ import java.nio.file.StandardOpenOption
 import javax.swing.text.StyledDocument
 import kotlin.streams.toList
 
-class TextFile(val path: String, var content: List<String>) {
+class TextFile(private val path: String, private var content: List<String>) {
 
     private var syntaxHighlighter: SyntaxHighlighter =
-        if (path.endsWith(".kt")) KotlinSyntaxHighlighter()
-        else DefaultSyntaxHighlighter()
+        when {
+            path.endsWith(".kt") -> KotlinSyntaxHighlighter()
+            path.endsWith(".java") -> JavaSyntaxHighlighter()
+            path.endsWith(".xml") -> XmlSyntaxHighlighter()
+            path.endsWith(".iml") -> XmlSyntaxHighlighter()
+            else -> DefaultSyntaxHighlighter()
+        }
 
     var text
         get() = content.joinToString("\n")

@@ -1,12 +1,10 @@
 package posidon.texter.ui
 
 import java.awt.*
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
 import java.io.File
 import javax.swing.*
 
-class FileChooser(val jFrame: JFrame) : JFileChooser() {
+class FileChooser(private val jFrame: JFrame) : JFileChooser() {
 
     override fun getIcon(file: File?): Icon {
         return ImageIcon(FileChooser::class.java.getResource(if (file != null) when {
