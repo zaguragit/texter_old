@@ -1,10 +1,12 @@
 package posidon.texter
 
 import posidon.texter.backend.TextFile
+import posidon.texter.backend.Tools
 import posidon.texter.ui.ScrollBar
 import posidon.texter.ui.Theme
 import java.awt.*
 import java.awt.datatransfer.DataFlavor
+import java.awt.datatransfer.StringSelection
 import java.awt.event.ActionEvent
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
@@ -15,6 +17,12 @@ import javax.swing.undo.CannotUndoException
 import javax.swing.undo.UndoManager
 
 object Window {
+
+    private var currentFile: TextFile? = null
+    private var activeTab: JButton? = null
+    private var undoManager: UndoManager? = null
+    private val codeFont = Font(Font.MONOSPACED, Font.PLAIN, 15)
+    private val uiFont = Font(Font.SANS_SERIF, Font.PLAIN, 15)
 
     private val jFrame = JFrame(AppInfo.NAME).apply {
         size = Dimension(AppInfo.INIT_WIDTH, AppInfo.INIT_HEIGHT)
@@ -39,6 +47,7 @@ object Window {
     }
 
     private val textArea = JTextPane().apply {
+        font = codeFont
         isEditable = true
         border = BorderFactory.createEmptyBorder(12, 12, 12, 12)
         isVisible = false
@@ -54,9 +63,29 @@ object Window {
                 catch (e: CannotUndoException) {}
             }
         })
+        actionMap.put("cut", object : AbstractAction("cut") {
+            override fun actionPerformed(event: ActionEvent?) {
+                Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(selectedText), null)
+                replaceSelection("")
+            }
+        })
+        actionMap.put("copy", object : AbstractAction("copy") {
+            override fun actionPerformed(event: ActionEvent?) {
+                Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(selectedText), null)
+            }
+        })
+        actionMap.put("paste", object : AbstractAction("paste") {
+            override fun actionPerformed(event: ActionEvent?) {
+                replaceSelection(Tools.getClipboardContents(Toolkit.getDefaultToolkit().systemClipboard))
+                currentFile!!.colorAll(styledDocument)
+            }
+        })
         inputMap.put(KeyStroke.getKeyStroke("control Z"), "undo")
         inputMap.put(KeyStroke.getKeyStroke("control Y"), "redo")
         inputMap.put(KeyStroke.getKeyStroke("control shift Z"), "redo")
+        inputMap.put(KeyStroke.getKeyStroke("control X"), "cut")
+        inputMap.put(KeyStroke.getKeyStroke("control C"), "copy")
+        inputMap.put(KeyStroke.getKeyStroke("control V"), "paste")
         transferHandler = jFrame.transferHandler
     }
 
@@ -72,12 +101,28 @@ object Window {
         jFrame.add(this, BorderLayout.NORTH)
     }
 
-    private lateinit var scroll: JScrollPane
-    private var currentFile: TextFile? = null
-    private var activeTab: JButton? = null
-    private var undoManager: UndoManager? = null
-    private val codeFont = Font(Font.MONOSPACED, Font.PLAIN, 15)
-    private val uiFont = Font(Font.SANS_SERIF, Font.PLAIN, 15)
+    private val scroll = JScrollPane(JPanel(BorderLayout()).apply { add(textArea); isOpaque = false }).apply {
+        border = null
+        isOpaque = false
+        viewport.isOpaque = false
+        verticalScrollBar.unitIncrement = 10
+        horizontalScrollBar.unitIncrement = 10
+        jFrame.add(this, BorderLayout.CENTER)
+    }
+
+    public var theme: Theme = Theme()
+        set(value) {
+            field = value
+            textArea.foreground = Color(theme.textAreaFG)
+            textArea.caretColor = Color(theme.textAreaCaret)
+            textArea.background = Color(theme.textAreaBG)
+            jFrame.background = Color(theme.windowBG)
+            jFrame.contentPane.background = Color(theme.windowBG)
+            scroll.verticalScrollBar.setUI(ScrollBar())
+            scroll.horizontalScrollBar.setUI(ScrollBar())
+            tabs.background = Color(theme.uiBG)
+            toolbar.background = Color(theme.uiBG)
+        }
 
     fun openFile(path: String) {
         val file = TextFile.open(path)
@@ -100,7 +145,7 @@ object Window {
                 undoManager!!.addEdit(it.edit)
                 val tmp = undoManager
                 undoManager = null
-                currentFile!!.color(document, textArea.caretPosition)
+                currentFile!!.colorLine(document, textArea.caretPosition)
                 undoManager = tmp
             }}
 
@@ -150,35 +195,9 @@ object Window {
         }
     }
 
-    public var theme: Theme = Theme()
-        set(value) {
-            field = value
-            textArea.foreground = Color(theme.textAreaFG)
-            textArea.caretColor = Color(theme.textAreaCaret)
-            textArea.background = Color(theme.textAreaBG)
-            jFrame.background = Color(theme.windowBG)
-            jFrame.contentPane.background = Color(theme.windowBG)
-            scroll.verticalScrollBar.ui = ScrollBar()
-            scroll.horizontalScrollBar.ui = ScrollBar()
-            tabs.background = Color(theme.uiBG)
-            toolbar.background = Color(theme.uiBG)
-        }
 
     fun init() {
-        textArea.font = codeFont
-
-        scroll = JScrollPane(JPanel(BorderLayout()).apply { add(textArea); isOpaque = false }).apply {
-            border = null
-            isOpaque = false
-            viewport.isOpaque = false
-            verticalScrollBar.ui = ScrollBar()
-            horizontalScrollBar.ui = ScrollBar()
-            verticalScrollBar.unitIncrement = 10
-            horizontalScrollBar.unitIncrement = 10
-            jFrame.add(this, BorderLayout.CENTER)
-        }
-
-        val runBtn = JButton(ImageIcon(Window::class.java.getResource("/icons/actions/run.png"))).apply {
+        /*JButton(ImageIcon(Window::class.java.getResource("/icons/actions/run.png"))).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
             isOpaque = false
@@ -192,9 +211,57 @@ object Window {
                 chooser.isVisible = true
                 if (chooser.file != null) openFile(chooser.directory + chooser.file)
             }
-        }
+            toolbar.add(this)
+        }*/
 
-        toolbar.add(runBtn)
+        JButton("file").apply {
+            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            isBorderPainted = false
+            isOpaque = false
+            margin = Insets(0, 0, 0, 0)
+            background = Color(0x0)
+            foreground = Color(theme.text)
+            val popup = JPopupMenu().apply {
+                border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+                isBorderPainted = false
+                background = Color(theme.uiHighlight)
+                add(JMenuItem().apply {
+                    action = object : AbstractAction() {
+                        override fun actionPerformed(a: ActionEvent?) {
+                            /*val chooser = FileChooser(jFrame)
+                            if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
+                            openFile(chooser.selectedFile.path)*/
+                            val chooser = FileDialog(Frame())
+                            chooser.isVisible = true
+                            if (chooser.file != null) openFile(chooser.directory + chooser.file)
+                        }
+                    }
+                    text = "open"
+                    border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                    isBorderPainted = false
+                    isOpaque = false
+                    background = Color(0x0)
+                    foreground = Color(theme.text)
+                })
+                add(JMenuItem().apply {
+                    action = object : AbstractAction() {
+                        override fun actionPerformed(a: ActionEvent?) {
+                            val chooser = FileDialog(Frame())
+                            chooser.isVisible = true
+                            if (chooser.file != null) openFile(chooser.directory + chooser.file)
+                        }
+                    }
+                    text = "new"
+                    border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                    isBorderPainted = false
+                    isOpaque = false
+                    background = Color(0x0)
+                    foreground = Color(theme.text)
+                })
+            }
+            addActionListener { popup.show(this, 0, this.height) }
+            toolbar.add(this)
+        }
 
         theme = Theme()
         jFrame.isVisible = true
