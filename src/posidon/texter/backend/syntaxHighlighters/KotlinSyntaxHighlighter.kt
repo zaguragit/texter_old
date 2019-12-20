@@ -16,6 +16,7 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
     private val operators = ArrayList<String>()
     private val exceptions = ArrayList<String>()
     private val undefined = ArrayList<String>()
+    private val values = ArrayList<String>()
     private val lineInfo = ArrayList<String>()
 
     init {
@@ -29,6 +30,7 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                 line.startsWith("conditions") -> conditions
                 line.startsWith("operators") -> operators
                 line.startsWith("exceptions") -> exceptions
+                line.startsWith("values") -> values
                 else -> undefined
             }.addAll(items.subList(2, items.size))
         }
@@ -46,12 +48,12 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                     doc.setCharacterAttributes(startPos, max(str.length, 1), when (string) {
                         in declarations -> {
                             val sas = SimpleAttributeSet()
-                            StyleConstants.setForeground(sas, Color(0xff3355))
+                            StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
                         in mods -> {
                             val sas = SimpleAttributeSet()
-                            StyleConstants.setForeground(sas, Color(0xA05FFF))
+                            StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
                         in funcBreaks -> {
@@ -74,13 +76,40 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                             StyleConstants.setForeground(sas, Color(0xFF6649))
                             sas
                         }
-                        else -> {
+                        in values -> {
                             val sas = SimpleAttributeSet()
-                            StyleConstants.setForeground(sas, Window.theme.textAreaFG)
-                            StyleConstants.setBackground(sas, Window.theme.textAreaBG)
-                            StyleConstants.setItalic(sas, false)
-                            StyleConstants.setBold(sas, false)
+                            StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
+                        }
+                        else -> {
+                            var num = string.substring(
+                                if (string.startsWith("0x") || string.startsWith("0b")) 2 else 0,
+                                if (
+                                    string.endsWith("d", true) ||
+                                    string.endsWith("l", true) ||
+                                    string.endsWith("f", true)
+                                ) string.length - 1 else string.length
+                            )
+                            if (string.startsWith("0x") && string.substring(2).toIntOrNull(16) != null) {
+                                val sas = SimpleAttributeSet()
+                                StyleConstants.setForeground(sas, Color(0x60CCFF))
+                                sas
+                            } else if (string.startsWith("0b") && string.substring(2).toIntOrNull(2) != null) {
+                                val sas = SimpleAttributeSet()
+                                StyleConstants.setForeground(sas, Color(0x60CCFF))
+                                sas
+                            } else if (string.toDoubleOrNull() != null) {
+                                val sas = SimpleAttributeSet()
+                                StyleConstants.setForeground(sas, Color(0x60CCFF))
+                                sas
+                            } else {
+                                val sas = SimpleAttributeSet()
+                                StyleConstants.setForeground(sas, Window.theme.textAreaFG)
+                                StyleConstants.setBackground(sas, Window.theme.textAreaBG)
+                                StyleConstants.setItalic(sas, false)
+                                StyleConstants.setBold(sas, false)
+                                sas
+                            }
                         }
                     }, false)
                     startPos += str.length + 1

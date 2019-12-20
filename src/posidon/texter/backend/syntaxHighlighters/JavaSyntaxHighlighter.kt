@@ -16,6 +16,7 @@ class JavaSyntaxHighlighter : SyntaxHighlighter() {
     private val operators = ArrayList<String>()
     private val exceptions = ArrayList<String>()
     private val undefined = ArrayList<String>()
+    private val values = ArrayList<String>()
     private val lineInfo = ArrayList<String>()
 
     init {
@@ -29,6 +30,7 @@ class JavaSyntaxHighlighter : SyntaxHighlighter() {
                 line.startsWith("conditions") -> conditions
                 line.startsWith("operators") -> operators
                 line.startsWith("exceptions") -> exceptions
+                line.startsWith("values") -> values
                 else -> undefined
             }.addAll(items.subList(2, items.size))
         }
@@ -46,12 +48,12 @@ class JavaSyntaxHighlighter : SyntaxHighlighter() {
                     doc.setCharacterAttributes(startPos, max(str.length, 1), when (string) {
                         in declarations -> {
                             val sas = SimpleAttributeSet()
-                            StyleConstants.setForeground(sas, Color(0xff3355))
+                            StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
                         in mods -> {
                             val sas = SimpleAttributeSet()
-                            StyleConstants.setForeground(sas, Color(0xA05FFF))
+                            StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
                         in funcBreaks -> {
@@ -72,6 +74,11 @@ class JavaSyntaxHighlighter : SyntaxHighlighter() {
                         in exceptions -> {
                             val sas = SimpleAttributeSet()
                             StyleConstants.setForeground(sas, Color(0xFF6649))
+                            sas
+                        }
+                        in values -> {
+                            val sas = SimpleAttributeSet()
+                            StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
                         else -> {

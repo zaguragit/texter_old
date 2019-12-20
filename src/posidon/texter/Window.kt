@@ -3,6 +3,7 @@ package posidon.texter
 import posidon.texter.backend.NewLineFilter
 import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
+import posidon.texter.ui.FileTree
 import posidon.texter.ui.ScrollBar
 import posidon.texter.ui.Theme
 import posidon.texter.ui.Themes
@@ -116,6 +117,10 @@ object Window {
         jFrame.add(this, BorderLayout.CENTER)
     }
 
+    private val fileTree = FileTree(File(".")).apply {
+        jFrame.add(this, BorderLayout.WEST)
+    }
+
     public var theme: Theme = Theme()
         set(value) {
             field = value
@@ -128,9 +133,12 @@ object Window {
             scroll.horizontalScrollBar.setUI(ScrollBar())
             tabs.background = theme.uiBG
             toolbar.background = theme.uiBG
+            fileTree.updateColors()
+            fileTree.verticalScrollBarUI = ScrollBar()
+            fileTree.horizontalScrollBarUI = ScrollBar()
         }
 
-    fun openFile(path: String) {
+    public fun openFile(path: String) {
         val file = TextFile.open(path)
         if (file != null) {
             val tab = JButton(file.name)
@@ -169,9 +177,9 @@ object Window {
                 undoManager = thisUndoManager
                 title = AppInfo.NAME + " - " + file.name
             }
-            val closeTabBtn = JButton(ImageIcon(Window::class.java.getResource("/icons/misc/close_tab_hover.png"))).apply {
+            val closeTabBtn = JButton(theme.iconTheme.close_tab_hover).apply {
                 isEnabled = false
-                disabledIcon = ImageIcon(Window::class.java.getResource("/icons/misc/close_tab.png"))
+                disabledIcon = theme.iconTheme.close_tab
                 margin = Insets(0, 0, 0, 0)
                 isOpaque = false
                 background = Color(0x0)
@@ -206,7 +214,8 @@ object Window {
 
 
     fun init() {
-        JButton(ImageIcon(Window::class.java.getResource("/icons/actions/file_menu.png"))).apply {
+        theme = Themes.elementary
+        JButton(ImageIcon(theme.iconTheme.file_menu)).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
             isOpaque = false
@@ -239,6 +248,24 @@ object Window {
                 add(JMenuItem().apply {
                     action = object : AbstractAction() {
                         override fun actionPerformed(a: ActionEvent?) {
+                            /*val chooser = FileChooser(jFrame)
+                            if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
+                            openFile(chooser.selectedFile.path)*/
+                            val chooser = FileDialog(Frame())
+                            chooser.isVisible = true
+                            if (chooser.file != null) openFile(chooser.directory + chooser.file)
+                        }
+                    }
+                    text = "open folder"
+                    border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                    isBorderPainted = false
+                    isOpaque = false
+                    background = Color(0x0)
+                    foreground = theme.text
+                })
+                add(JMenuItem().apply {
+                    action = object : AbstractAction() {
+                        override fun actionPerformed(a: ActionEvent?) {
                             val chooser = FileDialog(Frame())
                             chooser.isVisible = true
                             if (chooser.file != null) {
@@ -259,7 +286,6 @@ object Window {
             toolbar.add(this)
         }
 
-        theme = Themes.dark
         jFrame.isLocationByPlatform = true
         jFrame.isVisible = true
     }
