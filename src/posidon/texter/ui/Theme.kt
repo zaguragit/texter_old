@@ -2,10 +2,8 @@ package posidon.texter.ui
 
 import posidon.texter.Window
 import java.awt.Color
-import java.awt.SystemColor
 import java.net.URL
 import javax.swing.ImageIcon
-import javax.swing.UIManager
 
 data class Theme(
     val iconTheme: IconTheme = IconTheme(),
@@ -68,7 +66,11 @@ data class IconTheme(
     val close_tab: ImageIcon = ImageIcon(Window::class.java.getResource("/icons/misc/close_tab.png")),
     val close_tab_hover: ImageIcon = ImageIcon(Window::class.java.getResource("/icons/misc/close_tab_hover.png")),
     val folder: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/folder.png")),
-    val file: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/file.png"))
+    val file_text: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/file.png")),
+    val java: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/java.png")),
+    val kotlin: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/kotlin.png")),
+    val exec: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/exec.png")),
+    val file: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/other.png"))
 )
 
 private object IconThemes {
@@ -77,6 +79,10 @@ private object IconThemes {
         close_tab = ImageIcon(Window::class.java.getResource("/icons/elementary/actions/close.png")),
         close_tab_hover = ImageIcon(Window::class.java.getResource("/icons/elementary/actions/close.png")),
         folder = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/folder.png")),
-        file = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/file.png"))
+        file_text = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/file.png")),
+        java = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/java.png")),
+        kotlin = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/kotlin.png")),
+        exec = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/exec.png")),
+        file = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/other.png"))
     )
 }

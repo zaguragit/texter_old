@@ -1,24 +1,21 @@
 package posidon.texter.ui
 
 import posidon.texter.Window
-import java.awt.BorderLayout
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Insets
+import java.awt.*
 import java.io.File
+import java.lang.Exception
 import java.util.*
 import javax.swing.*
 import javax.swing.event.TreeSelectionEvent
 import javax.swing.plaf.ScrollBarUI
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeCellRenderer
-import javax.swing.tree.TreeNode
 
 class FileTree(dir: File) : JPanel() {
 
     private val scrollPane = JScrollPane()
     private val tree = JTree(addNodes(null, dir))
-    private val renderer = DefaultTreeCellRenderer()
+    private val renderer = Renderer()
 
     fun addNodes(curTop: DefaultMutableTreeNode?, dir: File): DefaultMutableTreeNode {
         val curPath = dir.path
@@ -30,13 +27,13 @@ class FileTree(dir: File) : JPanel() {
         ol.sortWith(String.CASE_INSENSITIVE_ORDER)
         var f: File
         val files = Vector<String>()
-        // Make two passes, one for Dirs and one for Files. This is #1.
+
         for (thisObject in ol) {
             val newPath: String = if (curPath == ".") thisObject else curPath + File.separator + thisObject
             if (File(newPath).also { f = it }.isDirectory) addNodes(curDir, f)
             else files.addElement(thisObject)
         }
-        // Pass two: for files.
+
         for (fnum in files.indices) curDir.add(DefaultMutableTreeNode(files.elementAt(fnum)))
         return curDir
     }
@@ -50,7 +47,6 @@ class FileTree(dir: File) : JPanel() {
         renderer.textNonSelectionColor = Window.theme.text
         renderer.closedIcon = Window.theme.iconTheme.folder
         renderer.openIcon = Window.theme.iconTheme.folder
-        renderer.leafIcon = Window.theme.iconTheme.file
     }
 
     var horizontalScrollBarUI: ScrollBarUI
@@ -78,5 +74,35 @@ class FileTree(dir: File) : JPanel() {
         tree.cellRenderer = renderer
         tree.isRootVisible = false
         isOpaque = false
+    }
+
+    private class Renderer : DefaultTreeCellRenderer() {
+        override fun getTreeCellRendererComponent(
+            tree: JTree?,
+            value: Any?,
+            selected: Boolean,
+            expanded: Boolean,
+            isLeaf: Boolean,
+            rowIndex: Int,
+            hasFocus: Boolean
+        ): Component {
+            if (isLeaf) try {
+                val v = value.toString()
+                leafIcon = when {
+                    v.endsWith(".kt") -> Window.theme.iconTheme.kotlin
+                    v.endsWith(".java") -> Window.theme.iconTheme.java
+                    v.endsWith(".class") ||
+                    v.endsWith(".elf") ||
+                    v.endsWith(".exe") ||
+                    v.endsWith(".efi") ||
+                    v.endsWith(".so") ||
+                    v.endsWith(".o") ||
+                    v.endsWith(".sh") -> Window.theme.iconTheme.exec
+                    v.endsWith(".txt") -> Window.theme.iconTheme.file_text
+                    else -> Window.theme.iconTheme.file
+                }
+            } catch (e: Exception) {}
+            return super.getTreeCellRendererComponent(tree, value, selected, expanded, isLeaf, rowIndex, hasFocus)
+        }
     }
 }
