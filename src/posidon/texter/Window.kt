@@ -16,10 +16,7 @@ import java.awt.event.MouseListener
 import java.io.File
 import javax.swing.*
 import javax.swing.text.*
-import javax.swing.undo.CannotRedoException
-import javax.swing.undo.CannotUndoException
 import javax.swing.undo.UndoManager
-import kotlin.test.todo
 
 object Window {
 
@@ -119,6 +116,7 @@ object Window {
 
     private val fileTree = FileTree(File(".")).apply {
         jFrame.add(this, BorderLayout.WEST)
+        setLeafDoubleClickListener { openFile(it) }
     }
 
     public var theme: Theme = Theme()
@@ -213,8 +211,8 @@ object Window {
 
 
     fun init() {
-        theme = Themes.midnight
-        JButton(ImageIcon(theme.iconTheme.file_menu)).apply {
+        theme = Themes.elementary
+        JButton(theme.iconTheme.file_menu).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
             isOpaque = false

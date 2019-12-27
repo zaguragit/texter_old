@@ -2,7 +2,6 @@ package posidon.texter.ui
 
 import posidon.texter.Window
 import java.awt.Color
-import java.net.URL
 import javax.swing.ImageIcon
 
 data class Theme(
@@ -62,10 +61,11 @@ object Themes {
 }
 
 data class IconTheme(
-    val file_menu: URL = Window::class.java.getResource("/icons/actions/file_menu.png"),
+    val file_menu: ImageIcon = ImageIcon(Window::class.java.getResource("/icons/actions/file_menu.png")),
     val close_tab: ImageIcon = ImageIcon(Window::class.java.getResource("/icons/misc/close_tab.png")),
     val close_tab_hover: ImageIcon = ImageIcon(Window::class.java.getResource("/icons/misc/close_tab_hover.png")),
     val folder: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/folder.png")),
+    val folder_open: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/folder.png")),
     val file_text: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/file.png")),
     val java: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/java.png")),
     val kotlin: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/kotlin.png")),
@@ -76,10 +76,11 @@ data class IconTheme(
 
 private object IconThemes {
     val elementary = IconTheme(
-        file_menu = Window::class.java.getResource("/icons/elementary/actions/file_menu.png"),
-        close_tab = ImageIcon(Window::class.java.getResource("/icons/elementary/actions/close.png")),
-        close_tab_hover = ImageIcon(Window::class.java.getResource("/icons/elementary/actions/close.png")),
+        file_menu = ImageIcon(Window::class.java.getResource("/icons/elementary/actions/file_menu.png")),
+        close_tab = ImageIcon(Window::class.java.getResource("/icons/elementary/misc/close.png")),
+        close_tab_hover = ImageIcon(Window::class.java.getResource("/icons/elementary/misc/close.png")),
         folder = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/folder.png")),
+        folder_open = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/folder_open.png")),
         file_text = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/file.png")),
         java = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/java.png")),
         kotlin = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/kotlin.png")),
