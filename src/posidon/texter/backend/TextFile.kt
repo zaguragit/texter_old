@@ -1,7 +1,6 @@
 package posidon.texter.backend
 
 import posidon.texter.backend.syntaxHighlighters.*
-import java.beans.JavaBean
 import java.io.*
 import java.lang.Exception
 import java.nio.file.Files
@@ -13,10 +12,12 @@ class TextFile(private val path: String, private var content: List<String>) {
 
     private var syntaxHighlighter: SyntaxHighlighter =
         when {
-            path.endsWith(".kt") -> KotlinSyntaxHighlighter()
-            path.endsWith(".java") -> JavaSyntaxHighlighter()
-            path.endsWith(".xml") -> XmlSyntaxHighlighter()
-            path.endsWith(".iml") -> XmlSyntaxHighlighter()
+            path.endsWith(".kt") -> BracketedSyntaxHighlighter("/code/highlighters/kt.highlighter")
+            path.endsWith(".java") -> BracketedSyntaxHighlighter("/code/highlighters/java.highlighter")
+            path.endsWith(".xml") ||
+            path.endsWith(".iml") ||
+            path.endsWith(".html") -> XmlSyntaxHighlighter()
+            path.endsWith(".highlighter") -> HighlighterSyntaxHighlighter()
             else -> DefaultSyntaxHighlighter()
         }
 

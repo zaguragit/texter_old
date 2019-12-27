@@ -6,8 +6,9 @@ import javax.swing.text.SimpleAttributeSet
 import javax.swing.text.StyleConstants
 import javax.swing.text.StyledDocument
 import kotlin.math.max
+import kotlin.math.min
 
-class KotlinSyntaxHighlighter : SyntaxHighlighter() {
+class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
 
     private val declarations = ArrayList<String>()
     private val mods = ArrayList<String>()
@@ -19,11 +20,23 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
     private val values = ArrayList<String>()
     private val lineInfo = ArrayList<String>()
 
+    private var lineComment: String? = null
+    private var startComment: String? = null
+    private var endComment: String? = null
+
     init {
-        val text = KotlinSyntaxHighlighter::class.java.getResource("/code/highlighters/kt.highlighter").readText().split('\n')
+        val text = BracketedSyntaxHighlighter::class.java.getResource(highligher).readText().split('\n')
         for (line in text) {
             val items = line.split(' ')
-            when {
+            if (line.startsWith('@')) {
+                when(items[0]) {
+                    "@line-comment" -> lineComment = items[1]
+                    "@multiline-comment" -> {
+                        startComment = items[1]
+                        endComment = items[2]
+                    }
+                }
+            } else when {
                 line.startsWith("declarations") -> declarations
                 line.startsWith("mods") -> mods
                 line.startsWith("func_breaks") -> funcBreaks
@@ -47,37 +60,37 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                     val string = str.toString()
                     doc.setCharacterAttributes(startPos, max(str.length, 1), when (string) {
                         in declarations -> {
-                            val sas = SimpleAttributeSet()
+                            val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
                         in mods -> {
-                            val sas = SimpleAttributeSet()
+                            val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
                         in funcBreaks -> {
-                            val sas = SimpleAttributeSet()
+                            val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
                         in conditions -> {
-                            val sas = SimpleAttributeSet()
+                            val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
                         in operators -> {
-                            val sas = SimpleAttributeSet()
+                            val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Color(0x60CCFF))
                             sas
                         }
                         in exceptions -> {
-                            val sas = SimpleAttributeSet()
+                            val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Color(0xFF6649))
                             sas
                         }
                         in values -> {
-                            val sas = SimpleAttributeSet()
+                            val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Color(0xff8800))
                             sas
                         }
@@ -91,24 +104,19 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                                 ) string.length - 1 else string.length
                             )
                             if (string.startsWith("0x") && string.substring(2).toIntOrNull(16) != null) {
-                                val sas = SimpleAttributeSet()
+                                val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Color(0x60CCFF))
                                 sas
                             } else if (string.startsWith("0b") && string.substring(2).toIntOrNull(2) != null) {
-                                val sas = SimpleAttributeSet()
+                                val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Color(0x60CCFF))
                                 sas
                             } else if (string.toDoubleOrNull() != null) {
-                                val sas = SimpleAttributeSet()
+                                val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Color(0x60CCFF))
                                 sas
                             } else {
-                                val sas = SimpleAttributeSet()
-                                StyleConstants.setForeground(sas, Window.theme.textAreaFG)
-                                StyleConstants.setBackground(sas, Window.theme.textAreaBG)
-                                StyleConstants.setItalic(sas, false)
-                                StyleConstants.setBold(sas, false)
-                                sas
+                                defaultTextStyle()
                             }
                         }
                     }, false)
@@ -116,6 +124,7 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                     str.clear()
                 } else str.append(line[i])
             }
+
 
             var stringStart = line.indexOf('"')
             var stringEnd: Int
@@ -134,51 +143,56 @@ class KotlinSyntaxHighlighter : SyntaxHighlighter() {
                 else break
             }
 
-            if (line.length > 1) {
-                var commentStart = line.indexOf("/*")
-                var commentEnd: Int
-                val commentAttrs = SimpleAttributeSet()
-                StyleConstants.setForeground(commentAttrs, Color(0x7C7C7C))
-                if (line.contains("/*")) do {
-                    commentEnd = line.indexOf("*/", commentStart + 2)
-                    doc.setCharacterAttributes(
-                        lineStart + commentStart,
-                        commentEnd - commentStart + 2,
-                        commentAttrs,
-                        false
-                    )
-                    if (line.substring(commentEnd + 2).contains("/*")) {
-                        commentStart = line.indexOf("/*", commentEnd + 2)
-                        if (line.substring(commentEnd + 2, commentStart).contains("//")) {
-                            val tmp = line.substring(commentEnd + 2).indexOf("//") + commentEnd + 2
-                            doc.setCharacterAttributes(
-                                lineStart + tmp,
-                                line.length - tmp,
-                                commentAttrs,
-                                false
-                            )
+            if (lineComment != null && startComment != null && endComment != null) {
+                val lineComment = lineComment!!
+                val startComment = startComment!!
+                val endComment = endComment!!
+                if (line.length >= min(lineComment.length, min(startComment.length, endComment.length))) {
+                    var commentStart = line.indexOf(startComment)
+                    var commentEnd: Int
+                    val commentAttrs = SimpleAttributeSet()
+                    StyleConstants.setForeground(commentAttrs, Color(0x7C7C7C))
+                    if (line.contains(startComment)) do {
+                        commentEnd = line.indexOf(endComment, commentStart + 2)
+                        doc.setCharacterAttributes(
+                            lineStart + commentStart,
+                            commentEnd - commentStart + 2,
+                            commentAttrs,
+                            false
+                        )
+                        if (line.substring(commentEnd + 2).contains(startComment)) {
+                            commentStart = line.indexOf(startComment, commentEnd + 2)
+                            if (line.substring(commentEnd + 2, commentStart).contains(lineComment)) {
+                                val tmp = line.substring(commentEnd + 2).indexOf(lineComment) + commentEnd + 2
+                                doc.setCharacterAttributes(
+                                    lineStart + tmp,
+                                    line.length - tmp,
+                                    commentAttrs,
+                                    false
+                                )
+                            }
+                        } else {
+                            if (line.substring(commentEnd + 2).contains(lineComment)) {
+                                val tmp = line.substring(commentEnd + 2).indexOf(lineComment) + commentEnd + 2
+                                doc.setCharacterAttributes(
+                                    lineStart + tmp,
+                                    line.length - tmp,
+                                    commentAttrs,
+                                    false
+                                )
+                            }
+                            break
                         }
-                    } else {
-                        if (line.substring(commentEnd + 2).contains("//")) {
-                            val tmp = line.substring(commentEnd + 2).indexOf("//") + commentEnd + 2
-                            doc.setCharacterAttributes(
-                                lineStart + tmp,
-                                line.length - tmp,
-                                commentAttrs,
-                                false
-                            )
-                        }
-                        break
+                    } while (line.substring(commentStart + 2).contains(endComment))
+                    else if (line.contains(lineComment)) {
+                        commentStart = line.indexOf(lineComment)
+                        doc.setCharacterAttributes(
+                            lineStart + commentStart,
+                            line.length - commentStart,
+                            commentAttrs,
+                            false
+                        )
                     }
-                } while (line.substring(commentStart + 2).contains("*/"))
-                else if (line.contains("//")) {
-                    commentStart = line.indexOf("//")
-                    doc.setCharacterAttributes(
-                        lineStart + commentStart,
-                        line.length - commentStart,
-                        commentAttrs,
-                        false
-                    )
                 }
             }
         }

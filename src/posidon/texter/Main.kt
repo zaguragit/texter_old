@@ -1,7 +1,7 @@
 package posidon.texter
 
 fun main(args: Array<String>) { Thread(Main()).start() }
-class Main : Runnable { override fun run() { Window.init() } }
+class Main : Runnable { override fun run() { Window.init() }}
 
 object AppInfo {
     const val NAME = "texter"

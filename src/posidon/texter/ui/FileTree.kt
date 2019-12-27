@@ -97,8 +97,9 @@ class FileTree(dir: File) : JPanel() {
                     v.endsWith(".efi") ||
                     v.endsWith(".so") ||
                     v.endsWith(".o") ||
-                    v.endsWith(".sh") -> Window.theme.iconTheme.exec
+                    v.endsWith(".sh") -> Window.theme.iconTheme.file_exec
                     v.endsWith(".txt") -> Window.theme.iconTheme.file_text
+                    v.endsWith(".highlighter") -> Window.theme.iconTheme.file_highlighter
                     else -> Window.theme.iconTheme.file
                 }
             } catch (e: Exception) {}

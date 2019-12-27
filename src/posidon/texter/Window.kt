@@ -182,6 +182,7 @@ object Window {
                 disabledIcon = theme.iconTheme.close_tab
                 margin = Insets(0, 0, 0, 0)
                 isOpaque = false
+                isContentAreaFilled = false
                 background = Color(0x0)
                 isBorderPainted = false
                 border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
@@ -195,16 +196,14 @@ object Window {
                     tabs.remove(tab)
                     tabs.updateUI()
                 }
+                addMouseListener(object : MouseListener {
+                    override fun mouseReleased(p0: MouseEvent?) {}
+                    override fun mouseClicked(p0: MouseEvent?) {}
+                    override fun mousePressed(p0: MouseEvent?) {}
+                    override fun mouseEntered(p0: MouseEvent?) { isEnabled = true }
+                    override fun mouseExited(p0: MouseEvent?) { isEnabled = false }
+                })
             }
-            val tabMouseListener = object : MouseListener {
-                override fun mouseReleased(p0: MouseEvent?) {}
-                override fun mouseClicked(p0: MouseEvent?) {}
-                override fun mousePressed(p0: MouseEvent?) {}
-                override fun mouseEntered(p0: MouseEvent?) { closeTabBtn.isEnabled = true }
-                override fun mouseExited(p0: MouseEvent?) { closeTabBtn.isEnabled = false }
-            }
-            closeTabBtn.addMouseListener(tabMouseListener)
-            tab.addMouseListener(tabMouseListener)
             tab.add(closeTabBtn, BorderLayout.EAST)
 
             tabs.add(tab)
@@ -214,11 +213,12 @@ object Window {
 
 
     fun init() {
-        theme = Themes.elementary
+        theme = Themes.midnight
         JButton(ImageIcon(theme.iconTheme.file_menu)).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
             isOpaque = false
+            isContentAreaFilled = false
             margin = Insets(0, 0, 0, 0)
             background = Color(0x0)
             foreground = theme.text

@@ -69,7 +69,8 @@ data class IconTheme(
     val file_text: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/file.png")),
     val java: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/java.png")),
     val kotlin: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/kotlin.png")),
-    val exec: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/exec.png")),
+    val file_highlighter: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/highlighter.png")),
+    val file_exec: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/exec.png")),
     val file: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/other.png"))
 )
 
@@ -82,7 +83,8 @@ private object IconThemes {
         file_text = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/file.png")),
         java = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/java.png")),
         kotlin = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/kotlin.png")),
-        exec = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/exec.png")),
+        file_highlighter = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/highlighter.png")),
+        file_exec = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/exec.png")),
         file = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/other.png"))
     )
 }

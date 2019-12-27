@@ -1,6 +1,9 @@
+@syntax bracketed
+@line-comment //
+@multiline-comment /* */
 declarations -> val var fun package import class object data interface constructor init const lateinit this
-mods -> public private protected abstract override typealias tailrec suspend
-func_breaks -> return continue break
+mods -> public private protected abstract override typealias tailrec suspend sealed
+func_breaks -> return continue break super
 conditions -> if else when for while do
 operators -> or and xor as is in
 exceptions -> try catch throw

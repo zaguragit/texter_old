@@ -1,7 +1,10 @@
+@syntax bracketed
+@line-comment //
+@multiline-comment /* */
 declarations -> package import class interface this new
 mods -> public private protected abstract final static
-func_breaks -> return continue break case
+func_breaks -> return continue break case super
 conditions -> if else switch for while do
 operators -> instanceof
-exceptions -> try catch throw throws
+exceptions -> try catch throw throws assert
 values -> true false null

@@ -20,7 +20,7 @@ class JavaSyntaxHighlighter : SyntaxHighlighter() {
     private val lineInfo = ArrayList<String>()
 
     init {
-        val text = JavaSyntaxHighlighter::class.java.getResource("/code/highlighters/java.txt").readText().split('\n')
+        val text = JavaSyntaxHighlighter::class.java.getResource("/code/highlighters/java.highlighter").readText().split('\n')
         for (line in text) {
             val items = line.split(' ')
             when {
