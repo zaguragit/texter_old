@@ -1,4 +1,4 @@
-package posidon.texter.ui
+package posidon.texter.ui.filestuff
 
 import java.awt.*
 import java.io.File
@@ -7,7 +7,8 @@ import javax.swing.*
 class FileChooser(private val jFrame: JFrame) : JFileChooser() {
 
     override fun getIcon(file: File?): Icon {
-        return ImageIcon(FileChooser::class.java.getResource(if (file != null) when {
+        return ImageIcon(
+            FileChooser::class.java.getResource(if (file != null) when {
             file.isDirectory -> "/icons/files/folder.png"
             file.isFile -> when (file.extension) {
                 "kt" -> "/icons/files/kotlin.png"

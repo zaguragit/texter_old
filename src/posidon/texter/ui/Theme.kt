@@ -2,6 +2,8 @@ package posidon.texter.ui
 
 import posidon.texter.Window
 import java.awt.Color
+import java.awt.Font
+import java.awt.Image
 import javax.swing.ImageIcon
 
 data class Theme(
@@ -17,6 +19,11 @@ data class Theme(
     val text: Color = Color(0xe1e2e3),
     val textSelected: Color = Color(0xF0F1F2)
 )
+
+object Constants {
+    val codeFont = Font(Font.MONOSPACED, Font.PLAIN, 15)
+    val uiFont = Font(Font.SANS_SERIF, Font.PLAIN, 15)
+}
 
 object Themes {
     val dark = Theme(
@@ -61,31 +68,35 @@ object Themes {
 }
 
 data class IconTheme(
-    val file_menu: ImageIcon = ImageIcon(Window::class.java.getResource("/icons/actions/file_menu.png")),
-    val close_tab: ImageIcon = ImageIcon(Window::class.java.getResource("/icons/misc/close_tab.png")),
-    val close_tab_hover: ImageIcon = ImageIcon(Window::class.java.getResource("/icons/misc/close_tab_hover.png")),
-    val folder: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/folder.png")),
-    val folder_open: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/folder.png")),
-    val file_text: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/file.png")),
-    val java: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/java.png")),
-    val kotlin: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/kotlin.png")),
-    val file_highlighter: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/highlighter.png")),
-    val file_exec: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/exec.png")),
-    val file: ImageIcon = ImageIcon(FileTree::class.java.getResource("/icons/files/other.png"))
+    val file_menu: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/actions/file_menu.png")),
+    val close_tab: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/misc/close_tab.png")),
+    val close_tab_hover: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/misc/close_tab_hover.png")),
+    val folder: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/folder.png")),
+    val folder_open: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/folder_open.png")),
+    val file_text: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/file.png")),
+    val java: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/java.png")),
+    val kotlin: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/kotlin.png")),
+    val xml: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/xml.png")),
+    val file_highlighter: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/highlighter.png")),
+    val file_exec: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/exec.png")),
+    val img: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/img.png")),
+    val file: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/other.png"))
 )
 
 private object IconThemes {
     val elementary = IconTheme(
-        file_menu = ImageIcon(Window::class.java.getResource("/icons/elementary/actions/file_menu.png")),
-        close_tab = ImageIcon(Window::class.java.getResource("/icons/elementary/misc/close.png")),
-        close_tab_hover = ImageIcon(Window::class.java.getResource("/icons/elementary/misc/close.png")),
-        folder = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/folder.png")),
-        folder_open = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/folder_open.png")),
-        file_text = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/file.png")),
-        java = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/java.png")),
-        kotlin = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/kotlin.png")),
-        file_highlighter = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/highlighter.png")),
-        file_exec = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/exec.png")),
-        file = ImageIcon(FileTree::class.java.getResource("/icons/elementary/files/other.png"))
+        file_menu = ImageIcon(Themes::class.java.getResource("/icons/elementary/actions/file_menu.png")),
+        close_tab = ImageIcon(Themes::class.java.getResource("/icons/elementary/misc/close.png")),
+        close_tab_hover = ImageIcon(Themes::class.java.getResource("/icons/elementary/misc/close.png")),
+        folder = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/folder.png")),
+        folder_open = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/folder_open.png")),
+        file_text = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/file.png")),
+        java = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/java.png")),
+        kotlin = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/kotlin.png")),
+        xml = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/xml.png")),
+        file_highlighter = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/highlighter.png")),
+        file_exec = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/exec.png")),
+        img = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/img.png")),
+        file = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/other.png"))
     )
 }

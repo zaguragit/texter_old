@@ -1,70 +1,80 @@
-package posidon.texter.ui
+package posidon.texter.ui.filestuff
 
 import posidon.texter.Window
+import posidon.texter.ui.ScrollBar
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
 import java.io.File
 import java.util.*
 import javax.swing.*
+import javax.swing.event.TreeExpansionEvent
 import javax.swing.event.TreeSelectionEvent
-import javax.swing.plaf.ScrollBarUI
-import javax.swing.plaf.TreeUI
+import javax.swing.event.TreeWillExpandListener
 import javax.swing.plaf.basic.BasicTreeUI
 import javax.swing.tree.DefaultMutableTreeNode
 import javax.swing.tree.DefaultTreeCellRenderer
+import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreePath
 
 
 class FileTree(dir: File) : JPanel() {
 
     private val scrollPane = JScrollPane()
-    private val tree = JTree(addNodes(null, dir))
+    private val tree = JTree(addNodes(null, dir), true)
     private val renderer = Renderer()
     private val treeUI = DecentTreeUI()
 
-    fun addNodes(curTop: DefaultMutableTreeNode?, dir: File): DefaultMutableTreeNode {
+    private fun addNodes(curTop: DefaultMutableTreeNode?, dir: File): DefaultMutableTreeNode {
         val curPath = dir.path
-        val curDir = DefaultMutableTreeNode(dir.name)
-        curTop?.add(curDir)
+        val curDir = curTop ?: DefaultMutableTreeNode(dir.name)
         val ol = Vector<String>()
         val tmp = dir.list()
         if (tmp != null) for (s in tmp) ol.addElement(s)
         ol.sortWith(String.CASE_INSENSITIVE_ORDER)
-        var f: File
         val files = Vector<String>()
 
         for (thisObject in ol) {
-            val newPath: String = if (curPath == ".") thisObject else curPath + File.separator + thisObject
-            if (File(newPath).also { f = it }.isDirectory) addNodes(curDir, f)
-            else files.addElement(thisObject)
+            files.addElement(
+                if (File(curPath + File.separator + thisObject).isDirectory) thisObject + File.separator
+                else thisObject)
         }
 
-        for (fnum in files.indices) curDir.add(DefaultMutableTreeNode(files.elementAt(fnum)))
+        for (i in files.indices) curDir.add(if (files.elementAt(i).endsWith(File.separator)) {
+            DefaultMutableTreeNode(files.elementAt(i).substring(0, files.elementAt(i).length - 1), true)
+        } else DefaultMutableTreeNode(files.elementAt(i), false))
+        //for (i in files.indices) curDir.add(DefaultMutableTreeNode(files.elementAt(i), false))
         return curDir
     }
 
-    fun updateColors() {
-        tree.background = Window.theme.uiBG
+    fun setFolder(path: String) {
+        with(tree.model.root as DefaultMutableTreeNode) {
+            removeAllChildren()
+            addNodes(this, File(path))
+            this.userObject = path
+        }
+        tree.updateUI()
+        tree.setUI(treeUI)
+        treeUI.collapsedIcon = null
+        treeUI.expandedIcon = null
+    }
+
+    fun updateTheme() {
+        background = Window.theme.uiBG
         renderer.backgroundSelectionColor = Window.theme.uiHighlight
-        renderer.backgroundNonSelectionColor = Window.theme.uiBG
         renderer.borderSelectionColor = Window.theme.uiBG
         renderer.textSelectionColor = Window.theme.textSelected
         renderer.textNonSelectionColor = Window.theme.text
         renderer.closedIcon = Window.theme.iconTheme.folder
         renderer.openIcon = Window.theme.iconTheme.folder_open
-        treeUI.collapsedIcon = null
-        treeUI.expandedIcon = null
+        scrollPane.verticalScrollBar.setUI(ScrollBar())
+        scrollPane.horizontalScrollBar.setUI(ScrollBar())
     }
 
-    var horizontalScrollBarUI: ScrollBarUI
-        get() = scrollPane.horizontalScrollBar.ui
-        set(value) = scrollPane.horizontalScrollBar.setUI(value)
-
-    var verticalScrollBarUI: ScrollBarUI
-        get() = scrollPane.verticalScrollBar.ui
-        set(value) = scrollPane.verticalScrollBar.setUI(value)
+    override fun setBackground(bg: Color?) {
+        tree?.background = bg
+        renderer?.backgroundNonSelectionColor = bg
+    }
 
     override fun getMinimumSize(): Dimension { return Dimension(200, 400) }
     override fun getPreferredSize(): Dimension { return Dimension(200, 400) }
@@ -78,16 +88,25 @@ class FileTree(dir: File) : JPanel() {
         add(BorderLayout.CENTER, scrollPane)
         renderer.border = BorderFactory.createEmptyBorder(4, 8, 4, 8)
         tree.cellRenderer = renderer
-        tree.isRootVisible = false
+        tree.isRootVisible = true
         tree.setUI(treeUI)
+        treeUI.collapsedIcon = null
+        treeUI.expandedIcon = null
         isOpaque = false
+        tree.addTreeWillExpandListener(object : TreeWillExpandListener {
+            override fun treeWillCollapse(e: TreeExpansionEvent) {}
+
+            override fun treeWillExpand(e: TreeExpansionEvent) {
+                addNodes(e.path.lastPathComponent as DefaultMutableTreeNode, File(e.path.path.joinToString(File.separator)))
+            }
+        })
         tree.addMouseListener(object : MouseAdapter() {
             override fun mousePressed(e: MouseEvent) {
                 val row = tree.getRowForLocation(e.x, e.y)
                 if (row != -1) {
                     val path: TreePath? = tree.getPathForLocation(e.x, e.y)
-                    if (e.clickCount == 2 && (path?.lastPathComponent as DefaultMutableTreeNode).isLeaf) {
-                        itemDoubleClickListener?.invoke(path.path.joinToString("/"))
+                    if (e.clickCount == 2 && (path?.lastPathComponent as MutableTreeNode).isLeaf) {
+                        itemDoubleClickListener?.invoke(path.path.joinToString(File.separator))
                     }
                 }
             }
@@ -115,10 +134,13 @@ class FileTree(dir: File) : JPanel() {
             hasFocus: Boolean
         ): Component {
             if (isLeaf) try {
-                val v = value.toString()
+                val v = value.toString().toLowerCase()
                 leafIcon = when {
                     v.endsWith(".kt") -> Window.theme.iconTheme.kotlin
                     v.endsWith(".java") -> Window.theme.iconTheme.java
+                    v.endsWith(".xml") ||
+                    v.endsWith(".iml") ||
+                    v.endsWith(".html") -> Window.theme.iconTheme.xml
                     v.endsWith(".class") ||
                     v.endsWith(".elf") ||
                     v.endsWith(".exe") ||
@@ -126,6 +148,13 @@ class FileTree(dir: File) : JPanel() {
                     v.endsWith(".so") ||
                     v.endsWith(".o") ||
                     v.endsWith(".sh") -> Window.theme.iconTheme.file_exec
+                    v.endsWith(".png") ||
+                    v.endsWith(".jpg") ||
+                    v.endsWith(".jpeg") ||
+                    v.endsWith(".tiff") ||
+                    v.endsWith(".svg") ||
+                    v.endsWith(".arw") ||
+                    v.endsWith(".dng") -> Window.theme.iconTheme.img
                     v.endsWith(".txt") -> Window.theme.iconTheme.file_text
                     v.endsWith(".highlighter") -> Window.theme.iconTheme.file_highlighter
                     else -> Window.theme.iconTheme.file

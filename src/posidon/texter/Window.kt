@@ -3,10 +3,11 @@ package posidon.texter
 import posidon.texter.backend.NewLineFilter
 import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
-import posidon.texter.ui.FileTree
-import posidon.texter.ui.ScrollBar
-import posidon.texter.ui.Theme
-import posidon.texter.ui.Themes
+import posidon.texter.ui.*
+import posidon.texter.ui.Button
+import posidon.texter.ui.Constants
+import posidon.texter.ui.filestuff.FileTree
+import posidon.texter.ui.filestuff.FilePicker
 import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
@@ -21,10 +22,8 @@ import javax.swing.undo.UndoManager
 object Window {
 
     private var currentFile: TextFile? = null
-    private var activeTab: JButton? = null
+    private var activeTab: Button? = null
     private var undoManager: UndoManager? = null
-    private val codeFont = Font(Font.MONOSPACED, Font.PLAIN, 15)
-    private val uiFont = Font(Font.SANS_SERIF, Font.PLAIN, 15)
 
     private val jFrame = JFrame(AppInfo.NAME).apply {
         size = Dimension(AppInfo.INIT_WIDTH, AppInfo.INIT_HEIGHT)
@@ -48,7 +47,7 @@ object Window {
     }
 
     private val textArea = JTextPane().apply {
-        font = codeFont
+        font = Constants.codeFont
         isEditable = true
         border = BorderFactory.createEmptyBorder(12, 12, 12, 12)
         isVisible = false
@@ -131,20 +130,13 @@ object Window {
             scroll.horizontalScrollBar.setUI(ScrollBar())
             tabs.background = theme.uiBG
             toolbar.background = theme.uiBG
-            fileTree.updateColors()
-            fileTree.verticalScrollBarUI = ScrollBar()
-            fileTree.horizontalScrollBarUI = ScrollBar()
+            fileTree.updateTheme()
         }
 
     public fun openFile(path: String) {
         val file = TextFile.open(path)
         if (file != null) {
-            val tab = JButton(file.name)
-            tab.background = theme.uiBG
-            tab.margin = Insets(0, 0, 0, 0)
-            tab.border = BorderFactory.createEmptyBorder(8, 10, 8, 10)
-            tab.foreground = theme.text
-            tab.font = uiFont
+            val tab = Button(file.name)
             tab.isBorderPainted = false
             tab.isFocusable = false
             tab.layout = BorderLayout()
@@ -175,7 +167,7 @@ object Window {
                 undoManager = thisUndoManager
                 title = AppInfo.NAME + " - " + file.name
             }
-            val closeTabBtn = JButton(theme.iconTheme.close_tab_hover).apply {
+            val closeTabBtn = Button(icon = theme.iconTheme.close_tab_hover).apply {
                 isEnabled = false
                 disabledIcon = theme.iconTheme.close_tab
                 margin = Insets(0, 0, 0, 0)
@@ -209,10 +201,9 @@ object Window {
         }
     }
 
-
     fun init() {
-        theme = Themes.elementary
-        JButton(theme.iconTheme.file_menu).apply {
+        theme = Themes.dark
+        Button(icon = theme.iconTheme.file_menu).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
             isOpaque = false
@@ -220,7 +211,6 @@ object Window {
             margin = Insets(0, 0, 0, 0)
             background = Color(0x0)
             foreground = theme.text
-            isFocusable = false
             val popup = JPopupMenu().apply {
                 border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
                 isBorderPainted = false
@@ -231,9 +221,8 @@ object Window {
                             /*val chooser = FileChooser(jFrame)
                             if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
                             openFile(chooser.selectedFile.path)*/
-                            val chooser = FileDialog(Frame())
-                            chooser.isVisible = true
-                            if (chooser.file != null) openFile(chooser.directory + chooser.file)
+                            val chooser = FilePicker(jFrame, FilePicker.Mode.PICK_FILE).apply { get() }
+                            chooser.result?.let { openFile(it) }
                         }
                     }
                     text = "open"
@@ -249,9 +238,8 @@ object Window {
                             /*val chooser = FileChooser(jFrame)
                             if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
                             openFile(chooser.selectedFile.path)*/
-                            val chooser = FileDialog(Frame())
-                            chooser.isVisible = true
-                            if (chooser.file != null) openFile(chooser.directory + chooser.file)
+                            val chooser = FilePicker(jFrame, FilePicker.Mode.PICK_FOLDER).apply { get() }
+                            chooser.result?.let { fileTree.setFolder(it) }
                         }
                     }
                     text = "open folder"
