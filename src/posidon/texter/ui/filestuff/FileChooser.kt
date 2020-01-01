@@ -1,57 +1,86 @@
 package posidon.texter.ui.filestuff
 
-import java.awt.*
+import posidon.texter.Window
+import posidon.texter.ui.Button
+import java.awt.BorderLayout
+import java.awt.Dimension
+import java.awt.Insets
 import java.io.File
 import javax.swing.*
+import javax.swing.tree.MutableTreeNode
 
-class FileChooser(private val jFrame: JFrame) : JFileChooser() {
+class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
 
-    override fun getIcon(file: File?): Icon {
-        return ImageIcon(
-            FileChooser::class.java.getResource(if (file != null) when {
-            file.isDirectory -> "/icons/files/folder.png"
-            file.isFile -> when (file.extension) {
-                "kt" -> "/icons/files/kotlin.png"
-                "java" -> "/icons/files/java.png"
-                else -> "/icons/files/file.png"
-            }
-            else -> "/icons/files/file.png"
-        } else "/icons/files/file.png"))
-    }
+    private lateinit var dialog: JDialog
+    private lateinit var selectBtn: Button
+    var result: String? = null
 
-    override fun createDialog(var1: Component?): JDialog? {
-        val title = getUI().getDialogTitle(this)
-        putClientProperty("AccessibleDescription", title)
-        /*val window = getWindowForComponent(var1)
-        val dialog: JDialog =
-            if (window is Frame) JDialog(window, title, true)
-            else JDialog(window as Dialog, title, true)
-
-        dialog.contentPane.apply {
-            //background = Color(posidon.texter.Window.theme.uiBG)
-            add(this@FileChooser)
-        }*/
-
-        isFileHidingEnabled = false
-
-        //dialog.pack()
-        //dialog.setLocationRelativeTo(jFrame)
-        return null
-    }
-
-    override fun showDialog(var1: Component?, var2: String?): Int {
-        if (var2 != null) {
-            approveButtonText = var2
-            dialogType = 2
+    fun get() {
+        dialog = JDialog(jFrame, when(mode) {
+            Mode.PICK_FOLDER -> "Select a folder"
+            Mode.PICK_FILE -> "Select a file"
+            Mode.CREATE_FILE -> "Create a file"
+        }, true).also {d ->
+            d.size = Dimension(FileChooserConfig.MIN_WIDTH, FileChooserConfig.MIN_WIDTH)
+            d.minimumSize = Dimension(FileChooserConfig.MIN_WIDTH, FileChooserConfig.MIN_HEIGHT)
+            d.isResizable = true
+            d.isLocationByPlatform = true
+            d.add(JPanel().apply {
+                layout = BorderLayout()
+                add(FileTree(File("/")).apply {
+                    updateTheme()
+                    background = Window.theme.windowBG
+                    addSelectionListener {
+                        when (mode) {
+                            Mode.PICK_FOLDER -> {
+                                if ((it.path.lastPathComponent as MutableTreeNode).isLeaf) selectBtn.isEnabled = false
+                                else {
+                                    selectBtn.isEnabled = true
+                                    result = it.path.path.joinToString(File.separator)
+                                }
+                            }
+                            Mode.PICK_FILE -> {
+                                if ((it.path.lastPathComponent as MutableTreeNode).isLeaf) {
+                                    selectBtn.isEnabled = true
+                                    result = it.path.path.joinToString(File.separator)
+                                } else selectBtn.isEnabled = false
+                            }
+                            Mode.CREATE_FILE -> {}
+                        }
+                    }
+                    setLeafDoubleClickListener {
+                        if (mode == Mode.PICK_FILE) {
+                            result = it
+                            d.dispose()
+                        }
+                    }
+                }, BorderLayout.CENTER)
+                add(JToolBar().apply {
+                    border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+                    margin = Insets(0, 0, 0, 0)
+                    isFloatable = true
+                    background = Window.theme.uiBG
+                    add(Button("Select").apply {
+                        selectBtn = this
+                        addActionListener {
+                            d.dispose()
+                        }
+                    })
+                }, BorderLayout.SOUTH)
+            })
+            d.isAlwaysOnTop = true
+            d.isVisible = true
         }
-        createDialog(var1)
-        rescanCurrentDirectory()
-        jFrame.add(this, BorderLayout.CENTER)
-        return -1
     }
 
-    private fun getWindowForComponent(var0: Component?): Window? {
-        return if (var0 == null) JOptionPane.getRootFrame()
-        else if (var0 !is Frame && var0 !is Dialog) getWindowForComponent(var0.parent) else var0 as Window?
+    enum class Mode {
+        PICK_FOLDER,
+        PICK_FILE,
+        CREATE_FILE
+    }
+
+    private object FileChooserConfig {
+        const val MIN_WIDTH = 360
+        const val MIN_HEIGHT = 390
     }
 }

@@ -14,8 +14,10 @@ class TextFile(private val path: String, private var content: List<String>) {
         when {
             path.endsWith(".kt") -> BracketedSyntaxHighlighter("/code/highlighters/kt.highlighter")
             path.endsWith(".java") -> BracketedSyntaxHighlighter("/code/highlighters/java.highlighter")
+            path.endsWith(".sh") -> BracketedSyntaxHighlighter("/code/highlighters/shellscript.highlighter")
             path.endsWith(".xml") ||
             path.endsWith(".iml") ||
+            path.endsWith(".svg") ||
             path.endsWith(".html") -> XmlSyntaxHighlighter()
             path.endsWith(".highlighter") -> HighlighterSyntaxHighlighter()
             else -> DefaultSyntaxHighlighter()

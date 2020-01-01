@@ -34,6 +34,7 @@ object CustomSyntax {
         "@line-comment",
         "@multiline-comment",
         "@hex-prefix",
-        "@binary-prefix"
+        "@binary-prefix",
+        "@string-sides"
     )
 }

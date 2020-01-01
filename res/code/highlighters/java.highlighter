@@ -1,6 +1,9 @@
 @syntax bracketed
 @line-comment //
 @multiline-comment /* */
+@hex-prefix 0x
+@binary-prefix 0b
+@string-sides " '
 declarations -> package import class interface this new enum
 mods -> public private protected abstract final static
 func_breaks -> return continue break case super

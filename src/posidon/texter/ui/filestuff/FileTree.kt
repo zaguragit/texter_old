@@ -88,14 +88,13 @@ class FileTree(dir: File) : JPanel() {
         add(BorderLayout.CENTER, scrollPane)
         renderer.border = BorderFactory.createEmptyBorder(4, 8, 4, 8)
         tree.cellRenderer = renderer
-        tree.isRootVisible = true
+        tree.isRootVisible = false
         tree.setUI(treeUI)
         treeUI.collapsedIcon = null
         treeUI.expandedIcon = null
         isOpaque = false
         tree.addTreeWillExpandListener(object : TreeWillExpandListener {
             override fun treeWillCollapse(e: TreeExpansionEvent) {}
-
             override fun treeWillExpand(e: TreeExpansionEvent) {
                 addNodes(e.path.lastPathComponent as DefaultMutableTreeNode, File(e.path.path.joinToString(File.separator)))
             }
@@ -105,7 +104,7 @@ class FileTree(dir: File) : JPanel() {
                 val row = tree.getRowForLocation(e.x, e.y)
                 if (row != -1) {
                     val path: TreePath? = tree.getPathForLocation(e.x, e.y)
-                    if (e.clickCount == 2 && (path?.lastPathComponent as MutableTreeNode).isLeaf) {
+                    if (e.button == 1 && e.clickCount == 2 && (path?.lastPathComponent as MutableTreeNode).isLeaf) {
                         itemDoubleClickListener?.invoke(path.path.joinToString(File.separator))
                     }
                 }
@@ -147,6 +146,8 @@ class FileTree(dir: File) : JPanel() {
                     v.endsWith(".efi") ||
                     v.endsWith(".so") ||
                     v.endsWith(".o") ||
+                    v.endsWith(".bin") ||
+                    v.endsWith(".iso") ||
                     v.endsWith(".sh") -> Window.theme.iconTheme.file_exec
                     v.endsWith(".png") ||
                     v.endsWith(".jpg") ||

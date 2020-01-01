@@ -1,6 +1,7 @@
 @syntax indented
 @line-comment #
 @multiline-comment ''' '''
+@string-sides " '
 declarations -> import class def
 mods -> with
 func_breaks -> return break continue pass

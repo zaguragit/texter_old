@@ -7,7 +7,7 @@ import posidon.texter.ui.*
 import posidon.texter.ui.Button
 import posidon.texter.ui.Constants
 import posidon.texter.ui.filestuff.FileTree
-import posidon.texter.ui.filestuff.FilePicker
+import posidon.texter.ui.filestuff.FileChooser
 import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
@@ -110,15 +110,26 @@ object Window {
         viewport.isOpaque = false
         verticalScrollBar.unitIncrement = 10
         horizontalScrollBar.unitIncrement = 10
-        jFrame.add(this, BorderLayout.CENTER)
+        //jFrame.add(this, BorderLayout.CENTER)
     }
 
     private val fileTree = FileTree(File(".")).apply {
-        jFrame.add(this, BorderLayout.WEST)
+        //jFrame.add(this, BorderLayout.WEST)
         setLeafDoubleClickListener { openFile(it) }
+        isVisible = false
     }
 
-    public var theme: Theme = Theme()
+    private val splitPane = JSplitPane(JSplitPane.HORIZONTAL_SPLIT).apply {
+        leftComponent = fileTree
+        rightComponent = scroll
+        isOpaque = false
+        border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+        dividerSize = 4
+        isContinuousLayout = true
+        jFrame.add(this, BorderLayout.CENTER)
+    }
+
+    var theme: Theme = Theme()
         set(value) {
             field = value
             textArea.foreground = theme.textAreaFG
@@ -133,7 +144,7 @@ object Window {
             fileTree.updateTheme()
         }
 
-    public fun openFile(path: String) {
+    fun openFile(path: String) {
         val file = TextFile.open(path)
         if (file != null) {
             val tab = Button(file.name)
@@ -182,6 +193,7 @@ object Window {
                         currentFile = null
                         textArea.isVisible = false
                         undoManager = null
+                        title = AppInfo.NAME
                     }
                     tabs.remove(tab)
                     tabs.updateUI()
@@ -202,7 +214,7 @@ object Window {
     }
 
     fun init() {
-        theme = Themes.dark
+        theme = Themes.elementary
         Button(icon = theme.iconTheme.file_menu).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
@@ -221,7 +233,7 @@ object Window {
                             /*val chooser = FileChooser(jFrame)
                             if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
                             openFile(chooser.selectedFile.path)*/
-                            val chooser = FilePicker(jFrame, FilePicker.Mode.PICK_FILE).apply { get() }
+                            val chooser = FileChooser(jFrame, FileChooser.Mode.PICK_FILE).apply { get() }
                             chooser.result?.let { openFile(it) }
                         }
                     }
@@ -238,8 +250,10 @@ object Window {
                             /*val chooser = FileChooser(jFrame)
                             if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
                             openFile(chooser.selectedFile.path)*/
-                            val chooser = FilePicker(jFrame, FilePicker.Mode.PICK_FOLDER).apply { get() }
+                            val chooser = FileChooser(jFrame, FileChooser.Mode.PICK_FOLDER).apply { get() }
                             chooser.result?.let { fileTree.setFolder(it) }
+                            fileTree.isVisible = true
+                            splitPane.dividerLocation = splitPane.minimumDividerLocation
                         }
                     }
                     text = "open folder"

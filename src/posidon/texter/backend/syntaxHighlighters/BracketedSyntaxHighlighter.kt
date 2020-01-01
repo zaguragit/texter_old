@@ -23,6 +23,9 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
     private var lineComment: String? = null
     private var startComment: String? = null
     private var endComment: String? = null
+    private var stringSides: List<String>? = null
+    private var hexPrefix: String? = null
+    private var binPrefix: String? = null
 
     init {
         val text = BracketedSyntaxHighlighter::class.java.getResource(highligher).readText().split('\n')
@@ -35,6 +38,9 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                         startComment = items[1]
                         endComment = items[2]
                     }
+                    "@hex-prefix" -> hexPrefix = items[1]
+                    "@binary-prefix" -> binPrefix = items[1]
+                    "@string-sides" -> stringSides = items.subList(1, items.size)
                 }
             } else when {
                 line.startsWith("declarations") -> declarations
@@ -66,7 +72,7 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                         }
                         in mods -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0xff8800))
+                            StyleConstants.setForeground(sas, Color(0x8D6CFF))
                             sas
                         }
                         in funcBreaks -> {
@@ -81,12 +87,12 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                         }
                         in operators -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0x60CCFF))
+                            StyleConstants.setForeground(sas, Color(0x69D3F5))
                             sas
                         }
                         in exceptions -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0xFF6649))
+                            StyleConstants.setForeground(sas, Color(0xF46A65))
                             sas
                         }
                         in values -> {
@@ -95,19 +101,11 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                             sas
                         }
                         else -> {
-                            var num = string.substring(
-                                if (string.startsWith("0x") || string.startsWith("0b")) 2 else 0,
-                                if (
-                                    string.endsWith("d", true) ||
-                                    string.endsWith("l", true) ||
-                                    string.endsWith("f", true)
-                                ) string.length - 1 else string.length
-                            )
-                            if (string.startsWith("0x") && string.substring(2).toIntOrNull(16) != null) {
+                            if (hexPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(16) != null) {
                                 val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Color(0x60CCFF))
                                 sas
-                            } else if (string.startsWith("0b") && string.substring(2).toIntOrNull(2) != null) {
+                            } else if (binPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(2) != null) {
                                 val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Color(0x60CCFF))
                                 sas
@@ -115,9 +113,7 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                                 val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Color(0x60CCFF))
                                 sas
-                            } else {
-                                defaultTextStyle()
-                            }
+                            } else defaultTextStyle()
                         }
                     }, false)
                     startPos += str.length + 1
@@ -125,22 +121,26 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                 } else str.append(line[i])
             }
 
-
-            var stringStart = line.indexOf('"')
-            var stringEnd: Int
-            val stringAttrs = SimpleAttributeSet()
-            StyleConstants.setForeground(stringAttrs, Color(0x49984D))
-            while (line.substring(stringStart + 1).contains('"')) {
-                stringEnd = line.indexOf('"', stringStart + 1)
-                doc.setCharacterAttributes(
-                    lineStart + stringStart,
-                    stringEnd - stringStart + 1,
-                    stringAttrs,
-                    false
-                )
-                if (line.substring(stringEnd + 1).contains('"'))
-                    stringStart = line.indexOf('"', stringEnd + 1)
-                else break
+            if (stringSides != null) {
+                val stringSides = stringSides!!
+                for (stringSide in stringSides) {
+                    var stringStart = line.indexOf(stringSide)
+                    var stringEnd: Int
+                    val stringAttrs = SimpleAttributeSet()
+                    StyleConstants.setForeground(stringAttrs, Color(0x49984D))
+                    while (line.substring(stringStart + 1).contains(stringSide)) {
+                        stringEnd = line.indexOf(stringSide, stringStart + 1)
+                        doc.setCharacterAttributes(
+                            lineStart + stringStart,
+                            stringEnd - stringStart + 1,
+                            stringAttrs,
+                            false
+                        )
+                        if (line.substring(stringEnd + 1).contains(stringSide))
+                            stringStart = line.indexOf(stringSide, stringEnd + 1)
+                        else break
+                    }
+                }
             }
 
             if (lineComment != null && startComment != null && endComment != null) {

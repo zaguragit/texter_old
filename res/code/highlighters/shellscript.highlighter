@@ -1,0 +1,10 @@
+@syntax indent
+@line-comment #
+@string-sides " '
+declarations ->
+mods ->
+func_breaks ->
+conditions -> if else
+operators ->
+exceptions ->
+values -> true false null
