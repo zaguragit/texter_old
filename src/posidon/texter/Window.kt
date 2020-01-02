@@ -233,8 +233,10 @@ object Window {
 
     fun init() {
         theme = when (Settings.getString(Settings.THEME)) {
-            "theme:elementary" -> Themes.elementary
-            "theme:midnight" -> Themes.midnight
+            "elementary" -> Themes.elementary
+            "midnight" -> Themes.midnight
+            "material" -> Themes.material
+            "dark" -> Themes.dark
             else -> Themes.dark
         }
         Button(icon = theme.iconTheme.file_menu).apply {

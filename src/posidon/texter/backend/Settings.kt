@@ -182,8 +182,11 @@ object Settings {
         val file = File(dir + File.separator + "settings")
         if (!file.exists()) {
             File(dir).mkdirs()
+            when (Tools.distro) {
+                "elementary" -> put("theme", "elementary")
+            }
             try {
-                Files.write(file.toPath(), ByteArray(0), StandardOpenOption.CREATE)
+                Files.write(file.toPath(), generateText().lines(), StandardOpenOption.CREATE)
             } catch (e: IOException) {
                 println("Couldn't create settings file")
                 e.printStackTrace()

@@ -65,6 +65,19 @@ object Themes {
         text = Color(0xc0c1bf),
         textSelected = Color(0xF0F1F2)
     )
+    val material = Theme(
+        iconTheme = IconThemes.elementary,
+        textAreaBG = Color(0x1E272B),
+        textAreaFG = Color(0xCFD8DC),
+        textAreaCaret = Color(0xB0BEC5),
+        windowBG = Color(0x212B30),
+        scrollBarBG = Color(0x1E272B),
+        scrollBarFG = Color(0x263238),
+        uiBG = Color(0x263238),
+        uiHighlight = Color(0x37474F),
+        text = Color(0xCFD8DC),
+        textSelected = Color(0xECEFF1)
+    )
 }
 
 data class IconTheme(

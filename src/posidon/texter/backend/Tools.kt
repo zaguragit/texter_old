@@ -3,7 +3,10 @@ package posidon.texter.backend
 import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
+import java.io.BufferedReader
 import java.io.IOException
+import java.io.InputStreamReader
+
 
 object Tools {
     fun getClipboardContents(clipboard: Clipboard?): String? {
@@ -39,4 +42,19 @@ object Tools {
             else -> System.getProperty("user.dir")
         }
     }
+
+    val distro: String
+        get() {
+            val cmd = arrayOf("/bin/sh", "-c", "cat /etc/*-release")
+            try {
+                val p = Runtime.getRuntime().exec(cmd)
+                val bri = BufferedReader(InputStreamReader(p.inputStream))
+                var line: String? = ""
+                while (bri.readLine().also { line = it } != null) {
+                    if (line?.startsWith("distrib_id") == true)
+                        return line?.substring(10) ?: ""
+                }
+            } catch (e: IOException) { e.printStackTrace() }
+            return ""
+        }
 }
