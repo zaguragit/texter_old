@@ -4,12 +4,6 @@ import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
 import java.io.IOException
-import javax.swing.JTextPane
-import javax.swing.text.SimpleAttributeSet
-import javax.swing.text.StyleConstants
-import javax.swing.text.TabSet
-import javax.swing.text.TabStop
-
 
 object Tools {
     fun getClipboardContents(clipboard: Clipboard?): String? {
@@ -31,5 +25,18 @@ object Tools {
             }
         }
         return result
+    }
+
+    fun getDataDir(): String {
+        val os = System.getProperty("os.name").toUpperCase()
+        println(os)
+        return when {
+            os.contains("WIN") -> System.getenv("APPDATA")
+            os.contains("MAC") -> (System.getProperty("user.home")
+                    + "/Library/Application "
+                    + "Support")
+            os.contains("NUX") -> System.getProperty("user.home") + "/.config/texter"
+            else -> System.getProperty("user.dir")
+        }
     }
 }

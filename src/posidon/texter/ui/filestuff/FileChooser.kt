@@ -7,7 +7,7 @@ import java.awt.Dimension
 import java.awt.Insets
 import java.io.File
 import javax.swing.*
-import javax.swing.tree.MutableTreeNode
+import javax.swing.tree.DefaultMutableTreeNode
 
 class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
 
@@ -33,17 +33,17 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
                     addSelectionListener {
                         when (mode) {
                             Mode.PICK_FOLDER -> {
-                                if ((it.path.lastPathComponent as MutableTreeNode).isLeaf) selectBtn.isEnabled = false
+                                if ((it.path.lastPathComponent as DefaultMutableTreeNode).allowsChildren) {
+                                    selectBtn.isEnabled = true
+                                    result = it.path.path.joinToString(File.separator)
+                                } else selectBtn.isEnabled = false
+                            }
+                            Mode.PICK_FILE -> {
+                                if ((it.path.lastPathComponent as DefaultMutableTreeNode).allowsChildren) selectBtn.isEnabled = false
                                 else {
                                     selectBtn.isEnabled = true
                                     result = it.path.path.joinToString(File.separator)
                                 }
-                            }
-                            Mode.PICK_FILE -> {
-                                if ((it.path.lastPathComponent as MutableTreeNode).isLeaf) {
-                                    selectBtn.isEnabled = true
-                                    result = it.path.path.joinToString(File.separator)
-                                } else selectBtn.isEnabled = false
                             }
                             Mode.CREATE_FILE -> {}
                         }
@@ -62,6 +62,7 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
                     background = Window.theme.uiBG
                     add(Button("Select").apply {
                         selectBtn = this
+                        isEnabled = false
                         addActionListener {
                             d.dispose()
                         }

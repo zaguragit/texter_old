@@ -1,6 +1,11 @@
 package posidon.texter
 
-fun main() { Thread(Main()).start() }
+import posidon.texter.backend.Settings
+
+fun main() {
+    Settings.init()
+    Thread(Main()).start()
+}
 class Main : Runnable { override fun run() { Window.init() }}
 
 object AppInfo {

@@ -1,14 +1,15 @@
 package posidon.texter
 
 import posidon.texter.backend.NewLineFilter
+import posidon.texter.backend.Settings
 import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
 import posidon.texter.ui.*
 import posidon.texter.ui.Button
-import posidon.texter.ui.Constants
-import posidon.texter.ui.filestuff.FileTree
 import posidon.texter.ui.filestuff.FileChooser
+import posidon.texter.ui.filestuff.FileTree
 import java.awt.*
+import java.awt.Color
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.event.ActionEvent
@@ -16,8 +17,13 @@ import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import java.io.File
 import javax.swing.*
-import javax.swing.text.*
+import javax.swing.border.Border
+import javax.swing.plaf.basic.BasicSplitPaneDivider
+import javax.swing.plaf.basic.BasicSplitPaneUI
+import javax.swing.text.DefaultStyledDocument
+import javax.swing.text.SimpleAttributeSet
 import javax.swing.undo.UndoManager
+
 
 object Window {
 
@@ -126,6 +132,18 @@ object Window {
         border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
         dividerSize = 4
         isContinuousLayout = true
+        setUI(object : BasicSplitPaneUI() {
+            override fun createDefaultDivider(): BasicSplitPaneDivider {
+                return object : BasicSplitPaneDivider(this) {
+                    override fun setBorder(b: Border) {}
+                    override fun paint(g: Graphics) {
+                        g.color = theme.uiBG
+                        g.fillRect(0, 0, size.width, size.height)
+                        super.paint(g)
+                    }
+                }
+            }
+        })
         jFrame.add(this, BorderLayout.CENTER)
     }
 
@@ -214,7 +232,11 @@ object Window {
     }
 
     fun init() {
-        theme = Themes.elementary
+        theme = when (Settings.getString(Settings.THEME)) {
+            "theme:elementary" -> Themes.elementary
+            "theme:midnight" -> Themes.midnight
+            else -> Themes.dark
+        }
         Button(icon = theme.iconTheme.file_menu).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
@@ -275,6 +297,36 @@ object Window {
                         }
                     }
                     text = "new"
+                    border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                    isBorderPainted = false
+                    isOpaque = false
+                    background = Color(0x0)
+                    foreground = theme.text
+                })
+            }
+            addActionListener { popup.show(this, 0, this.height) }
+            toolbar.add(this)
+        }
+
+        Button(icon = theme.iconTheme.file_menu).apply {
+            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            isBorderPainted = false
+            isOpaque = false
+            isContentAreaFilled = false
+            margin = Insets(0, 0, 0, 0)
+            background = Color(0x0)
+            foreground = theme.text
+            val popup = JPopupMenu().apply {
+                border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+                isBorderPainted = false
+                background = theme.uiHighlight
+                add(JMenuItem().apply {
+                    action = object : AbstractAction() {
+                        override fun actionPerformed(a: ActionEvent?) {
+                            SettingsWindow(jFrame)
+                        }
+                    }
+                    text = "Settings"
                     border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
                     isBorderPainted = false
                     isOpaque = false
