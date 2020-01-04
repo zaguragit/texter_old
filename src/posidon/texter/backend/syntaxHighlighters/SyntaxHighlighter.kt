@@ -13,6 +13,7 @@ abstract class SyntaxHighlighter() {
             val sas = SimpleAttributeSet()
             StyleConstants.setForeground(sas, Window.theme.textAreaFG)
             StyleConstants.setBackground(sas, Window.theme.textAreaBG)
+            StyleConstants.setFontSize(sas, 15)
             StyleConstants.setItalic(sas, false)
             StyleConstants.setBold(sas, false)
             return sas

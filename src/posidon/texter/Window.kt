@@ -188,6 +188,7 @@ object Window {
                 isOpaque = false
                 isContentAreaFilled = false
                 isBorderPainted = false
+                isFocusable = false
                 border = BorderFactory.createEmptyBorder(6, 6, 6, 6)
             }, BorderLayout.WEST)
             tab.add(JLabel(file.name).apply{
@@ -267,6 +268,7 @@ object Window {
             "elementary" -> Themes.elementary
             "midnight" -> Themes.midnight
             "material" -> Themes.material
+            "ubuntu" -> Themes.ubuntu
             "dark" -> Themes.dark
             else -> Themes.dark
         }
@@ -312,9 +314,11 @@ object Window {
                                 jFrame,
                                 FileChooser.Mode.PICK_FOLDER
                             ).apply { get() }
-                            chooser.result?.let { fileTree.setFolder(it) }
-                            fileTree.isVisible = true
-                            splitPane.dividerLocation = splitPane.minimumDividerLocation
+                            chooser.result?.let {
+                                fileTree.setFolder(it)
+                                fileTree.isVisible = true
+                                splitPane.dividerLocation = splitPane.minimumDividerLocation
+                            }
                         }
                     }
                     text = "open folder"

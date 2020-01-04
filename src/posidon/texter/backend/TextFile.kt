@@ -22,6 +22,7 @@ class TextFile(private val path: String, private var content: List<String>) {
                     path.endsWith(".svg") ||
                     path.endsWith(".html") -> XmlSyntaxHighlighter()
             path.endsWith(".highlighter") -> HighlighterSyntaxHighlighter()
+            path.endsWith(".md") -> MarkdownSyntaxHighlighter()
             else -> DefaultSyntaxHighlighter()
         }
 
@@ -58,8 +59,9 @@ class TextFile(private val path: String, private var content: List<String>) {
         set(value) { content = value.split("\n") }
 
     fun colorLine(doc: StyledDocument, caretI: Int) {
-        val lineI = getLineByIndex(caretI)
-        syntaxHighlighter.colorLine(doc, getLineStartByCaret(caretI), content[lineI], lineI)
+        val lineI = getLineIndex(caretI)
+        syntaxHighlighter.colorLine(doc, getLineStart(lineI), content[lineI], lineI)
+        if (lineI != content.lastIndex) syntaxHighlighter.colorLine(doc, getLineStart(lineI + 1), content[lineI + 1], lineI + 1)
     }
 
     fun colorAll(doc: StyledDocument) {
@@ -70,7 +72,7 @@ class TextFile(private val path: String, private var content: List<String>) {
 
     private fun getLineStartByCaret(caretI: Int): Int {
         var out = 0
-        (0 until getLineByIndex(caretI)).forEach { i -> out += content[i].length + 1 }
+        (0 until getLineIndex(caretI)).forEach { i -> out += content[i].length + 1 }
         return out
     }
 
@@ -80,7 +82,7 @@ class TextFile(private val path: String, private var content: List<String>) {
         return out
     }
 
-    private fun getLineByIndex(i: Int): Int {
+    private fun getLineIndex(i: Int): Int {
         var sum = content[0].length + 1
         var j = 0
         while (i > sum) {

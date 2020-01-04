@@ -1,7 +1,6 @@
 package posidon.texter.backend.syntaxHighlighters
 
 import posidon.texter.Window
-import java.awt.Color
 import javax.swing.text.SimpleAttributeSet
 import javax.swing.text.StyleConstants
 import javax.swing.text.StyledDocument
@@ -67,51 +66,51 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                     doc.setCharacterAttributes(startPos, max(str.length, 1), when (string) {
                         in declarations -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0xff8800))
+                            StyleConstants.setForeground(sas, Window.theme.orange)
                             sas
                         }
                         in mods -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0x8D6CFF))
+                            StyleConstants.setForeground(sas, Window.theme.purple)
                             sas
                         }
                         in funcBreaks -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0xff8800))
+                            StyleConstants.setForeground(sas, Window.theme.orange)
                             sas
                         }
                         in conditions -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0xff8800))
+                            StyleConstants.setForeground(sas, Window.theme.orange)
                             sas
                         }
                         in operators -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0x69D3F5))
+                            StyleConstants.setForeground(sas, Window.theme.cyan)
                             sas
                         }
                         in exceptions -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0xF46A65))
+                            StyleConstants.setForeground(sas, Window.theme.coral)
                             sas
                         }
                         in values -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Color(0xff8800))
+                            StyleConstants.setForeground(sas, Window.theme.orange)
                             sas
                         }
                         else -> {
                             if (hexPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(16) != null) {
                                 val sas = defaultTextStyle()
-                                StyleConstants.setForeground(sas, Color(0x60CCFF))
+                                StyleConstants.setForeground(sas, Window.theme.light_blue)
                                 sas
                             } else if (binPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(2) != null) {
                                 val sas = defaultTextStyle()
-                                StyleConstants.setForeground(sas, Color(0x60CCFF))
+                                StyleConstants.setForeground(sas, Window.theme.light_blue)
                                 sas
                             } else if (string.toDoubleOrNull() != null) {
                                 val sas = defaultTextStyle()
-                                StyleConstants.setForeground(sas, Color(0x60CCFF))
+                                StyleConstants.setForeground(sas, Window.theme.light_blue)
                                 sas
                             } else defaultTextStyle()
                         }
@@ -127,7 +126,7 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                     var stringStart = line.indexOf(stringSide)
                     var stringEnd: Int
                     val stringAttrs = SimpleAttributeSet()
-                    StyleConstants.setForeground(stringAttrs, Color(0x49984D))
+                    StyleConstants.setForeground(stringAttrs, Window.theme.green)
                     while (line.substring(stringStart + 1).contains(stringSide)) {
                         stringEnd = line.indexOf(stringSide, stringStart + 1)
                         doc.setCharacterAttributes(
@@ -151,7 +150,7 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                     var commentStart = line.indexOf(startComment)
                     var commentEnd: Int
                     val commentAttrs = SimpleAttributeSet()
-                    StyleConstants.setForeground(commentAttrs, Color(0x7C7C7C))
+                    StyleConstants.setForeground(commentAttrs, Window.theme.gray)
                     if (line.contains(startComment)) do {
                         commentEnd = line.indexOf(endComment, commentStart + 2)
                         doc.setCharacterAttributes(

@@ -14,6 +14,7 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
 
     private lateinit var dialog: JDialog
     private lateinit var selectBtn: Button
+    private var selection: String? = null
     var result: String? = null
 
     fun get() {
@@ -42,14 +43,14 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
                             Mode.PICK_FOLDER -> {
                                 if ((it.path.lastPathComponent as DefaultMutableTreeNode).allowsChildren) {
                                     selectBtn.isEnabled = true
-                                    result = it.path.path.joinToString(File.separator)
+                                    selection = it.path.path.joinToString(File.separator)
                                 } else selectBtn.isEnabled = false
                             }
                             Mode.PICK_FILE -> {
                                 if ((it.path.lastPathComponent as DefaultMutableTreeNode).allowsChildren) selectBtn.isEnabled = false
                                 else {
                                     selectBtn.isEnabled = true
-                                    result = it.path.path.joinToString(File.separator)
+                                    selection = it.path.path.joinToString(File.separator)
                                 }
                             }
                             Mode.CREATE_FILE -> {}
@@ -71,6 +72,7 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
                         selectBtn = this
                         isEnabled = false
                         addActionListener {
+                            result = selection
                             d.dispose()
                         }
                     })
