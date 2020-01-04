@@ -29,7 +29,7 @@ class HighlighterSyntaxHighlighter : SyntaxHighlighter() {
                     doc.setCharacterAttributes(startPos, line.length - tokens[0].length - 1, defaultTextStyle(), false)
                 }
             } else {
-                var sas = defaultTextStyle()
+                val sas = defaultTextStyle()
                 StyleConstants.setForeground(sas, Window.theme.yellow)
                 StyleConstants.setBold(sas, true)
                 doc.setCharacterAttributes(startPos, tokens[0].length, sas, false)

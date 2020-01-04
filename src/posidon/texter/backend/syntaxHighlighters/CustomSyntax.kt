@@ -24,10 +24,10 @@ object CustomSyntax {
         }
     }
 
-    const val SYNTAX_BRACKETED = 0
-    const val SYNTAX_INDENTED = 1
-    const val SYNTAX_TAGGED = 2
-    const val SYNTAX_DEFAULT = SYNTAX_BRACKETED
+    private const val SYNTAX_BRACKETED = 0
+    private const val SYNTAX_INDENTED = 1
+    private const val SYNTAX_TAGGED = 2
+    private const val SYNTAX_DEFAULT = SYNTAX_BRACKETED
 
     val HIGHLIGHTER_FLAGS = arrayListOf(
         "@syntax",

@@ -1,6 +1,7 @@
 package posidon.texter.ui.view
 
 import posidon.texter.Window
+import posidon.texter.backend.AnyFile
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -66,8 +67,8 @@ class FileTree(dir: File) : JPanel() {
         renderer.textNonSelectionColor = Window.theme.text
         renderer.closedIcon = Window.theme.iconTheme.folder
         renderer.openIcon = Window.theme.iconTheme.folder_open
-        scrollPane.verticalScrollBar.setUI(ScrollBar())
-        scrollPane.horizontalScrollBar.setUI(ScrollBar())
+        scrollPane.verticalScrollBar.setUI(ScrollBarUI())
+        scrollPane.horizontalScrollBar.setUI(ScrollBarUI())
     }
 
     override fun setBackground(bg: Color?) {
@@ -131,35 +132,9 @@ class FileTree(dir: File) : JPanel() {
             rowIndex: Int,
             hasFocus: Boolean
         ): Component {
-            if (isLeaf) try {
-                val v = value.toString().toLowerCase()
-                leafIcon = when {
-                    v.endsWith(".kt") -> Window.theme.iconTheme.kotlin
-                    v.endsWith(".java") -> Window.theme.iconTheme.java
-                    v.endsWith(".xml") ||
-                    v.endsWith(".iml") ||
-                    v.endsWith(".html") -> Window.theme.iconTheme.xml
-                    v.endsWith(".class") ||
-                    v.endsWith(".elf") ||
-                    v.endsWith(".exe") ||
-                    v.endsWith(".efi") ||
-                    v.endsWith(".so") ||
-                    v.endsWith(".o") ||
-                    v.endsWith(".bin") ||
-                    v.endsWith(".iso") ||
-                    v.endsWith(".sh") -> Window.theme.iconTheme.file_exec
-                    v.endsWith(".png") ||
-                    v.endsWith(".jpg") ||
-                    v.endsWith(".jpeg") ||
-                    v.endsWith(".tiff") ||
-                    v.endsWith(".svg") ||
-                    v.endsWith(".arw") ||
-                    v.endsWith(".dng") -> Window.theme.iconTheme.img
-                    v.endsWith(".txt") -> Window.theme.iconTheme.file_text
-                    v.endsWith(".highlighter") -> Window.theme.iconTheme.file_highlighter
-                    else -> Window.theme.iconTheme.file
-                }
-            } catch (e: Exception) {}
+            if (isLeaf)
+                try { leafIcon = AnyFile.getIcon(value.toString().toLowerCase()) }
+                catch (e: Exception) {}
             return super.getTreeCellRendererComponent(tree, value, selected, expanded, isLeaf, rowIndex, hasFocus)
         }
     }

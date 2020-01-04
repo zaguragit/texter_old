@@ -1,16 +1,14 @@
 package posidon.texter.backend
 
-import posidon.texter.Window
 import posidon.texter.backend.syntaxHighlighters.*
 import java.io.*
 import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
-import javax.swing.ImageIcon
 import javax.swing.text.StyledDocument
 import kotlin.streams.toList
 
-class TextFile(private val path: String, private var content: List<String>) {
+class TextFile(path: String, private var content: List<String>) : AnyFile(path) {
 
     private var syntaxHighlighter: SyntaxHighlighter =
         when {
@@ -26,34 +24,6 @@ class TextFile(private val path: String, private var content: List<String>) {
             else -> DefaultSyntaxHighlighter()
         }
 
-    val icon: ImageIcon =
-        when {
-            path.endsWith(".kt") -> Window.theme.iconTheme.kotlin
-            path.endsWith(".java") -> Window.theme.iconTheme.java
-            path.endsWith(".xml") ||
-            path.endsWith(".iml") ||
-            path.endsWith(".html") -> Window.theme.iconTheme.xml
-            path.endsWith(".class") ||
-            path.endsWith(".elf") ||
-            path.endsWith(".exe") ||
-            path.endsWith(".efi") ||
-            path.endsWith(".so") ||
-            path.endsWith(".o") ||
-            path.endsWith(".bin") ||
-            path.endsWith(".iso") ||
-            path.endsWith(".sh") -> Window.theme.iconTheme.file_exec
-            path.endsWith(".png") ||
-            path.endsWith(".jpg") ||
-            path.endsWith(".jpeg") ||
-            path.endsWith(".tiff") ||
-            path.endsWith(".svg") ||
-            path.endsWith(".arw") ||
-            path.endsWith(".dng") -> Window.theme.iconTheme.img
-            path.endsWith(".txt") -> Window.theme.iconTheme.file_text
-            path.endsWith(".highlighter") -> Window.theme.iconTheme.file_highlighter
-            else -> Window.theme.iconTheme.file
-        }
-
     var text
         get() = content.joinToString("\n")
         set(value) { content = value.split("\n") }
@@ -66,7 +36,9 @@ class TextFile(private val path: String, private var content: List<String>) {
 
     fun colorAll(doc: StyledDocument) {
         for (lineI in content.indices) {
-            syntaxHighlighter.colorLine(doc, getLineStart(lineI), content[lineI], lineI)
+            val lineStart = getLineStart(lineI)
+            doc.setCharacterAttributes(lineStart, content[lineI].length, SyntaxHighlighter.defaultTextStyle(), false)
+            syntaxHighlighter.colorLine(doc, lineStart, content[lineI], lineI)
         }
     }
 
@@ -92,9 +64,7 @@ class TextFile(private val path: String, private var content: List<String>) {
         return j
     }
 
-    val name = path.split('/').last()
-
-    fun save(): Boolean {
+    override fun save(): Boolean {
         return try {
             val buf = BufferedWriter(FileWriter(path))
             buf.write(text)

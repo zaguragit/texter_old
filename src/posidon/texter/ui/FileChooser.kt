@@ -22,7 +22,7 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
             Mode.PICK_FOLDER -> "Select a folder"
             Mode.PICK_FILE -> "Select a file"
             Mode.CREATE_FILE -> "Create a file"
-        }, true).also {d ->
+        }, true).also { d ->
             d.size = Dimension(
                 FileChooserConfig.MIN_WIDTH,
                 FileChooserConfig.MIN_WIDTH

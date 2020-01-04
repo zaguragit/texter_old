@@ -5,7 +5,7 @@ import javax.swing.text.SimpleAttributeSet
 import javax.swing.text.StyleConstants
 import javax.swing.text.StyledDocument
 
-abstract class SyntaxHighlighter() {
+abstract class SyntaxHighlighter {
     abstract fun colorLine(doc: StyledDocument, lineStart: Int, line: String, lineI: Int)
 
     companion object {

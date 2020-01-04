@@ -4,14 +4,14 @@ import posidon.texter.backend.NewLineFilter
 import posidon.texter.backend.Settings
 import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
-import posidon.texter.ui.*
-import posidon.texter.ui.view.Button
+import posidon.texter.ui.Constants
 import posidon.texter.ui.FileChooser
-import posidon.texter.ui.view.FileTree
-import posidon.texter.ui.view.HorizontalScrollPane
-import posidon.texter.ui.view.ScrollBar
+import posidon.texter.ui.Theme
+import posidon.texter.ui.Themes
+import posidon.texter.ui.settings.SettingsWindow
+import posidon.texter.ui.view.*
+import posidon.texter.ui.view.Button
 import java.awt.*
-import java.awt.Color
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.event.ActionEvent
@@ -29,7 +29,7 @@ import javax.swing.undo.UndoManager
 object Window {
 
     private var currentFile: TextFile? = null
-    private var activeTab: JPanel? = null
+    private var activeTab: FileTab? = null
     private var undoManager: UndoManager? = null
 
     private val jFrame = JFrame(AppInfo.NAME).apply {
@@ -51,8 +51,6 @@ object Window {
                 return info?.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ?: false
             }
         }
-
-
     }
 
     private val textArea = JTextPane().apply {
@@ -165,39 +163,24 @@ object Window {
             textArea.selectedTextColor = null
             jFrame.background = theme.windowBG
             jFrame.contentPane.background = theme.windowBG
-            scroll.verticalScrollBar.setUI(ScrollBar())
-            scroll.horizontalScrollBar.setUI(ScrollBar())
+            scroll.verticalScrollBar.setUI(ScrollBarUI())
+            scroll.horizontalScrollBar.setUI(ScrollBarUI())
             tabs.background = theme.uiBG
             toolbar.background = theme.uiBG
             fileTree.updateTheme()
+            val tmpUndoManager = undoManager
+            undoManager = null
+            for (tab in tabs.components)
+                if (tab is FileTab) tab.updateTheme()
+            undoManager = tmpUndoManager
         }
 
     fun openFile(path: String) {
         val file = TextFile.open(path)
         if (file != null) {
-            val tab = JPanel().apply {
-                preferredSize = Dimension(192, 32)
-                size = Dimension(192, 32)
-                background = theme.uiBG
-                isFocusable = false
-                layout = BorderLayout()
-                border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
-            }
-            tab.add(JButton(file.icon).apply {
-                margin = Insets(0, 0, 0, 0)
-                isOpaque = false
-                isContentAreaFilled = false
-                isBorderPainted = false
-                isFocusable = false
-                border = BorderFactory.createEmptyBorder(6, 6, 6, 6)
-            }, BorderLayout.WEST)
-            tab.add(JLabel(file.name).apply{
-                font = Constants.uiFont
-                foreground = theme.text
-                isOpaque = false
-            }, BorderLayout.CENTER)
             val thisUndoManager = UndoManager()
             val document = DefaultStyledDocument()
+            val tab = FileTab(file.name, file.icon, file, document)
             document.insertString(0, file.text, SimpleAttributeSet())
             file.colorAll(document)
             document.documentFilter = NewLineFilter()
@@ -211,7 +194,6 @@ object Window {
                 undoManager = tmp
             }}
 
-
             tab.addMouseListener(object : MouseListener {
                 override fun mouseReleased(p0: MouseEvent?) {}
                 override fun mouseEntered(p0: MouseEvent?) {}
@@ -219,8 +201,8 @@ object Window {
                 override fun mousePressed(p0: MouseEvent?) {}
                 override fun mouseClicked(p0: MouseEvent?) {
                     if (activeTab == null) textArea.isVisible = true
-                    else activeTab!!.background = theme.uiBG
-                    tab.background = theme.uiHighlight
+                    else activeTab!!.active = false
+                    tab.active = true
                     activeTab = tab
                     currentFile = file
                     undoManager = null
@@ -264,7 +246,118 @@ object Window {
     }
 
     fun init() {
-        theme = when (Settings.getString(Settings.THEME)) {
+        updateTheme(Settings.getString(Settings.THEME))
+        Button(icon = theme.iconTheme.file_menu).apply {
+            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            isBorderPainted = false
+            isOpaque = false
+            isContentAreaFilled = false
+            margin = Insets(0, 0, 0, 0)
+            addActionListener {
+                JPopupMenu().apply {
+                    border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+                    isBorderPainted = false
+                    background = theme.uiHighlight
+                    add(JMenuItem().apply {
+                        action = object : AbstractAction() {
+                            override fun actionPerformed(a: ActionEvent?) {
+                                /*val chooser = FileChooser(jFrame)
+                                if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
+                                openFile(chooser.selectedFile.path)*/
+                                val chooser = FileChooser(
+                                    jFrame,
+                                    FileChooser.Mode.PICK_FILE
+                                ).apply { get() }
+                                chooser.result?.let { openFile(it) }
+                            }
+                        }
+                        text = "open"
+                        border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                        isBorderPainted = false
+                        isOpaque = false
+                        foreground = theme.text
+                    })
+                    add(JMenuItem().apply {
+                        action = object : AbstractAction() {
+                            override fun actionPerformed(a: ActionEvent?) {
+                                /*val chooser = FileChooser(jFrame)
+                                if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
+                                openFile(chooser.selectedFile.path)*/
+                                val chooser = FileChooser(
+                                    jFrame,
+                                    FileChooser.Mode.PICK_FOLDER
+                                ).apply { get() }
+                                chooser.result?.let {
+                                    fileTree.setFolder(it)
+                                    fileTree.isVisible = true
+                                    splitPane.dividerLocation = splitPane.minimumDividerLocation
+                                }
+                            }
+                        }
+                        text = "open folder"
+                        border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                        isBorderPainted = false
+                        isOpaque = false
+                        foreground = theme.text
+                    })
+                    add(JMenuItem().apply {
+                        action = object : AbstractAction() {
+                            override fun actionPerformed(a: ActionEvent?) {
+                                val chooser = FileDialog(Frame())
+                                chooser.isVisible = true
+                                if (chooser.file != null) {
+                                    TextFile.new(chooser.directory + chooser.file)
+                                    openFile(chooser.directory + chooser.file)
+                                }
+                            }
+                        }
+                        text = "new"
+                        border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                        isBorderPainted = false
+                        isOpaque = false
+                        foreground = theme.text
+                    })
+                }.show(this, 0, this.height)
+            }
+            toolbar.add(this)
+        }
+
+        Button(icon = theme.iconTheme.file_menu).apply {
+            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
+            isBorderPainted = false
+            isOpaque = false
+            isContentAreaFilled = false
+            margin = Insets(0, 0, 0, 0)
+            foreground = theme.text
+            addActionListener {
+                JPopupMenu().apply {
+                    border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+                    isBorderPainted = false
+                    background = theme.uiHighlight
+                    add(JMenuItem().apply {
+                        action = object : AbstractAction() {
+                            override fun actionPerformed(a: ActionEvent?) {
+                                SettingsWindow(jFrame)
+                            }
+                        }
+                        text = "Settings"
+                        border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
+                        isBorderPainted = false
+                        isOpaque = false
+                        foreground = theme.text
+                    })
+                }.show(this, 0, this.height)
+            }
+            toolbar.add(this)
+        }
+
+        jFrame.isLocationByPlatform = true
+        jFrame.isVisible = true
+    }
+
+    fun updateTheme(name: String?) {
+        println(name)
+        theme = when (name) {
             "elementary" -> Themes.elementary
             "midnight" -> Themes.midnight
             "material" -> Themes.material
@@ -272,117 +365,6 @@ object Window {
             "dark" -> Themes.dark
             else -> Themes.dark
         }
-        Button(icon = theme.iconTheme.file_menu).apply {
-            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-            isBorderPainted = false
-            isOpaque = false
-            isContentAreaFilled = false
-            margin = Insets(0, 0, 0, 0)
-            background = Color(0x0)
-            foreground = theme.text
-            val popup = JPopupMenu().apply {
-                border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
-                isBorderPainted = false
-                background = theme.uiHighlight
-                add(JMenuItem().apply {
-                    action = object : AbstractAction() {
-                        override fun actionPerformed(a: ActionEvent?) {
-                            /*val chooser = FileChooser(jFrame)
-                            if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
-                            openFile(chooser.selectedFile.path)*/
-                            val chooser = FileChooser(
-                                jFrame,
-                                FileChooser.Mode.PICK_FILE
-                            ).apply { get() }
-                            chooser.result?.let { openFile(it) }
-                        }
-                    }
-                    text = "open"
-                    border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
-                    isBorderPainted = false
-                    isOpaque = false
-                    background = Color(0x0)
-                    foreground = theme.text
-                })
-                add(JMenuItem().apply {
-                    action = object : AbstractAction() {
-                        override fun actionPerformed(a: ActionEvent?) {
-                            /*val chooser = FileChooser(jFrame)
-                            if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
-                            openFile(chooser.selectedFile.path)*/
-                            val chooser = FileChooser(
-                                jFrame,
-                                FileChooser.Mode.PICK_FOLDER
-                            ).apply { get() }
-                            chooser.result?.let {
-                                fileTree.setFolder(it)
-                                fileTree.isVisible = true
-                                splitPane.dividerLocation = splitPane.minimumDividerLocation
-                            }
-                        }
-                    }
-                    text = "open folder"
-                    border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
-                    isBorderPainted = false
-                    isOpaque = false
-                    background = Color(0x0)
-                    foreground = theme.text
-                })
-                add(JMenuItem().apply {
-                    action = object : AbstractAction() {
-                        override fun actionPerformed(a: ActionEvent?) {
-                            val chooser = FileDialog(Frame())
-                            chooser.isVisible = true
-                            if (chooser.file != null) {
-                                TextFile.new(chooser.directory + chooser.file)
-                                openFile(chooser.directory + chooser.file)
-                            }
-                        }
-                    }
-                    text = "new"
-                    border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
-                    isBorderPainted = false
-                    isOpaque = false
-                    background = Color(0x0)
-                    foreground = theme.text
-                })
-            }
-            addActionListener { popup.show(this, 0, this.height) }
-            toolbar.add(this)
-        }
-
-        Button(icon = theme.iconTheme.file_menu).apply {
-            border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-            isBorderPainted = false
-            isOpaque = false
-            isContentAreaFilled = false
-            margin = Insets(0, 0, 0, 0)
-            background = Color(0x0)
-            foreground = theme.text
-            val popup = JPopupMenu().apply {
-                border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
-                isBorderPainted = false
-                background = theme.uiHighlight
-                add(JMenuItem().apply {
-                    action = object : AbstractAction() {
-                        override fun actionPerformed(a: ActionEvent?) {
-                            SettingsWindow(jFrame)
-                        }
-                    }
-                    text = "Settings"
-                    border = BorderFactory.createEmptyBorder(8, 12, 8, 12)
-                    isBorderPainted = false
-                    isOpaque = false
-                    background = Color(0x0)
-                    foreground = theme.text
-                })
-            }
-            addActionListener { popup.show(this, 0, this.height) }
-            toolbar.add(this)
-        }
-
-        jFrame.isLocationByPlatform = true
-        jFrame.isVisible = true
     }
 
     private var title: String

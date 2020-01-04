@@ -12,11 +12,13 @@ object Settings {
     const val LAST_OPENED_FOLDER = "last_opened_folder"
     const val HIGHLIGHTER_FOLDER = "highlighter_folder"
 
-    private const val TYPE_STRING = "text"
-    private const val TYPE_INT = "int"
-    private const val TYPE_FLOAT = "float"
-    private const val TYPE_BOOL = "bool"
-    private const val TYPE_LIST = "list"
+    enum class Type(val string: String) {
+        TEXT("text"),
+        INT("int"),
+        FLOAT("float"),
+        BOOL("bool"),
+        LIST("list"),
+    }
 
     private val ints: HashMap<String, String> = HashMap()
     private val floats: HashMap<String, String> = HashMap()
@@ -25,82 +27,91 @@ object Settings {
     private val lists: HashMap<String, String> = HashMap()
 
 
-    public fun put(key: String, value: Int) {
+    fun put(key: String, value: Int) {
         checkKey(key)
         ints[key] = value.toString()
     }
 
-    public fun put(key: String, value: Float) {
+    fun put(key: String, value: Float) {
         checkKey(key)
         floats[key] = value.toString()
     }
 
-    public fun put(key: String, value: Boolean) {
+    fun put(key: String, value: Boolean) {
         checkKey(key)
         booleans[key] = if (value) "1" else "0"
     }
 
-    public fun put(key: String, value: String) {
+    fun put(key: String, value: String) {
         checkKey(key)
         strings[key] = value
     }
 
-    public fun put(key: String, value: Array<Int>) {
+    fun put(key: String, value: Array<Int>) {
         checkKey(key)
-        val stringBuilder = StringBuilder(TYPE_INT)
+        val stringBuilder = StringBuilder(Type.INT.string)
         for (i in value) stringBuilder.append(' ').append(i)
         lists[key] = stringBuilder.toString()
     }
 
-    public fun put(key: String, value: Array<Float>) {
+    fun put(key: String, value: Array<Float>) {
         checkKey(key)
-        val stringBuilder = StringBuilder(TYPE_FLOAT)
+        val stringBuilder = StringBuilder(Type.FLOAT.string)
         for (i in value) stringBuilder.append(' ').append(i)
         lists[key] = stringBuilder.toString()
     }
 
-    public fun put(key: String, value: Array<Boolean>) {
+    fun put(key: String, value: Array<Boolean>) {
         checkKey(key)
-        val stringBuilder = StringBuilder(TYPE_BOOL)
+        val stringBuilder = StringBuilder(Type.BOOL.string)
         for (i in value) stringBuilder.append(' ').append(if (i) '1' else '0')
         lists[key] = stringBuilder.toString()
+    }
+
+    fun apply() {
+        val file = File(Tools.getDataDir() + File.separator + "settings")
+        Files.write(file.toPath(), generateText().lines(), StandardOpenOption.CREATE)
     }
 
     private fun generateText(): String {
         val stringBuilder = StringBuilder()
         for (string in ints) stringBuilder
-                .append("$TYPE_INT ")
-                .append(string.key)
-                .append(' ')
-                .append(string.value)
-                .append('\n')
+            .append(Type.INT.string)
+            .append(' ')
+            .append(string.key)
+            .append(' ')
+            .append(string.value)
+            .append('\n')
         for (string in floats) stringBuilder
-                .append("$TYPE_FLOAT ")
-                .append(string.key)
-                .append(' ')
-                .append(string.value)
-                .append('\n')
+            .append(Type.FLOAT.string)
+            .append(string.key)
+            .append(' ')
+            .append(string.value)
+            .append('\n')
         for (string in booleans) stringBuilder
-                .append("$TYPE_BOOL ")
-                .append(string.key)
-                .append(' ')
-                .append(string.value)
-                .append('\n')
+            .append(Type.BOOL.string)
+            .append(string.key)
+            .append(' ')
+            .append(string.value)
+            .append('\n')
         for (string in strings) {
-            if (string.value.contains('\n')) throw RuntimeException("Saved strings must not contain new-line characters (they're not supported as of now)")
+            if (string.value.contains('\n'))
+                throw RuntimeException("Saved strings must not contain new-line characters (they're not supported as of now)")
             stringBuilder
-                    .append("$TYPE_STRING ")
-                    .append(string.key)
-                    .append(' ')
-                    .append(string.value)
-                    .append('\n')
-        }
-        for (string in strings) stringBuilder
-                .append("$TYPE_LIST ")
+                .append(Type.TEXT.string)
+                .append(' ')
                 .append(string.key)
                 .append(' ')
                 .append(string.value)
                 .append('\n')
+        }
+        for (string in lists) stringBuilder
+            .append(Type.LIST.string)
+            .append(' ')
+            .append(string.key)
+            .append(' ')
+            .append(string.value)
+            .append('\n')
         return stringBuilder.toString()
     }
 
@@ -109,11 +120,11 @@ object Settings {
         for (line in lines) {
             val tokens = line.split(' ')
             when(tokens[0]) {
-                TYPE_INT -> ints[tokens[1]] = tokens[2]
-                TYPE_FLOAT -> floats[tokens[1]] = tokens[2]
-                TYPE_BOOL -> booleans[tokens[1]] = tokens[2]
-                TYPE_STRING -> strings[tokens[1]] = line.substring(tokens[0].length + tokens[1].length + 2)
-                TYPE_LIST -> lists[tokens[1]] = line.substring(tokens[0].length + tokens[1].length + 2)
+                Type.INT.string -> ints[tokens[1]] = tokens[2]
+                Type.FLOAT.string -> floats[tokens[1]] = tokens[2]
+                Type.BOOL.string -> booleans[tokens[1]] = tokens[2]
+                Type.TEXT.string -> strings[tokens[1]] = line.substring(tokens[0].length + tokens[1].length + 2)
+                Type.LIST.string -> lists[tokens[1]] = line.substring(tokens[0].length + tokens[1].length + 2)
             }
         }
     }
@@ -146,7 +157,7 @@ object Settings {
         checkKey(key)
         if (lists[key] == null) return default
         val stringList = lists[key]!!.split(' ')
-        if (stringList[0] != TYPE_INT) return default
+        if (stringList[0] != Type.INT.string) return default
         return Array(stringList.size - 1) { stringList[it].toInt() }
     }
 
@@ -154,7 +165,7 @@ object Settings {
         checkKey(key)
         if (lists[key] == null) return default
         val stringList = lists[key]!!.split(' ')
-        if (stringList[0] != TYPE_FLOAT) return default
+        if (stringList[0] != Type.FLOAT.string) return default
         return Array(stringList.size - 1) { stringList[it].toFloat() }
     }
 
@@ -162,7 +173,7 @@ object Settings {
         checkKey(key)
         if (lists[key] == null) return default
         val stringList = lists[key]!!.split(' ')
-        if (stringList[0] != TYPE_BOOL) return default
+        if (stringList[0] != Type.BOOL.string) return default
         return Array(stringList.size - 1) { stringList[it] != "0" }
     }
 
@@ -183,7 +194,7 @@ object Settings {
         if (!file.exists()) {
             File(dir).mkdirs()
             when (Tools.distro) {
-                "elementary" -> put("theme", "elementary")
+                "elementary" -> put(THEME, "elementary")
             }
             try {
                 Files.write(file.toPath(), generateText().lines(), StandardOpenOption.CREATE)
