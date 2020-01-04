@@ -1,7 +1,8 @@
-package posidon.texter.ui.filestuff
+package posidon.texter.ui
 
 import posidon.texter.Window
-import posidon.texter.ui.Button
+import posidon.texter.ui.view.Button
+import posidon.texter.ui.view.FileTree
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Insets
@@ -21,8 +22,14 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
             Mode.PICK_FILE -> "Select a file"
             Mode.CREATE_FILE -> "Create a file"
         }, true).also {d ->
-            d.size = Dimension(FileChooserConfig.MIN_WIDTH, FileChooserConfig.MIN_WIDTH)
-            d.minimumSize = Dimension(FileChooserConfig.MIN_WIDTH, FileChooserConfig.MIN_HEIGHT)
+            d.size = Dimension(
+                FileChooserConfig.MIN_WIDTH,
+                FileChooserConfig.MIN_WIDTH
+            )
+            d.minimumSize = Dimension(
+                FileChooserConfig.MIN_WIDTH,
+                FileChooserConfig.MIN_HEIGHT
+            )
             d.isResizable = true
             d.isLocationByPlatform = true
             d.add(JPanel().apply {

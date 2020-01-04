@@ -5,9 +5,11 @@ import posidon.texter.backend.Settings
 import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
 import posidon.texter.ui.*
-import posidon.texter.ui.Button
-import posidon.texter.ui.filestuff.FileChooser
-import posidon.texter.ui.filestuff.FileTree
+import posidon.texter.ui.view.Button
+import posidon.texter.ui.FileChooser
+import posidon.texter.ui.view.FileTree
+import posidon.texter.ui.view.HorizontalScrollPane
+import posidon.texter.ui.view.ScrollBar
 import java.awt.*
 import java.awt.Color
 import java.awt.datatransfer.DataFlavor
@@ -24,11 +26,10 @@ import javax.swing.text.DefaultStyledDocument
 import javax.swing.text.SimpleAttributeSet
 import javax.swing.undo.UndoManager
 
-
 object Window {
 
     private var currentFile: TextFile? = null
-    private var activeTab: Button? = null
+    private var activeTab: JPanel? = null
     private var undoManager: UndoManager? = null
 
     private val jFrame = JFrame(AppInfo.NAME).apply {
@@ -50,6 +51,8 @@ object Window {
                 return info?.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ?: false
             }
         }
+
+
     }
 
     private val textArea = JTextPane().apply {
@@ -103,10 +106,15 @@ object Window {
         jFrame.add(this, BorderLayout.EAST)
     }
 
-    private val tabs = JToolBar(JToolBar.HORIZONTAL).apply {
+    private val tabs = JPanel().apply {
         border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
-        margin = Insets(0, 0, 0, 0)
-        isFloatable = false
+        layout = BoxLayout(this, BoxLayout.X_AXIS)
+    }
+
+    private val tabsScroller = HorizontalScrollPane(tabs).apply {
+        border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+        horizontalScrollBarPolicy = ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER
+        verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER
         jFrame.add(this, BorderLayout.NORTH)
     }
 
@@ -153,6 +161,8 @@ object Window {
             textArea.foreground = theme.textAreaFG
             textArea.caretColor = theme.textAreaCaret
             textArea.background = theme.textAreaBG
+            textArea.selectionColor = theme.textSelectionBG
+            textArea.selectedTextColor = null
             jFrame.background = theme.windowBG
             jFrame.contentPane.background = theme.windowBG
             scroll.verticalScrollBar.setUI(ScrollBar())
@@ -165,10 +175,26 @@ object Window {
     fun openFile(path: String) {
         val file = TextFile.open(path)
         if (file != null) {
-            val tab = Button(file.name)
-            tab.isBorderPainted = false
-            tab.isFocusable = false
-            tab.layout = BorderLayout()
+            val tab = JPanel().apply {
+                preferredSize = Dimension(192, 32)
+                size = Dimension(192, 32)
+                background = theme.uiBG
+                isFocusable = false
+                layout = BorderLayout()
+                border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+            }
+            tab.add(JButton(file.icon).apply {
+                margin = Insets(0, 0, 0, 0)
+                isOpaque = false
+                isContentAreaFilled = false
+                isBorderPainted = false
+                border = BorderFactory.createEmptyBorder(6, 6, 6, 6)
+            }, BorderLayout.WEST)
+            tab.add(JLabel(file.name).apply{
+                font = Constants.uiFont
+                foreground = theme.text
+                isOpaque = false
+            }, BorderLayout.CENTER)
             val thisUndoManager = UndoManager()
             val document = DefaultStyledDocument()
             document.insertString(0, file.text, SimpleAttributeSet())
@@ -185,26 +211,31 @@ object Window {
             }}
 
 
-            tab.addActionListener {
-                if (activeTab == null) textArea.isVisible = true
-                else activeTab!!.background = theme.uiBG
-                tab.background = theme.uiHighlight
-                activeTab = tab
-                currentFile = file
-                undoManager = null
-                textArea.styledDocument = document
-                undoManager = thisUndoManager
-                title = AppInfo.NAME + " - " + file.name
-            }
+            tab.addMouseListener(object : MouseListener {
+                override fun mouseReleased(p0: MouseEvent?) {}
+                override fun mouseEntered(p0: MouseEvent?) {}
+                override fun mouseExited(p0: MouseEvent?) {}
+                override fun mousePressed(p0: MouseEvent?) {}
+                override fun mouseClicked(p0: MouseEvent?) {
+                    if (activeTab == null) textArea.isVisible = true
+                    else activeTab!!.background = theme.uiBG
+                    tab.background = theme.uiHighlight
+                    activeTab = tab
+                    currentFile = file
+                    undoManager = null
+                    textArea.styledDocument = document
+                    undoManager = thisUndoManager
+                    title = AppInfo.NAME + " - " + file.name
+                }
+            })
             val closeTabBtn = Button(icon = theme.iconTheme.close_tab_hover).apply {
                 isEnabled = false
                 disabledIcon = theme.iconTheme.close_tab
                 margin = Insets(0, 0, 0, 0)
                 isOpaque = false
                 isContentAreaFilled = false
-                background = Color(0x0)
                 isBorderPainted = false
-                border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
+                border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
                 addActionListener {
                     if (activeTab == tab) {
                         activeTab = null
@@ -214,7 +245,7 @@ object Window {
                         title = AppInfo.NAME
                     }
                     tabs.remove(tab)
-                    tabs.updateUI()
+                    jFrame.validate()
                 }
                 addMouseListener(object : MouseListener {
                     override fun mouseReleased(p0: MouseEvent?) {}
@@ -227,7 +258,7 @@ object Window {
             tab.add(closeTabBtn, BorderLayout.EAST)
 
             tabs.add(tab)
-            tabs.updateUI()
+            jFrame.validate()
         }
     }
 
@@ -257,7 +288,10 @@ object Window {
                             /*val chooser = FileChooser(jFrame)
                             if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
                             openFile(chooser.selectedFile.path)*/
-                            val chooser = FileChooser(jFrame, FileChooser.Mode.PICK_FILE).apply { get() }
+                            val chooser = FileChooser(
+                                jFrame,
+                                FileChooser.Mode.PICK_FILE
+                            ).apply { get() }
                             chooser.result?.let { openFile(it) }
                         }
                     }
@@ -274,7 +308,10 @@ object Window {
                             /*val chooser = FileChooser(jFrame)
                             if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
                             openFile(chooser.selectedFile.path)*/
-                            val chooser = FileChooser(jFrame, FileChooser.Mode.PICK_FOLDER).apply { get() }
+                            val chooser = FileChooser(
+                                jFrame,
+                                FileChooser.Mode.PICK_FOLDER
+                            ).apply { get() }
                             chooser.result?.let { fileTree.setFolder(it) }
                             fileTree.isVisible = true
                             splitPane.dividerLocation = splitPane.minimumDividerLocation

@@ -1,4 +1,4 @@
-package posidon.texter.ui
+package posidon.texter.ui.view
 
 import posidon.texter.Window
 import java.awt.Color

@@ -1,9 +1,7 @@
 package posidon.texter.ui
 
-import posidon.texter.Window
 import java.awt.Color
 import java.awt.Font
-import java.awt.Image
 import javax.swing.ImageIcon
 
 data class Theme(
@@ -17,7 +15,8 @@ data class Theme(
     val uiBG: Color = Color(0x252627),
     val uiHighlight: Color = Color(0x313233),
     val text: Color = Color(0xe1e2e3),
-    val textSelected: Color = Color(0xF0F1F2)
+    val textSelected: Color = Color(0xF0F1F2),
+    val textSelectionBG: Color = Color(0x152942)
 )
 
 object Constants {
@@ -37,7 +36,8 @@ object Themes {
         uiBG = Color(0x252627),
         uiHighlight = Color(0x313233),
         text = Color(0xe1e2e3),
-        textSelected = Color(0xF0F1F2)
+        textSelected = Color(0xF0F1F2),
+        textSelectionBG = Color(0x152942)
     )
     val midnight = Theme(
         iconTheme = IconTheme(),
@@ -50,7 +50,8 @@ object Themes {
         uiBG = Color(0x222539),
         uiHighlight = Color(0x323549),
         text = Color(0xafd2e0),
-        textSelected = Color(0xF0F1F2)
+        textSelected = Color(0xF0F1F2),
+        textSelectionBG = Color(0x0A3850)
     )
     val elementary = Theme(
         iconTheme = IconThemes.elementary,
@@ -63,10 +64,11 @@ object Themes {
         uiBG = Color(0x383838),
         uiHighlight = Color(0x414141),
         text = Color(0xc0c1bf),
-        textSelected = Color(0xF0F1F2)
+        textSelected = Color(0xF0F1F2),
+        textSelectionBG = Color(0x1A397A)
     )
     val material = Theme(
-        iconTheme = IconThemes.elementary,
+        iconTheme = IconThemes.material,
         textAreaBG = Color(0x1E272B),
         textAreaFG = Color(0xCFD8DC),
         textAreaCaret = Color(0xB0BEC5),
@@ -76,24 +78,25 @@ object Themes {
         uiBG = Color(0x263238),
         uiHighlight = Color(0x37474F),
         text = Color(0xCFD8DC),
-        textSelected = Color(0xECEFF1)
+        textSelected = Color(0xECEFF1),
+        textSelectionBG = Color(0x0D47A1)
     )
 }
 
 data class IconTheme(
-    val file_menu: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/actions/file_menu.png")),
-    val close_tab: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/misc/close_tab.png")),
-    val close_tab_hover: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/misc/close_tab_hover.png")),
-    val folder: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/folder.png")),
-    val folder_open: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/folder_open.png")),
-    val file_text: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/file.png")),
-    val java: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/java.png")),
-    val kotlin: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/kotlin.png")),
-    val xml: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/xml.png")),
-    val file_highlighter: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/highlighter.png")),
-    val file_exec: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/exec.png")),
-    val img: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/img.png")),
-    val file: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/files/other.png"))
+    val file_menu: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/actions/file_menu.png")),
+    val close_tab: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/misc/close_tab.png")),
+    val close_tab_hover: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/misc/close_tab_hover.png")),
+    val folder: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/folder.png")),
+    val folder_open: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/folder_open.png")),
+    val file_text: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/file.png")),
+    val java: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/java.png")),
+    val kotlin: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/kotlin.png")),
+    val xml: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/xml.png")),
+    val file_highlighter: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/highlighter.png")),
+    val file_exec: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/exec.png")),
+    val img: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/img.png")),
+    val file: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/other.png"))
 )
 
 private object IconThemes {
@@ -111,5 +114,20 @@ private object IconThemes {
         file_exec = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/exec.png")),
         img = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/img.png")),
         file = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/other.png"))
+    )
+    val material = IconTheme(
+        file_menu = ImageIcon(Themes::class.java.getResource("/icons/material/actions/file_menu.png")),
+        close_tab = ImageIcon(Themes::class.java.getResource("/icons/material/misc/close_tab.png")),
+        close_tab_hover = ImageIcon(Themes::class.java.getResource("/icons/material/misc/close_tab_hover.png")),
+        folder = ImageIcon(Themes::class.java.getResource("/icons/material/files/folder.png")),
+        folder_open = ImageIcon(Themes::class.java.getResource("/icons/material/files/folder_open.png")),
+        file_text = ImageIcon(Themes::class.java.getResource("/icons/material/files/file.png")),
+        java = ImageIcon(Themes::class.java.getResource("/icons/material/files/java.png")),
+        kotlin = ImageIcon(Themes::class.java.getResource("/icons/material/files/kotlin.png")),
+        xml = ImageIcon(Themes::class.java.getResource("/icons/material/files/xml.png")),
+        file_highlighter = ImageIcon(Themes::class.java.getResource("/icons/material/files/highlighter.png")),
+        file_exec = ImageIcon(Themes::class.java.getResource("/icons/material/files/exec.png")),
+        img = ImageIcon(Themes::class.java.getResource("/icons/material/files/img.png")),
+        file = ImageIcon(Themes::class.java.getResource("/icons/material/files/other.png"))
     )
 }

@@ -1,7 +1,6 @@
-package posidon.texter.ui.filestuff
+package posidon.texter.ui.view
 
 import posidon.texter.Window
-import posidon.texter.ui.ScrollBar
 import java.awt.*
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
@@ -104,7 +103,7 @@ class FileTree(dir: File) : JPanel() {
                 val row = tree.getRowForLocation(e.x, e.y)
                 if (row != -1) {
                     val path: TreePath? = tree.getPathForLocation(e.x, e.y)
-                    if (e.button == 1 && e.clickCount == 2 && (path?.lastPathComponent as MutableTreeNode).isLeaf) {
+                    if (e.button == 1 && e.clickCount == 2 && !(path?.lastPathComponent as MutableTreeNode).allowsChildren) {
                         itemDoubleClickListener?.invoke(path.path.joinToString(File.separator))
                     }
                 }

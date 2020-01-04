@@ -2,31 +2,27 @@ package posidon.texter.ui
 
 import posidon.texter.AppInfo
 import posidon.texter.Window
-import java.awt.BorderLayout
-import java.awt.Dimension
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
+import java.awt.event.MouseAdapter
+import java.awt.event.MouseEvent
 import javax.swing.JFrame
+import javax.swing.JPanel
 
-class SettingsWindow(mainWindow: JFrame) {
-    private val jFrame = JFrame(AppInfo.NAME + " - Settings").apply {
-        mainWindow.isVisible = false
-        size = mainWindow.size
-        minimumSize = Dimension(AppInfo.MIN_WIDTH, AppInfo.MIN_HEIGHT)
-        location = mainWindow.location
-        isResizable = true
-        addWindowListener(object : WindowAdapter() {
-            override fun windowClosing(e: WindowEvent?) {
-                mainWindow.size = size
-                mainWindow.location = location
-                mainWindow.isVisible = true
-            }
-        })
-        layout = BorderLayout()
-        contentPane.background = Window.theme.windowBG
-    }
+class SettingsWindow(jFrame: JFrame) {
 
     init {
-        jFrame.isVisible = true
+        val actualTitle = jFrame.title
+        jFrame.title = AppInfo.NAME + " - Settings"
+        val panel = JPanel()
+        val mainPane = jFrame.contentPane
+        panel.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                jFrame.contentPane = mainPane
+                jFrame.title = actualTitle
+                jFrame.validate()
+            }
+        })
+        panel.background = Window.theme.windowBG
+        jFrame.contentPane = panel
+        jFrame.validate()
     }
 }

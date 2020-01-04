@@ -1,6 +1,7 @@
-package posidon.texter.ui
+package posidon.texter.ui.view
 
 import posidon.texter.Window
+import posidon.texter.ui.Constants
 import java.awt.Insets
 import javax.swing.BorderFactory
 import javax.swing.Icon
