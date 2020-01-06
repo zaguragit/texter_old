@@ -1,5 +1,6 @@
 package posidon.texter.ui.view
 
+import posidon.texter.Window
 import posidon.texter.backend.Settings
 import java.awt.Dimension
 import javax.swing.JComboBox
@@ -16,10 +17,12 @@ class SettingsSpinner(
         add(JComboBox<String>(items).apply {
             selectedItem = Settings.getString(key)
             addActionListener {
-                save(selectedItem)
+                selectedItem?.let { save(it) }
                 selectionListener.invoke(selectedItem as String)
             }
-            preferredSize = Dimension(128, 32)
+            maximumSize = Dimension(256, 32)
+            background = Window.theme.uiBG
+            foreground = Window.theme.text
         })
     }
 }

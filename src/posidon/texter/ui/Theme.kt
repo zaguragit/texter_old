@@ -188,7 +188,8 @@ object Themes {
 }
 
 data class IconTheme(
-    val file_menu: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/actions/file_menu.png")),
+    val action_file_menu: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/actions/file_menu.png")),
+    val action_back: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/actions/back.png")),
     val close_tab: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/misc/close_tab.png")),
     val close_tab_hover: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/misc/close_tab_hover.png")),
     val folder: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/files/folder.png")),
@@ -205,7 +206,8 @@ data class IconTheme(
 
 private object IconThemes {
     val elementary = IconTheme(
-        file_menu = ImageIcon(Themes::class.java.getResource("/icons/elementary/actions/file_menu.png")),
+        action_file_menu = ImageIcon(Themes::class.java.getResource("/icons/elementary/actions/file_menu.png")),
+        action_back = ImageIcon(Themes::class.java.getResource("/icons/elementary/actions/back.png")),
         close_tab = ImageIcon(Themes::class.java.getResource("/icons/elementary/misc/close_tab.png")),
         close_tab_hover = ImageIcon(Themes::class.java.getResource("/icons/elementary/misc/close_tab.png")),
         folder = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/folder.png")),
@@ -220,7 +222,8 @@ private object IconThemes {
         file = ImageIcon(Themes::class.java.getResource("/icons/elementary/files/file.png"))
     )
     val material = IconTheme(
-        file_menu = ImageIcon(Themes::class.java.getResource("/icons/material/actions/file_menu.png")),
+        action_file_menu = ImageIcon(Themes::class.java.getResource("/icons/material/actions/file_menu.png")),
+        action_back = ImageIcon(Themes::class.java.getResource("/icons/material/actions/back.png")),
         close_tab = ImageIcon(Themes::class.java.getResource("/icons/material/misc/close_tab.png")),
         close_tab_hover = ImageIcon(Themes::class.java.getResource("/icons/material/misc/close_tab_hover.png")),
         folder = ImageIcon(Themes::class.java.getResource("/icons/material/files/folder.png")),
@@ -235,7 +238,8 @@ private object IconThemes {
         file = ImageIcon(Themes::class.java.getResource("/icons/material/files/file.png"))
     )
     val ubuntu = IconTheme(
-        file_menu = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/actions/file_menu.png")),
+        action_file_menu = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/actions/file_menu.png")),
+        action_back = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/actions/back.png")),
         close_tab = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/misc/close_tab.png")),
         close_tab_hover = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/misc/close_tab_hover.png")),
         folder = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/files/folder.png")),

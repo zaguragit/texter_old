@@ -8,7 +8,7 @@ import posidon.texter.ui.Constants
 import posidon.texter.ui.FileChooser
 import posidon.texter.ui.Theme
 import posidon.texter.ui.Themes
-import posidon.texter.ui.settings.SettingsWindow
+import posidon.texter.ui.settings.SettingsScreen
 import posidon.texter.ui.view.*
 import posidon.texter.ui.view.Button
 import java.awt.*
@@ -247,7 +247,7 @@ object Window {
 
     fun init() {
         updateTheme(Settings.getString(Settings.THEME))
-        Button(icon = theme.iconTheme.file_menu).apply {
+        Button(icon = theme.iconTheme.action_file_menu).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
             isOpaque = false
@@ -322,7 +322,7 @@ object Window {
             toolbar.add(this)
         }
 
-        Button(icon = theme.iconTheme.file_menu).apply {
+        Button(icon = theme.iconTheme.action_file_menu).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
             isOpaque = false
@@ -337,7 +337,7 @@ object Window {
                     add(JMenuItem().apply {
                         action = object : AbstractAction() {
                             override fun actionPerformed(a: ActionEvent?) {
-                                SettingsWindow(jFrame)
+                                SettingsScreen(jFrame)
                             }
                         }
                         text = "Settings"

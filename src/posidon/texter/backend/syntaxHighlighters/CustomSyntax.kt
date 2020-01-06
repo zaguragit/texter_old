@@ -32,7 +32,7 @@ object CustomSyntax {
     val HIGHLIGHTER_FLAGS = arrayListOf(
         "@syntax",
         "@line-comment",
-        "@multiline-comment",
+        "@selective-comment",
         "@hex-prefix",
         "@binary-prefix",
         "@string-sides"

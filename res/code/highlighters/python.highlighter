@@ -1,6 +1,6 @@
 @syntax indented
 @line-comment #
-@multiline-comment ''' '''
+@selective-comment ''' '''
 @string-sides " '
 declarations -> import class def
 mods -> with

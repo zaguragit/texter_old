@@ -1,6 +1,6 @@
 @syntax bracketed
 @line-comment //
-@multiline-comment /* */
+@selective-comment /* */
 @hex-prefix 0x
 @binary-prefix 0b
 @string-sides " '

@@ -33,7 +33,7 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
             if (line.startsWith('@')) {
                 when(items[0]) {
                     "@line-comment" -> lineComment = items[1]
-                    "@multiline-comment" -> {
+                    "@selective-comment" -> {
                         startComment = items[1]
                         endComment = items[2]
                     }
