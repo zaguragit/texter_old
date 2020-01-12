@@ -175,6 +175,8 @@ object Window {
             for (tab in tabs.components)
                 if (tab is FileTab) tab.updateTheme()
             undoManager = tmpUndoManager
+            actionBtnFiles.icon = theme.iconTheme.action_file_menu
+            actionBtnOther.icon = theme.iconTheme.action_file_menu
         }
 
     fun openFile(path: String) {
@@ -219,8 +221,9 @@ object Window {
         }
     }
 
+    lateinit var actionBtnFiles: Button
+    lateinit var actionBtnOther: Button
     fun init() {
-        updateTheme(Settings.getString(Settings.THEME))
         Button(icon = theme.iconTheme.action_file_menu).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
@@ -235,9 +238,6 @@ object Window {
                     add(JMenuItem().apply {
                         action = object : AbstractAction() {
                             override fun actionPerformed(a: ActionEvent?) {
-                                /*val chooser = FileChooser(jFrame)
-                                if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
-                                openFile(chooser.selectedFile.path)*/
                                 val chooser = FileChooser(
                                     jFrame,
                                     FileChooser.Mode.PICK_FILE
@@ -254,9 +254,6 @@ object Window {
                     add(JMenuItem().apply {
                         action = object : AbstractAction() {
                             override fun actionPerformed(a: ActionEvent?) {
-                                /*val chooser = FileChooser(jFrame)
-                                if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return@addActionListener
-                                openFile(chooser.selectedFile.path)*/
                                 val chooser = FileChooser(
                                     jFrame,
                                     FileChooser.Mode.PICK_FOLDER
@@ -277,11 +274,13 @@ object Window {
                     add(JMenuItem().apply {
                         action = object : AbstractAction() {
                             override fun actionPerformed(a: ActionEvent?) {
-                                val chooser = FileDialog(Frame())
-                                chooser.isVisible = true
-                                if (chooser.file != null) {
-                                    TextFile.new(chooser.directory + chooser.file)
-                                    openFile(chooser.directory + chooser.file)
+                                val chooser = FileChooser(
+                                    jFrame,
+                                    FileChooser.Mode.CREATE_FILE
+                                ).apply { get() }
+                                chooser.result?.let {
+                                    TextFile.new(it)
+                                    openFile(it)
                                 }
                             }
                         }
@@ -294,6 +293,7 @@ object Window {
                 }.show(this, 0, this.height)
             }
             toolbar.add(this)
+            actionBtnFiles = this
         }
 
         Button(icon = theme.iconTheme.action_file_menu).apply {
@@ -323,10 +323,12 @@ object Window {
                 }.show(this, 0, this.height)
             }
             toolbar.add(this)
+            actionBtnOther = this
         }
 
         jFrame.isLocationByPlatform = true
         jFrame.isVisible = true
+        updateTheme(Settings.getString(Settings.THEME))
     }
 
     fun updateTheme(name: String?) {

@@ -1,33 +1,36 @@
 package posidon.texter.backend.syntaxHighlighters
 
 object CustomSyntax {
-    fun getHighlighter(path: String): SyntaxHighlighter {
-        val text = CustomSyntax::class.java.getResource(path).readText().split('\n')
-        var syntax = SYNTAX_DEFAULT
+    fun getHighlighter(fileName: String): SyntaxHighlighter {
+        val pathToHighlighter = "/code/highlighters/${fileName.split(".").last()}.highlighter"
+        val text = CustomSyntax::class.java.getResource(pathToHighlighter)?.readText()?.split('\n') ?: return DefaultSyntaxHighlighter()
+        var syntax = Syntax.DEFAULT
         for (line in text) {
             if (line.startsWith('@')) {
                 val tokens = line.split(' ')
                 if (tokens[0] == "@syntax")
                     syntax = when(tokens[1]) {
-                        "bracket", "bracketed" -> SYNTAX_BRACKETED
-                        "indent", "indented" -> SYNTAX_INDENTED
-                        "tag", "tagged" -> SYNTAX_TAGGED
-                        else -> SYNTAX_DEFAULT
+                        "bracket", "bracketed" -> Syntax.BRACKETED
+                        "indent", "indented" -> Syntax.INDENTED
+                        "tag", "tagged" -> Syntax.TAGGED
+                        else -> Syntax.DEFAULT
                     }
             }
         }
         return when(syntax) {
-            SYNTAX_BRACKETED -> BracketedSyntaxHighlighter(path)
-            SYNTAX_INDENTED -> BracketedSyntaxHighlighter(path)
-            SYNTAX_TAGGED -> XmlSyntaxHighlighter()
-            else -> BracketedSyntaxHighlighter(path)
+            Syntax.BRACKETED -> BracketedSyntaxHighlighter(pathToHighlighter)
+            Syntax.INDENTED -> BracketedSyntaxHighlighter(pathToHighlighter)
+            Syntax.TAGGED -> XmlSyntaxHighlighter()
+            else -> BracketedSyntaxHighlighter(pathToHighlighter)
         }
     }
 
-    private const val SYNTAX_BRACKETED = 0
-    private const val SYNTAX_INDENTED = 1
-    private const val SYNTAX_TAGGED = 2
-    private const val SYNTAX_DEFAULT = SYNTAX_BRACKETED
+    enum class Syntax {
+        BRACKETED,
+        INDENTED,
+        TAGGED,
+        DEFAULT
+    }
 
     val HIGHLIGHTER_FLAGS = arrayListOf(
         "@syntax",

@@ -11,17 +11,12 @@ import kotlin.streams.toList
 class TextFile(path: String, private var content: List<String>) : AnyFile(path) {
 
     private var syntaxHighlighter: SyntaxHighlighter =
-        when {
-            path.endsWith(".kt") -> BracketedSyntaxHighlighter("/code/highlighters/kt.highlighter")
-            path.endsWith(".java") -> BracketedSyntaxHighlighter("/code/highlighters/java.highlighter")
-            path.endsWith(".sh") -> BracketedSyntaxHighlighter("/code/highlighters/shellscript.highlighter")
-            path.endsWith(".xml") ||
-                    path.endsWith(".iml") ||
-                    path.endsWith(".svg") ||
-                    path.endsWith(".html") -> XmlSyntaxHighlighter()
-            path.endsWith(".highlighter") -> HighlighterSyntaxHighlighter()
-            path.endsWith(".md") -> MarkdownSyntaxHighlighter()
-            else -> DefaultSyntaxHighlighter()
+        when (path.split('.').last()) {
+            "sh" -> BracketedSyntaxHighlighter("/code/highlighters/shellscript.highlighter")
+            "xml", "iml", "svg", "html" -> XmlSyntaxHighlighter()
+            "highlighter" -> HighlighterSyntaxHighlighter()
+            "md" -> MarkdownSyntaxHighlighter()
+            else -> CustomSyntax.getHighlighter(path.split(File.separator).last())
         }
 
     var text
