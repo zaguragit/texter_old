@@ -67,13 +67,16 @@ class FileTree(dir: File) : JPanel() {
         renderer.textNonSelectionColor = Window.theme.text
         renderer.closedIcon = Window.theme.iconTheme.folder
         renderer.openIcon = Window.theme.iconTheme.folder_open
-        scrollPane.verticalScrollBar.setUI(ScrollBarUI())
-        scrollPane.horizontalScrollBar.setUI(ScrollBarUI())
+        scrollPane.verticalScrollBar?.setUI(MinimalScrollBarUI())
+        scrollPane.horizontalScrollBar?.setUI(MinimalScrollBarUI())
     }
 
     override fun setBackground(bg: Color?) {
-        tree?.background = bg
         renderer?.backgroundNonSelectionColor = bg
+        scrollPane?.let {
+            scrollPane.background = bg
+            scrollPane.viewport?.background = bg
+        }
     }
 
     override fun getMinimumSize(): Dimension { return Dimension(200, 400) }
@@ -82,9 +85,10 @@ class FileTree(dir: File) : JPanel() {
     init {
         layout = BorderLayout()
         tree.toggleClickCount = 2
-        scrollPane.isOpaque = false
         scrollPane.border = null
         scrollPane.viewport.add(tree)
+        scrollPane.verticalScrollBar.isOpaque = false
+        scrollPane.horizontalScrollBar.isOpaque = false
         add(BorderLayout.CENTER, scrollPane)
         renderer.border = BorderFactory.createEmptyBorder(4, 8, 4, 8)
         tree.cellRenderer = renderer
@@ -92,6 +96,7 @@ class FileTree(dir: File) : JPanel() {
         tree.setUI(treeUI)
         treeUI.collapsedIcon = null
         treeUI.expandedIcon = null
+        tree.isOpaque = false
         isOpaque = false
         tree.addTreeWillExpandListener(object : TreeWillExpandListener {
             override fun treeWillCollapse(e: TreeExpansionEvent) {}

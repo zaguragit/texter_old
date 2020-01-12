@@ -1,11 +1,14 @@
 package posidon.texter.ui.view
 
+import posidon.texter.AppInfo
 import posidon.texter.Window
 import posidon.texter.backend.TextFile
 import posidon.texter.ui.Constants
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Insets
+import java.awt.event.MouseEvent
+import java.awt.event.MouseListener
 import javax.swing.*
 import javax.swing.text.StyledDocument
 
@@ -13,6 +16,7 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
 
     private val labelView: JLabel
     private val iconView: JButton
+    private val closeTabBtn: JButton
 
     var active = false
         set(value) {
@@ -26,6 +30,8 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
         else Window.theme.uiBG
         file.colorAll(document)
         iconView.icon = file.icon
+        closeTabBtn.icon = Window.theme.iconTheme.close_tab_hover
+        closeTabBtn.disabledIcon = Window.theme.iconTheme.close_tab
     }
 
     init {
@@ -52,5 +58,34 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
             isOpaque = false
             labelView = this
         }, BorderLayout.CENTER)
+
+        add(Button(icon = Window.theme.iconTheme.close_tab_hover).apply {
+            isEnabled = false
+            disabledIcon = Window.theme.iconTheme.close_tab
+            margin = Insets(0, 0, 0, 0)
+            isOpaque = false
+            isContentAreaFilled = false
+            isBorderPainted = false
+            border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
+            addActionListener {
+                if (Window.activeTab == this@FileTab) {
+                    Window.activeTab = null
+                    Window.currentFile = null
+                    Window.textArea.isVisible = false
+                    Window.undoManager = null
+                    Window.title = AppInfo.NAME
+                }
+                Window.tabs.remove(this@FileTab)
+                Window.jFrame.validate()
+            }
+            addMouseListener(object : MouseListener {
+                override fun mouseReleased(p0: MouseEvent?) {}
+                override fun mouseClicked(p0: MouseEvent?) {}
+                override fun mousePressed(p0: MouseEvent?) {}
+                override fun mouseEntered(p0: MouseEvent?) { isEnabled = true }
+                override fun mouseExited(p0: MouseEvent?) { isEnabled = false }
+            })
+            closeTabBtn = this
+        }, BorderLayout.EAST)
     }
 }

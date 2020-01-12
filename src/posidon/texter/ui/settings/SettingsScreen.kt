@@ -29,12 +29,12 @@ class SettingsScreen(private val jFrame: JFrame) {
             val backBtn: JButton
             add(JButton(Window.theme.iconTheme.action_back).apply {
                 addActionListener { exit() }
-                maximumSize = Dimension(Int.MAX_VALUE, minimumSize.width)
                 isOpaque = false
                 isBorderPainted = false
                 isContentAreaFilled = false
                 backBtn = this
             }, BorderLayout.WEST)
+            backBtn.maximumSize = Dimension(Int.MAX_VALUE, minimumSize.width)
             add(JLabel("Settings").apply {
                 font = Constants.uiFont.deriveFont(48f)
                 foreground = Window.theme.text

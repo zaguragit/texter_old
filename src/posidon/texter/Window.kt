@@ -28,11 +28,11 @@ import javax.swing.undo.UndoManager
 
 object Window {
 
-    private var currentFile: TextFile? = null
-    private var activeTab: FileTab? = null
-    private var undoManager: UndoManager? = null
+    var currentFile: TextFile? = null
+    var activeTab: FileTab? = null
+    var undoManager: UndoManager? = null
 
-    private val jFrame = JFrame(AppInfo.NAME).apply {
+    val jFrame = JFrame(AppInfo.NAME).apply {
         size = Dimension(AppInfo.INIT_WIDTH, AppInfo.INIT_HEIGHT)
         minimumSize = Dimension(AppInfo.MIN_WIDTH, AppInfo.MIN_HEIGHT)
         isResizable = true
@@ -53,7 +53,7 @@ object Window {
         }
     }
 
-    private val textArea = JTextPane().apply {
+    val textArea = JTextPane().apply {
         font = Constants.codeFont
         isEditable = true
         border = BorderFactory.createEmptyBorder(12, 12, 12, 12)
@@ -104,7 +104,7 @@ object Window {
         jFrame.add(this, BorderLayout.EAST)
     }
 
-    private val tabs = JPanel().apply {
+    val tabs = JPanel().apply {
         border = BorderFactory.createEmptyBorder(0, 0, 0, 0)
         layout = BoxLayout(this, BoxLayout.X_AXIS)
     }
@@ -122,6 +122,8 @@ object Window {
         viewport.isOpaque = false
         verticalScrollBar.unitIncrement = 10
         horizontalScrollBar.unitIncrement = 10
+        verticalScrollBar.isOpaque = false
+        horizontalScrollBar.isOpaque = false
         //jFrame.add(this, BorderLayout.CENTER)
     }
 
@@ -163,8 +165,8 @@ object Window {
             textArea.selectedTextColor = null
             jFrame.background = theme.windowBG
             jFrame.contentPane.background = theme.windowBG
-            scroll.verticalScrollBar.setUI(ScrollBarUI())
-            scroll.horizontalScrollBar.setUI(ScrollBarUI())
+            scroll.verticalScrollBar.setUI(MinimalScrollBarUI())
+            scroll.horizontalScrollBar.setUI(MinimalScrollBarUI())
             tabs.background = theme.uiBG
             toolbar.background = theme.uiBG
             fileTree.updateTheme()
@@ -211,34 +213,6 @@ object Window {
                     title = AppInfo.NAME + " - " + file.name
                 }
             })
-            val closeTabBtn = Button(icon = theme.iconTheme.close_tab_hover).apply {
-                isEnabled = false
-                disabledIcon = theme.iconTheme.close_tab
-                margin = Insets(0, 0, 0, 0)
-                isOpaque = false
-                isContentAreaFilled = false
-                isBorderPainted = false
-                border = BorderFactory.createEmptyBorder(8, 8, 8, 8)
-                addActionListener {
-                    if (activeTab == tab) {
-                        activeTab = null
-                        currentFile = null
-                        textArea.isVisible = false
-                        undoManager = null
-                        title = AppInfo.NAME
-                    }
-                    tabs.remove(tab)
-                    jFrame.validate()
-                }
-                addMouseListener(object : MouseListener {
-                    override fun mouseReleased(p0: MouseEvent?) {}
-                    override fun mouseClicked(p0: MouseEvent?) {}
-                    override fun mousePressed(p0: MouseEvent?) {}
-                    override fun mouseEntered(p0: MouseEvent?) { isEnabled = true }
-                    override fun mouseExited(p0: MouseEvent?) { isEnabled = false }
-                })
-            }
-            tab.add(closeTabBtn, BorderLayout.EAST)
 
             tabs.add(tab)
             jFrame.validate()
@@ -367,7 +341,7 @@ object Window {
         }
     }
 
-    private var title: String
+    var title: String
         get() = jFrame.title
         set(value) { jFrame.title = value }
 }

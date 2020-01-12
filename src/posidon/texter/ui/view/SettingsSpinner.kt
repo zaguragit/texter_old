@@ -3,7 +3,11 @@ package posidon.texter.ui.view
 import posidon.texter.Window
 import posidon.texter.backend.Settings
 import java.awt.Dimension
+import javax.swing.ComboBoxModel
+import javax.swing.DefaultComboBoxModel
 import javax.swing.JComboBox
+import javax.swing.event.ListDataListener
+import javax.swing.plaf.ComboBoxUI
 
 class SettingsSpinner(
     label: String,

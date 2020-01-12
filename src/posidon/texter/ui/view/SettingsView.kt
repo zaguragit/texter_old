@@ -2,6 +2,7 @@ package posidon.texter.ui.view
 
 import posidon.texter.Window
 import posidon.texter.backend.Settings
+import javax.swing.BorderFactory
 import javax.swing.BoxLayout
 import javax.swing.JComponent
 import javax.swing.JLabel
@@ -17,6 +18,7 @@ open class SettingsView(
         add(JLabel(label).apply {
             foreground = Window.theme.text
             isFocusable = false
+            border = BorderFactory.createEmptyBorder(0, 0, 0, 18)
         })
     }
 
