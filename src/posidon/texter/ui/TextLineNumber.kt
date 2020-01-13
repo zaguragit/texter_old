@@ -24,8 +24,7 @@ class TextLineNumber @JvmOverloads constructor(
     private val component: JTextComponent,
     private val scrollPane: JScrollPane,
     minimumDisplayDigits: Int = 3
-) : JPanel(),
-    CaretListener, DocumentListener, PropertyChangeListener {
+) : JPanel(), CaretListener, DocumentListener, PropertyChangeListener {
     //  Properties that can be changed
     var updateFont = true
 
@@ -168,7 +167,7 @@ class TextLineNumber @JvmOverloads constructor(
     private fun isCurrentLine(rowStartOffset: Int): Boolean {
         val caretPosition = component.caretPosition
         val root = component.document.defaultRootElement
-        return if (root.getElementIndex(rowStartOffset) == root.getElementIndex(caretPosition)) true else false
+        return root.getElementIndex(rowStartOffset) == root.getElementIndex(caretPosition)
     }
 
     /*
@@ -202,12 +201,10 @@ class TextLineNumber @JvmOverloads constructor(
         val y = r.y + r.height
         var descent = 0
         //  The text needs to be positioned above the bottom of the bounding
-//  rectangle based on the descent of the font(s) contained on the row.
-        if (r.height == lineHeight) // default font is being used
-        {
+        //  rectangle based on the descent of the font(s) contained on the row.
+        if (r.height == lineHeight) {
             descent = fontMetrics.descent
-        } else  // We need to check all the attributes for font changes
-        {
+        } else {
             if (fonts == null) fonts = HashMap()
             val root = component.document.defaultRootElement
             val index = root.getElementIndex(rowStartOffset)
@@ -247,24 +244,16 @@ class TextLineNumber @JvmOverloads constructor(
     //
 //  Implement DocumentListener interface
 //
-    override fun changedUpdate(e: DocumentEvent) {
-        documentChanged()
-    }
-
-    override fun insertUpdate(e: DocumentEvent) {
-        documentChanged()
-    }
-
-    override fun removeUpdate(e: DocumentEvent) {
-        documentChanged()
-    }
+    override fun changedUpdate(e: DocumentEvent) = documentChanged()
+    override fun insertUpdate(e: DocumentEvent) = documentChanged()
+    override fun removeUpdate(e: DocumentEvent) = documentChanged()
 
     /*
 	 *  A document change may affect the number of displayed lines of text.
 	 *  Therefore the lines numbers will also change.
 	 */
     private fun documentChanged() { //  View of the component has not been updated at the time
-//  the DocumentEvent is fired
+    // the DocumentEvent is fired
         SwingUtilities.invokeLater {
             try {
                 val endPos = component.document.length
@@ -274,8 +263,7 @@ class TextLineNumber @JvmOverloads constructor(
                     repaint()
                     lastHeight = rect.y
                 }
-            } catch (ex: BadLocationException) { /* nothing to do */
-            }
+            } catch (e: BadLocationException) {}
         }
     }
 
@@ -289,9 +277,7 @@ class TextLineNumber @JvmOverloads constructor(
                 font = newFont
                 lastDigits = 0
                 setPreferredWidth()
-            } else {
-                repaint()
-            }
+            } else repaint()
         }
     }
 

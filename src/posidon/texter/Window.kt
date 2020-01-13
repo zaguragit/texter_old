@@ -27,7 +27,6 @@ import javax.swing.undo.UndoManager
 
 object Window {
 
-    var currentFile: TextFile? = null
     var activeTab: FileTab? = null
     var undoManager: UndoManager? = null
 
@@ -83,7 +82,7 @@ object Window {
                 replaceSelection(Tools.getClipboardContents(Toolkit.getDefaultToolkit().systemClipboard))
                 val tmp = undoManager
                 undoManager = null
-                currentFile!!.colorAll(styledDocument)
+                activeTab?.file?.colorAll(styledDocument)
                 undoManager = tmp
             }
         })
@@ -186,39 +185,20 @@ object Window {
     fun openFile(path: String) {
         val file = TextFile.open(path)
         if (file != null) {
-            val thisUndoManager = UndoManager()
             val document = DefaultStyledDocument()
             val tab = FileTab(file.name, file.icon, file, document)
             document.insertString(0, file.text, SimpleAttributeSet())
             file.colorAll(document)
             document.documentFilter = NewLineFilter()
             document.addUndoableEditListener { if (undoManager != null) {
-                currentFile!!.text = document.getText(0, document.length)
-                currentFile!!.save()
-                undoManager!!.addEdit(it.edit)
-                val tmp = undoManager
-                undoManager = null
-                currentFile!!.colorLine(document, textArea.caretPosition)
-                undoManager = tmp
+                activeTab?.file?.text = document.getText(0, document.length)
+                activeTab?.file?.save()
+                activeTab?.undoManager?.addEdit(it.edit)
+                val tmp = activeTab
+                activeTab = null
+                activeTab?.file?.colorLine(document, textArea.caretPosition)
+                activeTab = tmp
             }}
-
-            tab.addMouseListener(object : MouseListener {
-                override fun mouseReleased(p0: MouseEvent?) {}
-                override fun mouseEntered(p0: MouseEvent?) {}
-                override fun mouseExited(p0: MouseEvent?) {}
-                override fun mousePressed(p0: MouseEvent?) {}
-                override fun mouseClicked(p0: MouseEvent?) {
-                    if (activeTab == null) textArea.isVisible = true
-                    else activeTab!!.active = false
-                    tab.active = true
-                    activeTab = tab
-                    currentFile = file
-                    undoManager = null
-                    textArea.styledDocument = document
-                    undoManager = thisUndoManager
-                    title = AppInfo.NAME + " - " + file.name
-                }
-            })
 
             tabs.add(tab)
             jFrame.validate()
