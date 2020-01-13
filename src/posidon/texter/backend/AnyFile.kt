@@ -8,6 +8,7 @@ abstract class AnyFile(protected val path: String) {
     val icon: ImageIcon
         get() = getIcon(path)
     val name = path.split('/').last()
+    val extension = name.split('.').last()
 
     abstract fun save(): Boolean
 

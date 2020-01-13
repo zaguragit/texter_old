@@ -8,6 +8,8 @@ data class Theme(
     val iconTheme: IconTheme = IconTheme(),
     val textAreaBG: Color = Color(0x111213),
     val textAreaFG: Color = Color(0xe1e2e3),
+    val textAreaNumberBG: Color = Color(0x111213),
+    val textAreaNumberFG: Color = Color(0xe1e2e3),
     val textAreaCaret: Color = Color(0xe1e2e3),
     val windowBG: Color = Color(0x111213),
     val scrollBarBG: Color = Color(0x111213),
@@ -44,6 +46,8 @@ object Themes {
         iconTheme = IconTheme(),
         textAreaBG = Color(0x111213),
         textAreaFG = Color(0xe1e2e3),
+        textAreaNumberBG = Color(0x111213),
+        textAreaNumberFG = Color(0xe1e2e3),
         textAreaCaret = Color(0xe1e2e3),
         windowBG = Color(0x111213),
         scrollBarBG = Color(0x111213),
@@ -73,6 +77,8 @@ object Themes {
         iconTheme = IconTheme(),
         textAreaBG = Color(0x111321),
         textAreaFG = Color(0xafd2e0),
+        textAreaNumberBG = Color(0x111321),
+        textAreaNumberFG = Color(0xafd2e0),
         textAreaCaret = Color(0x89a4c1),
         windowBG = Color(0x0e101e),
         scrollBarBG = Color(0x111321),
@@ -102,6 +108,8 @@ object Themes {
         iconTheme = IconThemes.elementary,
         textAreaBG = Color(0x303030),
         textAreaFG = Color(0xededed),
+        textAreaNumberBG = Color(0x303030),
+        textAreaNumberFG = Color(0xededed),
         textAreaCaret = Color(0xfafafa),
         windowBG = Color(0x404040),
         scrollBarBG = Color(0x303030),
@@ -131,6 +139,8 @@ object Themes {
         iconTheme = IconThemes.material,
         textAreaBG = Color(0x1E272B),
         textAreaFG = Color(0xCFD8DC),
+        textAreaNumberBG = Color(0x1E272B),
+        textAreaNumberFG = Color(0xCFD8DC),
         textAreaCaret = Color(0xB0BEC5),
         windowBG = Color(0x212B30),
         scrollBarBG = Color(0x1E272B),
@@ -160,6 +170,8 @@ object Themes {
         iconTheme = IconThemes.ubuntu,
         textAreaBG = Color(0x2C001E),
         textAreaFG = Color(0xD6D3CF),
+        textAreaNumberBG = Color(0x2C001E),
+        textAreaNumberFG = Color(0xD6D3CF),
         textAreaCaret = Color(0xE95420),
         windowBG = Color(0x411934),
         scrollBarBG = Color(0x2C001E),
@@ -189,6 +201,7 @@ object Themes {
 
 data class IconTheme(
     val action_file_menu: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/actions/file_menu.png")),
+    val action_other_menu: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/actions/file_menu.png")),
     val action_back: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/actions/back.png")),
     val close_tab: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/misc/close_tab.png")),
     val close_tab_hover: ImageIcon = ImageIcon(Themes::class.java.getResource("/icons/posidon/misc/close_tab_hover.png")),
@@ -207,6 +220,7 @@ data class IconTheme(
 private object IconThemes {
     val elementary = IconTheme(
         action_file_menu = ImageIcon(Themes::class.java.getResource("/icons/elementary/actions/file_menu.png")),
+        action_other_menu = ImageIcon(Themes::class.java.getResource("/icons/elementary/actions/file_menu.png")),
         action_back = ImageIcon(Themes::class.java.getResource("/icons/elementary/actions/back.png")),
         close_tab = ImageIcon(Themes::class.java.getResource("/icons/elementary/misc/close_tab.png")),
         close_tab_hover = ImageIcon(Themes::class.java.getResource("/icons/elementary/misc/close_tab.png")),
@@ -223,6 +237,7 @@ private object IconThemes {
     )
     val material = IconTheme(
         action_file_menu = ImageIcon(Themes::class.java.getResource("/icons/material/actions/file_menu.png")),
+        action_other_menu = ImageIcon(Themes::class.java.getResource("/icons/material/actions/file_menu.png")),
         action_back = ImageIcon(Themes::class.java.getResource("/icons/material/actions/back.png")),
         close_tab = ImageIcon(Themes::class.java.getResource("/icons/material/misc/close_tab.png")),
         close_tab_hover = ImageIcon(Themes::class.java.getResource("/icons/material/misc/close_tab_hover.png")),
@@ -239,6 +254,7 @@ private object IconThemes {
     )
     val ubuntu = IconTheme(
         action_file_menu = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/actions/file_menu.png")),
+        action_other_menu = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/actions/file_menu.png")),
         action_back = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/actions/back.png")),
         close_tab = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/misc/close_tab.png")),
         close_tab_hover = ImageIcon(Themes::class.java.getResource("/icons/ubuntu/misc/close_tab_hover.png")),

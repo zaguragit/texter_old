@@ -17,12 +17,17 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
     private val labelView: JLabel
     private val iconView: JButton
     private val closeTabBtn: JButton
+    private fun doesShowNumbers() = file.extension != "md"
 
     var active = false
         set(value) {
             field = value
-            background = if (active) Window.theme.uiHighlight
-            else Window.theme.uiBG
+            if (active) {
+                Window.textNumbers.isVisible = doesShowNumbers()
+                background = Window.theme.uiHighlight
+            } else {
+                background = Window.theme.uiBG
+            }
         }
 
     fun updateTheme() {
@@ -74,6 +79,7 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
                     Window.textArea.isVisible = false
                     Window.undoManager = null
                     Window.title = AppInfo.NAME
+                    Window.textNumbers.isVisible = false
                 }
                 Window.tabs.remove(this@FileTab)
                 Window.jFrame.validate()

@@ -4,10 +4,7 @@ import posidon.texter.backend.NewLineFilter
 import posidon.texter.backend.Settings
 import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
-import posidon.texter.ui.Constants
-import posidon.texter.ui.FileChooser
-import posidon.texter.ui.Theme
-import posidon.texter.ui.Themes
+import posidon.texter.ui.*
 import posidon.texter.ui.settings.SettingsScreen
 import posidon.texter.ui.view.*
 import posidon.texter.ui.view.Button
@@ -20,9 +17,11 @@ import java.awt.event.MouseListener
 import java.io.File
 import javax.swing.*
 import javax.swing.border.Border
+import javax.swing.border.MatteBorder
 import javax.swing.plaf.basic.BasicSplitPaneDivider
 import javax.swing.plaf.basic.BasicSplitPaneUI
 import javax.swing.text.DefaultStyledDocument
+import javax.swing.text.JTextComponent
 import javax.swing.text.SimpleAttributeSet
 import javax.swing.undo.UndoManager
 
@@ -124,8 +123,9 @@ object Window {
         horizontalScrollBar.unitIncrement = 10
         verticalScrollBar.isOpaque = false
         horizontalScrollBar.isOpaque = false
-        //jFrame.add(this, BorderLayout.CENTER)
     }
+
+    val textNumbers = TextLineNumber(textArea, scroll).apply { isVisible = false }
 
     private val fileTree = FileTree(File(".")).apply {
         //jFrame.add(this, BorderLayout.WEST)
@@ -176,7 +176,11 @@ object Window {
                 if (tab is FileTab) tab.updateTheme()
             undoManager = tmpUndoManager
             actionBtnFiles.icon = theme.iconTheme.action_file_menu
-            actionBtnOther.icon = theme.iconTheme.action_file_menu
+            actionBtnOther.icon = theme.iconTheme.action_other_menu
+            textNumbers.background = theme.textAreaNumberBG
+            textNumbers.foreground = theme.textAreaNumberFG
+            textNumbers.sideBorder = MatteBorder(0, 0, 0, 2, theme.uiHighlight)
+            textNumbers.currentLineForeground = theme.textAreaCaret
         }
 
     fun openFile(path: String) {
@@ -296,7 +300,7 @@ object Window {
             actionBtnFiles = this
         }
 
-        Button(icon = theme.iconTheme.action_file_menu).apply {
+        Button(icon = theme.iconTheme.action_other_menu).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
             isBorderPainted = false
             isOpaque = false
