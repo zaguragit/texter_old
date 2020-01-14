@@ -244,11 +244,7 @@ object Window {
                                     jFrame,
                                     FileChooser.Mode.PICK_FOLDER
                                 ).apply { get() }
-                                chooser.result?.let {
-                                    fileTree.setFolder(it)
-                                    fileTree.isVisible = true
-                                    splitPane.dividerLocation = splitPane.minimumDividerLocation
-                                }
+                                chooser.result?.let { folder = it }
                             }
                         }
                         text = "open folder"
@@ -332,4 +328,17 @@ object Window {
     var title: String
         get() = jFrame.title
         set(value) { jFrame.title = value }
+
+    var folder: String? = null
+        set(value) {
+            field = value
+            if (value == null) {
+                fileTree.isVisible = false
+                splitPane.dividerLocation = splitPane.minimumDividerLocation
+            } else {
+                fileTree.setFolder(value)
+                fileTree.isVisible = true
+                splitPane.dividerLocation = splitPane.minimumDividerLocation
+            }
+        }
 }

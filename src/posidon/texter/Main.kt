@@ -1,10 +1,16 @@
 package posidon.texter
 
 import posidon.texter.backend.Settings
+import java.io.File
 
-fun main() {
+fun main(args: Array<String>) {
     Settings.init()
     Thread(Main()).start()
+    for (string in args) {
+        val file = File(string)
+        if (file.isDirectory) Window.folder = string
+        else Window.openFile(string)
+    }
 }
 class Main : Runnable { override fun run() { Window.init() }}
 
