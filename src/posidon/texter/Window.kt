@@ -12,8 +12,6 @@ import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.event.ActionEvent
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
 import java.io.File
 import javax.swing.*
 import javax.swing.border.Border
@@ -21,7 +19,6 @@ import javax.swing.border.MatteBorder
 import javax.swing.plaf.basic.BasicSplitPaneDivider
 import javax.swing.plaf.basic.BasicSplitPaneUI
 import javax.swing.text.DefaultStyledDocument
-import javax.swing.text.JTextComponent
 import javax.swing.text.SimpleAttributeSet
 import javax.swing.undo.UndoManager
 
@@ -48,6 +45,11 @@ object Window {
             override fun canImport(info: TransferSupport?): Boolean {
                 return info?.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ?: false
             }
+        }
+        iconImages = ArrayList<Image>().apply {
+            add(ImageIcon(Window.javaClass.getResource("/icons/appIcon/128.png")).image)
+            add(ImageIcon(Window.javaClass.getResource("/icons/appIcon/64.png")).image)
+            add(ImageIcon(Window.javaClass.getResource("/icons/appIcon/32.png")).image)
         }
     }
 
