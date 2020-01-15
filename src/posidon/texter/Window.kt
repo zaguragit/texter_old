@@ -192,15 +192,19 @@ object Window {
             document.insertString(0, file.text, SimpleAttributeSet())
             file.colorAll(document)
             document.documentFilter = NewLineFilter()
-            document.addUndoableEditListener { if (undoManager != null) {
-                activeTab?.file?.text = document.getText(0, document.length)
-                activeTab?.file?.save()
-                activeTab?.undoManager?.addEdit(it.edit)
-                val tmp = activeTab
-                activeTab = null
-                activeTab?.file?.colorLine(document, textArea.caretPosition)
-                activeTab = tmp
-            }}
+            document.addUndoableEditListener { edit ->
+                if (activeTab != null) {
+                    activeTab?.file?.let {
+                        it.text = document.getText(0, document.length)
+                        it.save()
+                        val tmp = activeTab
+                        activeTab = null
+                        it.colorLine(document, textArea.caretPosition)
+                        activeTab = tmp
+                    }
+                    activeTab?.undoManager?.addEdit(edit.edit)
+                }
+            }
 
             tabs.add(tab)
             jFrame.validate()

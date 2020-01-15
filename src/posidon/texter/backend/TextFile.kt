@@ -5,7 +5,10 @@ import java.io.*
 import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
+import javax.swing.text.StyleConstants
 import javax.swing.text.StyledDocument
+import javax.swing.text.TabSet
+import javax.swing.text.TabStop
 import kotlin.streams.toList
 
 class TextFile(path: String, private var content: List<String>) : AnyFile(path) {
@@ -13,7 +16,8 @@ class TextFile(path: String, private var content: List<String>) : AnyFile(path) 
     private var syntaxHighlighter: SyntaxHighlighter =
         when (path.split('.').last()) {
             "sh" -> BracketedSyntaxHighlighter("/code/highlighters/shellscript.highlighter")
-            "xml", "iml", "svg", "html" -> XmlSyntaxHighlighter()
+            "xml", "iml", "svg" -> XmlSyntaxHighlighter()
+            "html" -> HtmlSyntaxHighlighter()
             "highlighter" -> HighlighterSyntaxHighlighter()
             "md" -> MarkdownSyntaxHighlighter()
             else -> CustomSyntax.getHighlighter(path.split(File.separator).last())
@@ -24,17 +28,31 @@ class TextFile(path: String, private var content: List<String>) : AnyFile(path) 
         set(value) { content = value.split("\n") }
 
     fun colorLine(doc: StyledDocument, caretI: Int) {
-        val lineI = getLineIndex(caretI)
-        syntaxHighlighter.colorLine(doc, getLineStart(lineI), content[lineI], lineI)
-        if (lineI != content.lastIndex) syntaxHighlighter.colorLine(doc, getLineStart(lineI + 1), content[lineI + 1], lineI + 1)
+        try {
+            val lineI = getLineIndex(caretI)
+            syntaxHighlighter.colorLine(doc, getLineStart(lineI), content[lineI], lineI)
+            if (lineI != content.lastIndex) syntaxHighlighter.colorLine(
+                doc,
+                getLineStart(lineI + 1),
+                content[lineI + 1],
+                lineI + 1
+            )
+        } catch (e: Exception) { e.printStackTrace() }
     }
 
     fun colorAll(doc: StyledDocument) {
-        for (lineI in content.indices) {
-            val lineStart = getLineStart(lineI)
-            doc.setCharacterAttributes(lineStart, content[lineI].length, SyntaxHighlighter.defaultTextStyle(), false)
-            syntaxHighlighter.colorLine(doc, lineStart, content[lineI], lineI)
-        }
+        try {
+            for (lineI in content.indices) {
+                val lineStart = getLineStart(lineI)
+                doc.setCharacterAttributes(
+                    lineStart,
+                    content[lineI].length,
+                    SyntaxHighlighter.defaultTextStyle(),
+                    false
+                )
+                syntaxHighlighter.colorLine(doc, lineStart, content[lineI], lineI)
+            }
+        } catch (e: Exception) { e.printStackTrace() }
     }
 
     private fun getLineStartByCaret(caretI: Int): Int {
