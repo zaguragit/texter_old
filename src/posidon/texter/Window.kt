@@ -25,7 +25,6 @@ import javax.swing.undo.UndoManager
 object Window {
 
     var activeTab: FileTab? = null
-    var undoManager: UndoManager? = null
 
     val jFrame = JFrame(AppInfo.NAME).apply {
         size = Dimension(AppInfo.INIT_WIDTH, AppInfo.INIT_HEIGHT)
@@ -60,18 +59,22 @@ object Window {
         isVisible = false
         actionMap.put("undo", object : AbstractAction("undo") {
             override fun actionPerformed(event: ActionEvent?) {
-                try { if (undoManager != null) undoManager!!.undo() } catch (e: Exception) {}
+                try { activeTab?.undoManager?.undo() } catch (e: Exception) {}
             }
         })
         actionMap.put("redo", object : AbstractAction("redo") {
             override fun actionPerformed(event: ActionEvent?) {
-                try { if (undoManager != null) undoManager!!.redo() } catch (e: Exception) {}
+                try { activeTab?.undoManager?.redo() } catch (e: Exception) {}
             }
         })
         actionMap.put("cut", object : AbstractAction("cut") {
             override fun actionPerformed(event: ActionEvent?) {
                 Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(selectedText), null)
                 replaceSelection("")
+                val tmp = activeTab
+                activeTab = null
+                activeTab?.file?.colorAll(styledDocument)
+                activeTab = tmp
             }
         })
         actionMap.put("copy", object : AbstractAction("copy") {
@@ -82,10 +85,10 @@ object Window {
         actionMap.put("paste", object : AbstractAction("paste") {
             override fun actionPerformed(event: ActionEvent?) {
                 replaceSelection(Tools.getClipboardContents(Toolkit.getDefaultToolkit().systemClipboard))
-                val tmp = undoManager
-                undoManager = null
+                val tmp = activeTab
+                activeTab = null
                 activeTab?.file?.colorAll(styledDocument)
-                undoManager = tmp
+                activeTab = tmp
             }
         })
         inputMap.put(KeyStroke.getKeyStroke("control Z"), "undo")
@@ -129,7 +132,6 @@ object Window {
     val textNumbers = TextLineNumber(textArea, scroll).apply { isVisible = false }
 
     private val fileTree = FileTree(File(".")).apply {
-        //jFrame.add(this, BorderLayout.WEST)
         setLeafDoubleClickListener { openFile(it) }
         isVisible = false
     }
@@ -171,11 +173,11 @@ object Window {
             tabs.background = theme.uiBG
             toolbar.background = theme.uiBG
             fileTree.updateTheme()
-            val tmpUndoManager = undoManager
-            undoManager = null
+            val tmpTab = activeTab
+            activeTab = null
             for (tab in tabs.components)
                 if (tab is FileTab) tab.updateTheme()
-            undoManager = tmpUndoManager
+            activeTab = tmpTab
             actionBtnFiles.icon = theme.iconTheme.action_file_menu
             actionBtnOther.icon = theme.iconTheme.action_other_menu
             textNumbers.background = theme.textAreaNumberBG

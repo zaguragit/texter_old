@@ -38,6 +38,7 @@ object CustomSyntax {
         "@selective-comment",
         "@hex-prefix",
         "@binary-prefix",
-        "@string-sides"
+        "@string-sides",
+        "@num-suffixes"
     )
 }

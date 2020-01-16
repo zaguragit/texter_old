@@ -79,7 +79,6 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
                 if (Window.activeTab == this@FileTab) {
                     Window.activeTab = null
                     Window.textArea.isVisible = false
-                    Window.undoManager = null
                     Window.title = AppInfo.NAME
                     Window.textNumbers.isVisible = false
                 }
@@ -105,10 +104,9 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
                 if (Window.activeTab == null) Window.textArea.isVisible = true
                 else Window.activeTab!!.active = false
                 this@FileTab.active = true
-                Window.activeTab = this@FileTab
-                Window.undoManager = null
+                Window.activeTab = null
                 Window.textArea.styledDocument = document
-                Window.undoManager = undoManager
+                Window.activeTab = this@FileTab
                 Window.title = AppInfo.NAME + " - " + file.name
             }
         })

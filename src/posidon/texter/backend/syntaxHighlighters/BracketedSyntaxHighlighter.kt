@@ -19,10 +19,13 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
     private val values = ArrayList<String>()
     private val lineInfo = ArrayList<LineInfo>()
 
+
+    private var numSuffixes: List<String>? = null
+    private var stringSides: List<String>? = null
+
     private var lineComment: String? = null
     private var startComment: String? = null
     private var endComment: String? = null
-    private var stringSides: List<String>? = null
     private var hexPrefix: String? = null
     private var binPrefix: String? = null
 
@@ -42,6 +45,7 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                     "@hex-prefix" -> hexPrefix = items[1]
                     "@binary-prefix" -> binPrefix = items[1]
                     "@string-sides" -> stringSides = items.subList(1, items.size)
+                    "@num-suffixes" -> numSuffixes = items.subList(1, items.size)
                 }
             } else when {
                 line.startsWith("declarations") -> declarations
@@ -101,20 +105,31 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                             StyleConstants.setForeground(sas, Window.theme.orange)
                             sas
                         }
-                        else -> {
-                            if (hexPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(16) != null) {
+                        else -> when {
+                            hexPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(16) != null -> {
                                 val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Window.theme.light_blue)
                                 sas
-                            } else if (binPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(2) != null) {
+                            }
+                            binPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(2) != null -> {
                                 val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Window.theme.light_blue)
                                 sas
-                            } else if (string.toDoubleOrNull() != null) {
+                            }
+                            else -> {
                                 val sas = defaultTextStyle()
-                                StyleConstants.setForeground(sas, Window.theme.light_blue)
+                                numSuffixes?.forEach normalNum@ { suffix ->
+                                    if (string.toDoubleOrNull() != null) {
+                                        StyleConstants.setForeground(sas, Window.theme.light_blue)
+                                        return@normalNum
+                                    }
+                                    if (string.endsWith(suffix) && string.substring(0, string.length - suffix.length).toDoubleOrNull() != null) {
+                                        StyleConstants.setForeground(sas, Window.theme.light_blue)
+                                        return@normalNum
+                                    }
+                                }
                                 sas
-                            } else defaultTextStyle()
+                            }
                         }
                     }, false)
                     startPos += str.length + 1
