@@ -2,10 +2,10 @@
 @line-comment #
 @selective-comment ''' '''
 @string-sides " '
-declarations -> import class def
-mods -> with
+declarations -> func extends var export
+mods ->
 func_breaks -> return break continue pass
 conditions -> if else elif for while do
-operators -> yield in
-exceptions -> try except finally raise assert
-values -> true false
+operators -> in or and not
+exceptions ->
+values -> true false null

@@ -19,4 +19,6 @@ abstract class SyntaxHighlighter {
             return sas
         }
     }
+
+    protected class LineInfo(var unfinishedMultilineCommentI: Int?, var unstartedMultilineCommentI: Int?, var uncoupledStringSideI: Int?)
 }

@@ -29,8 +29,6 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
     private var hexPrefix: String? = null
     private var binPrefix: String? = null
 
-    private class LineInfo(var unfinishedMultilineCommentI: Int?, var unstartedMultilineCommentI: Int?, var uncoupledStringSideI: Int?)
-
     init {
         val text = BracketedSyntaxHighlighter::class.java.getResource(highligher).readText().split('\n')
         for (line in text) {
@@ -118,16 +116,12 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                             }
                             else -> {
                                 val sas = defaultTextStyle()
-                                numSuffixes?.forEach normalNum@ { suffix ->
-                                    if (string.toDoubleOrNull() != null) {
-                                        StyleConstants.setForeground(sas, Window.theme.light_blue)
-                                        return@normalNum
-                                    }
+                                if (string.toDoubleOrNull() == null) numSuffixes?.forEach normalNum@ { suffix ->
                                     if (string.endsWith(suffix) && string.substring(0, string.length - suffix.length).toDoubleOrNull() != null) {
                                         StyleConstants.setForeground(sas, Window.theme.light_blue)
                                         return@normalNum
                                     }
-                                }
+                                } else StyleConstants.setForeground(sas, Window.theme.light_blue)
                                 sas
                             }
                         }
@@ -226,6 +220,8 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
                     }
                 }
             }
+
+            lineInfo.add(thisLineInfo)
         }
     }
 }

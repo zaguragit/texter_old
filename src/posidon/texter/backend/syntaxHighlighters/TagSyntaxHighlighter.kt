@@ -4,7 +4,6 @@ import posidon.texter.Window
 import javax.swing.text.SimpleAttributeSet
 import javax.swing.text.StyleConstants
 import javax.swing.text.StyledDocument
-import kotlin.math.max
 import kotlin.math.min
 
 class TagSyntaxHighlighter(highlighterScript: String) : SyntaxHighlighter() {
@@ -17,10 +16,12 @@ class TagSyntaxHighlighter(highlighterScript: String) : SyntaxHighlighter() {
         IN_STRING_SINGLE,
         IN_TAG,
         IN_TAG_PARAMS,
-        TEXT
+        TEXT,
+        COMMENT
     }
 
-    private var lineComment: String? = null
+    private val lineInfo = ArrayList<LineInfo>()
+
     private var startComment: String? = null
     private var endComment: String? = null
 
@@ -29,7 +30,6 @@ class TagSyntaxHighlighter(highlighterScript: String) : SyntaxHighlighter() {
             if (line.startsWith('@')) {
                 val items = line.split(' ')
                 when(items[0]) {
-                    "@line-comment" -> lineComment = items[1]
                     "@selective-comment" -> {
                         startComment = items[1]
                         endComment = items[2]
@@ -48,12 +48,21 @@ class TagSyntaxHighlighter(highlighterScript: String) : SyntaxHighlighter() {
             for (i in 0..line.lastIndex) {
                 length++
                 when (line[i]) {
-                    '<' -> if (state == TagState.TEXT) {
-                        state = TagState.IN_TAG
-                        startPos = i + lineStart
-                        length = 1
+                    '<' -> {
+                        if (line[i + 1] == '!' && line[i + 2] == '-' && line[i + 3] == '-') {
+                            state = TagState.COMMENT
+                        } else if (state == TagState.TEXT) {
+                            state = TagState.IN_TAG
+                            startPos = i + lineStart
+                            length = 1
+                        }
                     }
-                    '>' -> if (state == TagState.IN_TAG) {
+                    '>' -> if (state == TagState.COMMENT && line[i - 1] == '-' && line[i - 2] == '-') {
+                        doc.setCharacterAttributes(startPos, length, SimpleAttributeSet().apply {
+                            StyleConstants.setForeground(this, Window.theme.gray)
+                        }, false)
+                        state = TagState.TEXT
+                    } else if (state == TagState.IN_TAG) {
                         doc.setCharacterAttributes(startPos, length, SimpleAttributeSet().apply {
                             StyleConstants.setForeground(this, tagColor)
                         }, false)
@@ -114,6 +123,11 @@ class TagSyntaxHighlighter(highlighterScript: String) : SyntaxHighlighter() {
                     }
                 }
             }
+
+            val thisLineInfo = LineInfo(null, null, null)
+
+            //lineInfo.add(thisLineInfo)
+
             line.indexOf("<!DOCTYPE").let {
                 if (it != -1) {
                     doc.setCharacterAttributes(lineStart + it, line.indexOf('>', it) - it + 1, SimpleAttributeSet().apply {

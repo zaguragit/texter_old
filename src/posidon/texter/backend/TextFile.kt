@@ -14,10 +14,8 @@ import kotlin.streams.toList
 class TextFile(path: String, private var content: List<String>) : AnyFile(path) {
 
     private var syntaxHighlighter: SyntaxHighlighter =
-        when (path.split('.').last()) {
+        when (path.split(File.separator).last().split('.').last()) {
             "sh" -> BracketedSyntaxHighlighter("/code/highlighters/shellscript.highlighter")
-            "xml", "iml", "svg" -> XmlSyntaxHighlighter()
-            "html" -> HtmlSyntaxHighlighter()
             "highlighter" -> HighlighterSyntaxHighlighter()
             "md" -> MarkdownSyntaxHighlighter()
             else -> CustomSyntax.getHighlighter(path.split(File.separator).last())

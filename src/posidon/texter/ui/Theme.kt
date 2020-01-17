@@ -220,7 +220,7 @@ data class IconTheme(
 private object IconThemes {
     val elementary = IconTheme(
         action_file_menu = ImageIcon(Themes.javaClass.getResource("/icons/elementary/actions/file_menu.png")),
-        action_other_menu = ImageIcon(Themes.javaClass.getResource("/icons/elementary/actions/file_menu.png")),
+        action_other_menu = ImageIcon(Themes.javaClass.getResource("/icons/elementary/actions/settings.png")),
         action_back = ImageIcon(Themes.javaClass.getResource("/icons/elementary/actions/back.png")),
         close_tab = ImageIcon(Themes.javaClass.getResource("/icons/elementary/misc/close_tab.png")),
         close_tab_hover = ImageIcon(Themes.javaClass.getResource("/icons/elementary/misc/close_tab.png")),
