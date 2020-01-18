@@ -1,0 +1,13 @@
+@syntax bracketed
+@line-comment //
+@selective-comment /* */
+@hex-prefix 0x
+@binary-prefix 0b
+@string-sides " '
+declarations -> namespace using class this new var
+mods -> public private static const
+func_breaks -> return
+conditions -> if else switch for foreach while
+operators -> as
+exceptions -> try catch
+values -> true false null

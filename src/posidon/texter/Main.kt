@@ -5,14 +5,15 @@ import java.io.File
 
 fun main(args: Array<String>) {
     Settings.init()
-    Thread(Main()).start()
-    for (string in args) {
-        val file = File(string)
-        if (file.isDirectory) Window.folder = string
-        else Window.openFile(string)
-    }
+    Thread(Runnable {
+        Window.init()
+        for (string in args) {
+            val file = File(string)
+            if (file.isDirectory) Window.folder = string
+            else Window.openFile(string)
+        }
+    }).start()
 }
-class Main : Runnable { override fun run() { Window.init() }}
 
 object AppInfo {
     const val NAME = "texter"

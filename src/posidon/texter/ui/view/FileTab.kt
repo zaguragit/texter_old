@@ -26,8 +26,14 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
         set(value) {
             field = value
             if (active) {
+                if (Window.activeTab == null) Window.textArea.isVisible = true
+                else Window.activeTab!!.active = false
                 Window.textNumbers.isVisible = doesShowNumbers()
                 background = Window.theme.uiHighlight
+                Window.activeTab = null
+                Window.textArea.styledDocument = document
+                Window.activeTab = this@FileTab
+                Window.title = AppInfo.NAME + " - " + file.name
             } else {
                 background = Window.theme.uiBG
             }
@@ -100,15 +106,7 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
             override fun mouseEntered(p0: MouseEvent?) {}
             override fun mouseExited(p0: MouseEvent?) {}
             override fun mousePressed(p0: MouseEvent?) {}
-            override fun mouseClicked(p0: MouseEvent?) {
-                if (Window.activeTab == null) Window.textArea.isVisible = true
-                else Window.activeTab!!.active = false
-                this@FileTab.active = true
-                Window.activeTab = null
-                Window.textArea.styledDocument = document
-                Window.activeTab = this@FileTab
-                Window.title = AppInfo.NAME + " - " + file.name
-            }
+            override fun mouseClicked(p0: MouseEvent?) { this@FileTab.active = true }
         })
     }
 }

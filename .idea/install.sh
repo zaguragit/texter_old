@@ -1,0 +1,1 @@
+sudo cp out/artifacts/texter_jar/texter.jar -T /usr/share/posidon.texter/texter.jar

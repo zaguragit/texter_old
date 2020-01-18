@@ -18,9 +18,8 @@ import javax.swing.border.Border
 import javax.swing.border.MatteBorder
 import javax.swing.plaf.basic.BasicSplitPaneDivider
 import javax.swing.plaf.basic.BasicSplitPaneUI
-import javax.swing.text.DefaultStyledDocument
-import javax.swing.text.SimpleAttributeSet
-import javax.swing.undo.UndoManager
+import javax.swing.text.*
+
 
 object Window {
 
@@ -207,8 +206,11 @@ object Window {
                     activeTab?.undoManager?.addEdit(edit.edit)
                 }
             }
-
             tabs.add(tab)
+            activeTab?.active = false
+            tab.active = true
+            activeTab = tab
+            setTabs(textArea, 4)
             jFrame.validate()
         }
     }
@@ -319,8 +321,23 @@ object Window {
         updateTheme(Settings.getString(Settings.THEME))
     }
 
+    fun setTabs(textPane: JTextPane, charactersPerTab: Int) {
+        val fm = textPane.getFontMetrics(textPane.font)
+        val charWidth = fm.charWidth(' ')
+        val tabWidth = charWidth * charactersPerTab
+        val tabs = arrayOfNulls<TabStop>(5)
+        for (j in tabs.indices) {
+            val tab = j + 1
+            tabs[j] = TabStop((tab * tabWidth).toFloat())
+        }
+        val tabSet = TabSet(tabs)
+        val attributes = SimpleAttributeSet()
+        StyleConstants.setTabSet(attributes, tabSet)
+        val length = textPane.document.length
+        textPane.styledDocument.setParagraphAttributes(0, length, attributes, false)
+    }
+
     fun updateTheme(name: String?) {
-        println(name)
         theme = when (name) {
             "elementary" -> Themes.elementary
             "midnight" -> Themes.midnight
