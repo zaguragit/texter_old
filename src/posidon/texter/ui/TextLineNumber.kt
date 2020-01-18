@@ -20,7 +20,7 @@ import javax.swing.text.StyleConstants
 import javax.swing.text.Utilities
 import kotlin.math.max
 
-class TextLineNumber @JvmOverloads constructor(
+class TextLineNumber(
     private val component: JTextComponent,
     private val scrollPane: JScrollPane,
     minimumDisplayDigits: Int = 3
@@ -134,6 +134,7 @@ class TextLineNumber @JvmOverloads constructor(
      */
     public override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
+        if (g is Graphics2D) g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         //	Determine the width of the space available to draw the line number
         val fontMetrics = component.getFontMetrics(component.font)
         val insets = insets
@@ -289,10 +290,10 @@ class TextLineNumber @JvmOverloads constructor(
     }
 
     var sideBorder: Border? = null
-    set(value) {
-        field = value
-        borderGap = borderGap
-    }
+        set(value) {
+            field = value
+            borderGap = borderGap
+        }
 
     init {
         font = component.font

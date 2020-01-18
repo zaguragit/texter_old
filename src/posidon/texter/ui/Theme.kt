@@ -201,7 +201,7 @@ object Themes {
 
 data class IconTheme(
     val action_file_menu: ImageIcon = ImageIcon(Themes.javaClass.getResource("/icons/posidon/actions/file_menu.png")),
-    val action_other_menu: ImageIcon = ImageIcon(Themes.javaClass.getResource("/icons/posidon/actions/file_menu.png")),
+    val action_other_menu: ImageIcon = ImageIcon(Themes.javaClass.getResource("/icons/posidon/actions/settings.png")),
     val action_back: ImageIcon = ImageIcon(Themes.javaClass.getResource("/icons/posidon/actions/back.png")),
     val close_tab: ImageIcon = ImageIcon(Themes.javaClass.getResource("/icons/posidon/misc/close_tab.png")),
     val close_tab_hover: ImageIcon = ImageIcon(Themes.javaClass.getResource("/icons/posidon/misc/close_tab_hover.png")),
@@ -237,7 +237,7 @@ private object IconThemes {
     )
     val material = IconTheme(
         action_file_menu = ImageIcon(Themes.javaClass.getResource("/icons/material/actions/file_menu.png")),
-        action_other_menu = ImageIcon(Themes.javaClass.getResource("/icons/material/actions/file_menu.png")),
+        action_other_menu = ImageIcon(Themes.javaClass.getResource("/icons/material/actions/settings.png")),
         action_back = ImageIcon(Themes.javaClass.getResource("/icons/material/actions/back.png")),
         close_tab = ImageIcon(Themes.javaClass.getResource("/icons/material/misc/close_tab.png")),
         close_tab_hover = ImageIcon(Themes.javaClass.getResource("/icons/material/misc/close_tab_hover.png")),
@@ -254,7 +254,7 @@ private object IconThemes {
     )
     val ubuntu = IconTheme(
         action_file_menu = ImageIcon(Themes.javaClass.getResource("/icons/ubuntu/actions/file_menu.png")),
-        action_other_menu = ImageIcon(Themes.javaClass.getResource("/icons/ubuntu/actions/file_menu.png")),
+        action_other_menu = ImageIcon(Themes.javaClass.getResource("/icons/ubuntu/actions/settings.png")),
         action_back = ImageIcon(Themes.javaClass.getResource("/icons/ubuntu/actions/back.png")),
         close_tab = ImageIcon(Themes.javaClass.getResource("/icons/ubuntu/misc/close_tab.png")),
         close_tab_hover = ImageIcon(Themes.javaClass.getResource("/icons/ubuntu/misc/close_tab_hover.png")),

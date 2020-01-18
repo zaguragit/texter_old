@@ -1,6 +1,6 @@
 package posidon.texter
 
-import posidon.texter.backend.NewLineFilter
+import posidon.texter.backend.TextFilter
 import posidon.texter.backend.Settings
 import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
@@ -34,7 +34,10 @@ object Window {
             override fun importData(info: TransferSupport?): Boolean {
                 if (info != null && info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) try {
                     val data = info.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
-                    for (file in data) openFile(file.path)
+                    for (file in data) {
+                        if (file.isDirectory) folder = file.path
+                        else openFile(file.path)
+                    }
                     return true
                 } catch (ignore: Exception) {}
                 return false
@@ -181,7 +184,7 @@ object Window {
             actionBtnOther.icon = theme.iconTheme.action_other_menu
             textNumbers.background = theme.textAreaNumberBG
             textNumbers.foreground = theme.textAreaNumberFG
-            textNumbers.sideBorder = MatteBorder(0, 0, 0, 2, theme.uiHighlight)
+            textNumbers.sideBorder = MatteBorder(0, 0, 0, 1, theme.uiHighlight)
             textNumbers.currentLineForeground = theme.textAreaCaret
         }
 
@@ -196,7 +199,7 @@ object Window {
             val tab = FileTab(file.name, file.icon, file, document)
             document.insertString(0, file.text, SimpleAttributeSet())
             file.colorAll(document)
-            document.documentFilter = NewLineFilter()
+            document.documentFilter = TextFilter()
             document.addUndoableEditListener { edit ->
                 if (activeTab != null) {
                     activeTab?.file?.let {

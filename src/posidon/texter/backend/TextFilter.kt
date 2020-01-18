@@ -2,7 +2,7 @@ package posidon.texter.backend
 
 import javax.swing.text.*
 
-class NewLineFilter : DocumentFilter() {
+class TextFilter : DocumentFilter() {
 
     override fun insertString(fb: FilterBypass, offset: Int, string: String, a: AttributeSet?) {
         var str = string
