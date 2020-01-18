@@ -7,7 +7,7 @@ import javax.swing.text.StyledDocument
 import kotlin.math.max
 import kotlin.math.min
 
-class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
+class BracketedSyntaxHighlighter(highligherScript: String) : SyntaxHighlighter() {
 
     private val declarations = ArrayList<String>()
     private val mods = ArrayList<String>()
@@ -30,7 +30,7 @@ class BracketedSyntaxHighlighter(highligher: String) : SyntaxHighlighter() {
     private var binPrefix: String? = null
 
     init {
-        val text = BracketedSyntaxHighlighter::class.java.getResource(highligher).readText().split('\n')
+        val text = highligherScript.split('\n')
         for (line in text) {
             val items = line.split(' ')
             if (line.startsWith('@')) {

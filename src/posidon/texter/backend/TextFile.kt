@@ -15,7 +15,6 @@ class TextFile(path: String, private var content: List<String>) : AnyFile(path) 
 
     private var syntaxHighlighter: SyntaxHighlighter =
         when (path.split(File.separator).last().split('.').last()) {
-            "sh" -> BracketedSyntaxHighlighter("/code/highlighters/shellscript.highlighter")
             "highlighter" -> HighlighterSyntaxHighlighter()
             "md" -> MarkdownSyntaxHighlighter()
             else -> CustomSyntax.getHighlighter(path.split(File.separator).last())

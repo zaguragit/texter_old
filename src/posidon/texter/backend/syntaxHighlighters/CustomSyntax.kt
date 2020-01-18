@@ -26,13 +26,13 @@ object CustomSyntax {
                 }
             }
             return when(syntax) {
-                Syntax.BRACKETED -> BracketedSyntaxHighlighter(pathToHighlighter)
-                Syntax.INDENTED -> BracketedSyntaxHighlighter(pathToHighlighter)
+                Syntax.BRACKETED -> BracketedSyntaxHighlighter(it)
+                Syntax.INDENTED -> BracketedSyntaxHighlighter(it)
                 Syntax.TAGGED -> TagSyntaxHighlighter(it)
-                else -> BracketedSyntaxHighlighter(pathToHighlighter)
+                else -> DefaultSyntaxHighlighter()
             }
         }
-        return BracketedSyntaxHighlighter(pathToHighlighter)
+        return DefaultSyntaxHighlighter()
     }
 
     enum class Syntax {
