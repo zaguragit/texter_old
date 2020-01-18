@@ -2,7 +2,9 @@
 @selective-comment /* */
 @hex-prefix #
 @num-suffixes % px s
-declarations -> body h1 h2 h3 h4 h5 h6 a p button textarea code li ul table tr th img div
+@separators =,.;:-+*/()[]{}&|!
+declarations -> @import @keyframes
 mods -> :hover :active :focus :link :disabled :enabled :checked :selection :lang :first-child :last-child :only-child :first-of-type :last-of-type :only-of-type :empty :root :target ::before ::after ::first-letter ::first-line ::selection
-operators -> rgb rgba
+operators -> rgb rgba url
 values -> none auto transparent inherit
+//body h1 h2 h3 h4 h5 h6 a p button textarea code li ul table tr th img div

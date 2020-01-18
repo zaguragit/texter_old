@@ -2,6 +2,7 @@
 @line-comment #
 @selective-comment ''' '''
 @string-sides " '
+@separators =,.;:-+*/()[]{}&|!
 declarations -> import class def
 mods -> with
 func_breaks -> return break continue pass

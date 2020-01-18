@@ -7,116 +7,67 @@ import javax.swing.text.StyledDocument
 import kotlin.math.max
 import kotlin.math.min
 
-class BracketedSyntaxHighlighter(highligherScript: String) : SyntaxHighlighter() {
+class BracketedSyntaxHighlighter(private val highlighter: Highlighter) : SyntaxHighlighter() {
 
-    private val declarations = ArrayList<String>()
-    private val mods = ArrayList<String>()
-    private val funcBreaks = ArrayList<String>()
-    private val conditions = ArrayList<String>()
-    private val operators = ArrayList<String>()
-    private val exceptions = ArrayList<String>()
-    private val undefined = ArrayList<String>()
-    private val values = ArrayList<String>()
     private val lineInfo = ArrayList<LineInfo>()
-
-
-    private var numSuffixes: List<String>? = null
-    private var stringSides: List<String>? = null
-
-    private var lineComment: String? = null
-    private var startComment: String? = null
-    private var endComment: String? = null
-    private var hexPrefix: String? = null
-    private var binPrefix: String? = null
-
-    init {
-        val text = highligherScript.split('\n')
-        for (line in text) {
-            val items = line.split(' ')
-            if (line.startsWith('@')) {
-                when(items[0]) {
-                    "@line-comment" -> lineComment = items[1]
-                    "@selective-comment" -> {
-                        startComment = items[1]
-                        endComment = items[2]
-                    }
-                    "@hex-prefix" -> hexPrefix = items[1]
-                    "@binary-prefix" -> binPrefix = items[1]
-                    "@string-sides" -> stringSides = items.subList(1, items.size)
-                    "@num-suffixes" -> numSuffixes = items.subList(1, items.size)
-                }
-            } else when {
-                line.startsWith("declarations") -> declarations
-                line.startsWith("mods") -> mods
-                line.startsWith("func_breaks") -> funcBreaks
-                line.startsWith("conditions") -> conditions
-                line.startsWith("operators") -> operators
-                line.startsWith("exceptions") -> exceptions
-                line.startsWith("values") -> values
-                else -> undefined
-            }.addAll(items.subList(2, items.size))
-        }
-    }
-
-    private val separators = " \t=,.;:-+*/()[]{}&|!"
 
     override fun colorLine(doc: StyledDocument, lineStart: Int, line: String, lineI: Int) {
         if (line.isNotEmpty()) {
             var startPos = lineStart
             val str = StringBuilder()
             for (i in 0..line.length) {
-                if (i == line.length || separators.contains(line[i])) {
+                if (i == line.length || line[i] == ' ' || line[i] == '\t' || highlighter.separators.contains(line[i])) {
                     val string = str.toString()
                     doc.setCharacterAttributes(startPos, max(str.length, 1), when (string) {
-                        in declarations -> {
+                        in highlighter.declarations -> {
                             val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Window.theme.orange)
                             sas
                         }
-                        in mods -> {
+                        in highlighter.mods -> {
                             val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Window.theme.purple)
                             sas
                         }
-                        in funcBreaks -> {
+                        in highlighter.funcBreaks -> {
                             val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Window.theme.orange)
                             sas
                         }
-                        in conditions -> {
+                        in highlighter.conditions -> {
                             val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Window.theme.orange)
                             sas
                         }
-                        in operators -> {
+                        in highlighter.operators -> {
                             val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Window.theme.cyan)
                             sas
                         }
-                        in exceptions -> {
+                        in highlighter.exceptions -> {
                             val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Window.theme.coral)
                             sas
                         }
-                        in values -> {
+                        in highlighter.values -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Window.theme.orange)
+                            StyleConstants.setForeground(sas, Window.theme.light_blue)
                             sas
                         }
                         else -> when {
-                            hexPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(16) != null -> {
+                            highlighter.hexPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(16) != null -> {
                                 val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Window.theme.light_blue)
                                 sas
                             }
-                            binPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(2) != null -> {
+                            highlighter.binPrefix?.let { string.startsWith(it) } == true && string.substring(2).toIntOrNull(2) != null -> {
                                 val sas = defaultTextStyle()
                                 StyleConstants.setForeground(sas, Window.theme.light_blue)
                                 sas
                             }
                             else -> {
                                 val sas = defaultTextStyle()
-                                if (string.toDoubleOrNull() == null) numSuffixes?.forEach normalNum@ { suffix ->
+                                if (string.toDoubleOrNull() == null) highlighter.numSuffixes?.forEach normalNum@ { suffix ->
                                     if (string.endsWith(suffix) && string.substring(0, string.length - suffix.length).toDoubleOrNull() != null) {
                                         StyleConstants.setForeground(sas, Window.theme.light_blue)
                                         return@normalNum
@@ -133,8 +84,8 @@ class BracketedSyntaxHighlighter(highligherScript: String) : SyntaxHighlighter()
 
             val thisLineInfo = LineInfo(null, null, null)
 
-            if (stringSides != null) {
-                val stringSides = stringSides!!
+            if (highlighter.stringSides != null) {
+                val stringSides = highlighter.stringSides!!
                 for (stringSide in stringSides) {
                     var stringStart = line.indexOf(stringSide)
                     var stringEnd: Int
@@ -155,10 +106,10 @@ class BracketedSyntaxHighlighter(highligherScript: String) : SyntaxHighlighter()
                 }
             }
 
-            if (lineComment != null && startComment != null && endComment != null) {
-                val lineComment = lineComment!!
-                val startComment = startComment!!
-                val endComment = endComment!!
+            if (highlighter.lineComment != null && highlighter.startComment != null && highlighter.endComment != null) {
+                val lineComment = highlighter.lineComment!!
+                val startComment = highlighter.startComment!!
+                val endComment = highlighter.endComment!!
                 val lastICommentStart = line.lastIndexOf(startComment)
                 if (lastICommentStart > line.lastIndexOf(endComment)) thisLineInfo.unfinishedMultilineCommentI = lastICommentStart
                 if (line.length >= min(lineComment.length, min(startComment.length, endComment.length))) {

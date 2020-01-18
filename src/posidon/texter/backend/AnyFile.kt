@@ -3,7 +3,7 @@ package posidon.texter.backend
 import posidon.texter.Window
 import javax.swing.ImageIcon
 
-abstract class AnyFile(protected val path: String) {
+abstract class AnyFile(val path: String) {
 
     val icon: ImageIcon
         get() = getIcon(path)

@@ -1,10 +1,11 @@
 @syntax indent
 @line-comment #
 @string-sides " '
+@separators =,-+*/|
 declarations ->
-mods ->
+mods -> sudo
 func_breaks ->
 conditions -> if else
-operators ->
+operators -> cd ls cp rm mkdir
 exceptions ->
 values -> true false null

@@ -4,6 +4,7 @@
 @hex-prefix 0x
 @binary-prefix 0b
 @string-sides " '
+@separators =,.;:-+*/()[]{}&|!
 declarations -> namespace using class this new var
 mods -> public private static const
 func_breaks -> return

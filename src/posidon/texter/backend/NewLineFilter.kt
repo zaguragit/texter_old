@@ -28,6 +28,6 @@ class NewLineFilter : DocumentFilter() {
                 i++
             } else break
         }
-        return whiteSpace.toString().replace("        ", "\t")
+        return whiteSpace.toString().replace("    ", "\t")
     }
 }

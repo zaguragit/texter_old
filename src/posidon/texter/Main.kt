@@ -1,9 +1,11 @@
 package posidon.texter
 
+import posidon.texter.backend.InstanceManager
 import posidon.texter.backend.Settings
 import java.io.File
 
 fun main(args: Array<String>) {
+    InstanceManager.start(args)
     Settings.init()
     Thread(Runnable {
         Window.init()

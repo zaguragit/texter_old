@@ -11,44 +11,14 @@ object CustomSyntax {
         pathToHighlighter = "/code/highlighters/${extension}.highlighter"
         text = CustomSyntax::class.java.getResource(pathToHighlighter)?.readText()
         text?.let {
-            val lines = it.split('\n')
-            var syntax = Syntax.DEFAULT
-            for (line in lines) {
-                if (line.startsWith('@')) {
-                    val tokens = line.split(' ')
-                    if (tokens[0] == "@syntax")
-                        syntax = when(tokens[1]) {
-                            "bracket", "bracketed" -> Syntax.BRACKETED
-                            "indent", "indented" -> Syntax.INDENTED
-                            "tag", "tagged" -> Syntax.TAGGED
-                            else -> Syntax.DEFAULT
-                        }
-                }
-            }
-            return when(syntax) {
-                Syntax.BRACKETED -> BracketedSyntaxHighlighter(it)
-                Syntax.INDENTED -> BracketedSyntaxHighlighter(it)
-                Syntax.TAGGED -> TagSyntaxHighlighter(it)
+            val highlighter = Highlighter(it)
+            return when(highlighter.syntax) {
+                Highlighter.Syntax.BRACKETED -> BracketedSyntaxHighlighter(highlighter)
+                Highlighter.Syntax.INDENTED -> BracketedSyntaxHighlighter(highlighter)
+                Highlighter.Syntax.TAGGED -> TagSyntaxHighlighter(highlighter)
                 else -> DefaultSyntaxHighlighter()
             }
         }
         return DefaultSyntaxHighlighter()
     }
-
-    enum class Syntax {
-        BRACKETED,
-        INDENTED,
-        TAGGED,
-        DEFAULT
-    }
-
-    val HIGHLIGHTER_FLAGS = arrayListOf(
-        "@syntax",
-        "@line-comment",
-        "@selective-comment",
-        "@hex-prefix",
-        "@binary-prefix",
-        "@string-sides",
-        "@num-suffixes"
-    )
 }

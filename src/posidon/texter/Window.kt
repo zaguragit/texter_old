@@ -186,6 +186,10 @@ object Window {
         }
 
     fun openFile(path: String) {
+        for (tab in tabs.components) if (tab is FileTab && tab.file.path == path) {
+            tab.active = true
+            return
+        }
         val file = TextFile.open(path)
         if (file != null) {
             val document = DefaultStyledDocument()

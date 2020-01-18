@@ -6,7 +6,7 @@ import javax.swing.text.StyleConstants
 import javax.swing.text.StyledDocument
 import kotlin.math.min
 
-class TagSyntaxHighlighter(highlighterScript: String) : SyntaxHighlighter() {
+class TagSyntaxHighlighter(val highlighter: Highlighter) : SyntaxHighlighter() {
 
     val tagColor = Window.theme.light_blue
     val tagParamsColor = Window.theme.yellow
@@ -21,23 +21,6 @@ class TagSyntaxHighlighter(highlighterScript: String) : SyntaxHighlighter() {
     }
 
     private val lineInfo = ArrayList<LineInfo>()
-
-    private var startComment: String? = null
-    private var endComment: String? = null
-
-    init {
-        for (line in highlighterScript.split('\n')) {
-            if (line.startsWith('@')) {
-                val items = line.split(' ')
-                when(items[0]) {
-                    "@selective-comment" -> {
-                        startComment = items[1]
-                        endComment = items[2]
-                    }
-                }
-            }
-        }
-    }
 
     override fun colorLine(doc: StyledDocument, lineStart: Int, line: String, lineI: Int) {
         doc.setCharacterAttributes(lineStart, line.length, defaultTextStyle(), false)

@@ -2,6 +2,7 @@
 @line-comment #
 @selective-comment ''' '''
 @string-sides " '
+@separators =,.;:-+*/()[]{}&|!
 declarations -> func extends var export
 mods ->
 func_breaks -> return break continue pass
