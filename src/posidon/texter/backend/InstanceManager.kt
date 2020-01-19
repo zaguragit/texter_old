@@ -23,10 +23,13 @@ object InstanceManager {
                 while (running) {
                     val input = ObjectInputStream(socket.accept().getInputStream())
                     val arguments = input.readObject()
-                    if (arguments is Array<*>) for (string in arguments) if (string is String) {
-                        val file = File(string)
-                        if (file.isDirectory) Window.folder = string
-                        else Window.openFile(string)
+                    if (arguments is Array<*>) {
+                        Window.bringToFront()
+                        for (string in arguments) if (string is String) {
+                            val file = File(string)
+                            if (file.isDirectory) Window.folder = string
+                            else Window.openFile(string)
+                        }
                     }
                     input.close()
                 }

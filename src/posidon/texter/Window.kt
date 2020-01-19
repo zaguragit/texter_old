@@ -355,6 +355,12 @@ object Window {
         }
     }
 
+    fun bringToFront() {
+        jFrame.isAlwaysOnTop = true
+        jFrame.isAlwaysOnTop = false
+        jFrame.requestFocus()
+    }
+
     var title: String
         get() = jFrame.title
         set(value) { jFrame.title = value }
