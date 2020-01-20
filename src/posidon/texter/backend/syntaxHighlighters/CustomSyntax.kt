@@ -2,6 +2,9 @@ package posidon.texter.backend.syntaxHighlighters
 
 object CustomSyntax {
     fun getHighlighter(fileName: String): SyntaxHighlighter {
+        when {
+            fileName.equals("makefile", true) -> return MakefileSyntaxHighlighter()
+        }
         var extension = fileName.split(".").last()
         var pathToHighlighter = "/code/highlighters/${extension}.highlighter"
         var text = CustomSyntax::class.java.getResource(pathToHighlighter)?.readText()
