@@ -59,14 +59,17 @@ object Window {
         isEditable = true
         border = BorderFactory.createEmptyBorder(12, 12, 12, 12)
         isVisible = false
+        isOpaque = false
         actionMap.put("undo", object : AbstractAction("undo") {
             override fun actionPerformed(event: ActionEvent?) {
                 try { activeTab?.undoManager?.undo() } catch (e: Exception) {}
+                activeTab?.file?.save()
             }
         })
         actionMap.put("redo", object : AbstractAction("redo") {
             override fun actionPerformed(event: ActionEvent?) {
                 try { activeTab?.undoManager?.redo() } catch (e: Exception) {}
+                activeTab?.file?.save()
             }
         })
         actionMap.put("cut", object : AbstractAction("cut") {
@@ -123,7 +126,6 @@ object Window {
 
     private val scroll = JScrollPane(JPanel(BorderLayout()).apply { add(textArea); isOpaque = false }).apply {
         border = null
-        isOpaque = false
         viewport.isOpaque = false
         verticalScrollBar.unitIncrement = 10
         horizontalScrollBar.unitIncrement = 10
@@ -165,13 +167,13 @@ object Window {
             field = value
             textArea.foreground = theme.textAreaFG
             textArea.caretColor = theme.textAreaCaret
-            textArea.background = theme.textAreaBG
             textArea.selectionColor = theme.textSelectionBG
             textArea.selectedTextColor = null
-            jFrame.background = theme.windowBG
-            jFrame.contentPane.background = theme.windowBG
             scroll.verticalScrollBar.setUI(MinimalScrollBarUI())
             scroll.horizontalScrollBar.setUI(MinimalScrollBarUI())
+            scroll.background = theme.textAreaBG
+            jFrame.background = theme.windowBG
+            jFrame.contentPane.background = theme.windowBG
             tabs.background = theme.uiBG
             toolbar.background = theme.uiBG
             fileTree.updateTheme()

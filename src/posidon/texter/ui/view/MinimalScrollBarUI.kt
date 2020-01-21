@@ -11,7 +11,7 @@ import javax.swing.plaf.basic.BasicScrollBarUI
 class MinimalScrollBarUI : BasicScrollBarUI() {
 
     override fun configureScrollBarColors() {
-        thumbColor = Window.theme.uiHighlight
+        thumbColor = Window.theme.scrollBarFG
         scrollBarWidth = 5
     }
 
