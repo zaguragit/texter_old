@@ -124,11 +124,12 @@ object Window {
         jFrame.add(this, BorderLayout.NORTH)
     }
 
-    private val scroll = JScrollPane(JPanel(BorderLayout()).apply { add(textArea); isOpaque = false }).apply {
+    private val scroll = JScrollPane(JPanel().apply { add(textArea); isOpaque = false }).apply {
         border = null
         viewport.isOpaque = false
         verticalScrollBar.unitIncrement = 10
         horizontalScrollBar.unitIncrement = 10
+        isWheelScrollingEnabled = true
         verticalScrollBar.isOpaque = false
         horizontalScrollBar.isOpaque = false
     }
@@ -169,8 +170,8 @@ object Window {
             textArea.caretColor = theme.textAreaCaret
             textArea.selectionColor = theme.textSelectionBG
             textArea.selectedTextColor = null
-            scroll.verticalScrollBar.setUI(MinimalScrollBarUI())
-            scroll.horizontalScrollBar.setUI(MinimalScrollBarUI())
+            scroll.verticalScrollBar.setUI(ScrollBarUI())
+            scroll.horizontalScrollBar.setUI(ScrollBarUI())
             scroll.background = theme.textAreaBG
             jFrame.background = theme.windowBG
             jFrame.contentPane.background = theme.windowBG

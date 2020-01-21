@@ -67,8 +67,8 @@ class FileTree(dir: File) : JPanel() {
         renderer.textNonSelectionColor = Window.theme.text
         renderer.closedIcon = Window.theme.iconTheme.folder
         renderer.openIcon = Window.theme.iconTheme.folder_open
-        scrollPane.verticalScrollBar?.setUI(MinimalScrollBarUI())
-        scrollPane.horizontalScrollBar?.setUI(MinimalScrollBarUI())
+        scrollPane.verticalScrollBar?.setUI(ScrollBarUI())
+        scrollPane.horizontalScrollBar?.setUI(ScrollBarUI())
     }
 
     override fun setBackground(bg: Color?) {

@@ -9,10 +9,10 @@ import javax.swing.plaf.basic.BasicScrollBarUI
 
 
 class ScrollBarUI : BasicScrollBarUI() {
+
     override fun configureScrollBarColors() {
-        this.thumbColor = Window.theme.scrollBarFG
-        this.trackColor = Window.theme.scrollBarBG
-        this.scrollBarWidth = 10
+        thumbColor = Window.theme.scrollBarFG
+        scrollBarWidth = 5
     }
 
     override fun installComponents() {
@@ -25,9 +25,11 @@ class ScrollBarUI : BasicScrollBarUI() {
         if (!thumbBounds.isEmpty && scrollbar.isEnabled) {
             g.translate(thumbBounds.x, thumbBounds.y)
             g.color = thumbColor
-            g.fillRect(0, 0, thumbBounds.width - 1, thumbBounds.height - 1)
+            g.fillRect(0, 0, thumbBounds.width, thumbBounds.height)
         }
     }
+
+    override fun paintTrack(g: Graphics?, c: JComponent?, bounds: Rectangle?) {}
 
     private fun createZeroButton(): JButton? {
         val button = JButton()
