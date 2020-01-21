@@ -7,6 +7,7 @@ import posidon.texter.ui.Constants
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Insets
+import java.awt.Point
 import java.awt.event.MouseEvent
 import java.awt.event.MouseListener
 import javax.swing.*
@@ -18,6 +19,9 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
     private val labelView: JLabel
     private val iconView: JButton
     private val closeTabBtn: JButton
+    private var caretPos = 0
+    private var scrollPosition = Point(0, 0)
+
     private fun doesShowNumbers() = file.extension != "md"
 
     val undoManager = UndoManager()
@@ -32,9 +36,13 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, val document: 
                 background = Window.theme.uiHighlight
                 Window.activeTab = null
                 Window.textArea.styledDocument = document
+                Window.textArea.caretPosition = caretPos
+                Window.scroll.viewport.viewPosition = scrollPosition
                 Window.activeTab = this@FileTab
                 Window.title = AppInfo.NAME + " - " + file.name
             } else {
+                scrollPosition = Window.scroll.viewport.viewPosition
+                caretPos = Window.textArea.caretPosition
                 background = Window.theme.uiBG
             }
         }

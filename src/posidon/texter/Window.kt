@@ -128,7 +128,7 @@ object Window {
         jFrame.add(this, BorderLayout.NORTH)
     }
 
-    private val scroll = JScrollPane(JPanel().apply { add(textArea); isOpaque = false }).apply {
+    val scroll = JScrollPane(JPanel().apply { add(textArea); isOpaque = false }).apply {
         border = null
         viewport.isOpaque = false
         verticalScrollBar.unitIncrement = 10
