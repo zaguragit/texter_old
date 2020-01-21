@@ -19,6 +19,7 @@ import javax.swing.border.MatteBorder
 import javax.swing.plaf.basic.BasicSplitPaneDivider
 import javax.swing.plaf.basic.BasicSplitPaneUI
 import javax.swing.text.*
+import kotlin.math.max
 
 
 object Window {
@@ -78,7 +79,7 @@ object Window {
                 replaceSelection("")
                 val tmp = activeTab
                 activeTab = null
-                activeTab?.file?.colorAll(styledDocument)
+                tmp?.file?.colorAll(styledDocument)
                 activeTab = tmp
             }
         })
@@ -89,10 +90,13 @@ object Window {
         })
         actionMap.put("paste", object : AbstractAction("paste") {
             override fun actionPerformed(event: ActionEvent?) {
-                replaceSelection(Tools.getClipboardContents(Toolkit.getDefaultToolkit().systemClipboard))
+                val content = Tools.getClipboardContents(Toolkit.getDefaultToolkit().systemClipboard)
+                replaceSelection(content)
                 val tmp = activeTab
                 activeTab = null
-                activeTab?.file?.colorAll(styledDocument)
+                tmp?.file?.colorAll(styledDocument)
+                //val stuffToColor = max(content?.split('\n')?.size, selectionEnd)
+                //for (i 0..stuffToColor) tmp?.file?.colorLine(styledDocument, i)
                 activeTab = tmp
             }
         })

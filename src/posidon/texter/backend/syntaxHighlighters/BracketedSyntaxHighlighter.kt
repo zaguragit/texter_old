@@ -13,6 +13,7 @@ class BracketedSyntaxHighlighter(private val highlighter: Highlighter) : SyntaxH
 
     override fun colorLine(doc: StyledDocument, lineStart: Int, line: String, lineI: Int) {
         if (line.isNotEmpty()) {
+            doc.setCharacterAttributes(lineStart, line.length, defaultTextStyle(), false)
             var startPos = lineStart
             val str = StringBuilder()
             for (i in 0..line.length) {

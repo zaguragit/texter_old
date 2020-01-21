@@ -23,8 +23,8 @@ class TagSyntaxHighlighter(val highlighter: Highlighter) : SyntaxHighlighter() {
     private val lineInfo = ArrayList<LineInfo>()
 
     override fun colorLine(doc: StyledDocument, lineStart: Int, line: String, lineI: Int) {
-        doc.setCharacterAttributes(lineStart, line.length, defaultTextStyle(), false)
         if (line.isNotEmpty()) {
+            doc.setCharacterAttributes(lineStart, line.length, defaultTextStyle(), false)
             var startPos = lineStart
             var state = TagState.TEXT
             var length = 0
