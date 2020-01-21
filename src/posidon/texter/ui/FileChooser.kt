@@ -1,11 +1,13 @@
 package posidon.texter.ui
 
 import posidon.texter.Window
+import posidon.texter.backend.TextFile
 import posidon.texter.ui.view.Button
 import posidon.texter.ui.view.FileTree
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Insets
+import java.awt.TextArea
 import java.io.File
 import javax.swing.*
 import javax.swing.tree.DefaultMutableTreeNode
@@ -40,12 +42,6 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
                     background = Window.theme.windowBG
                     addSelectionListener {
                         when (mode) {
-                            Mode.PICK_FOLDER -> {
-                                if ((it.path.lastPathComponent as DefaultMutableTreeNode).allowsChildren) {
-                                    selectBtn.isEnabled = true
-                                    selection = it.path.path.joinToString(File.separator)
-                                } else selectBtn.isEnabled = false
-                            }
                             Mode.PICK_FILE -> {
                                 if ((it.path.lastPathComponent as DefaultMutableTreeNode).allowsChildren) selectBtn.isEnabled = false
                                 else {
@@ -53,7 +49,12 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
                                     selection = it.path.path.joinToString(File.separator)
                                 }
                             }
-                            Mode.CREATE_FILE -> {}
+                            else -> {
+                                if ((it.path.lastPathComponent as DefaultMutableTreeNode).allowsChildren) {
+                                    selectBtn.isEnabled = true
+                                    selection = it.path.path.joinToString(File.separator)
+                                } else selectBtn.isEnabled = false
+                            }
                         }
                     }
                     setLeafDoubleClickListener {
@@ -68,7 +69,26 @@ class FileChooser(private val jFrame: JFrame, private val mode: Mode) {
                     margin = Insets(0, 0, 0, 0)
                     isFloatable = true
                     background = Window.theme.uiBG
-                    add(Button("Select").apply {
+                    if (mode == Mode.CREATE_FILE) {
+                        val textField = JTextField().apply {
+                            border = BorderFactory.createCompoundBorder(
+                                BorderFactory.createLineBorder(Window.theme.uiBG, 6, false),
+                                BorderFactory.createEmptyBorder(8, 10, 8, 10))
+                            background = Window.theme.textAreaBG
+                            foreground = Window.theme.textAreaFG
+                            caretColor = Window.theme.textAreaCaret
+                        }
+                        add(textField)
+                        add(Button("Create").apply {
+                            selectBtn = this
+                            isEnabled = false
+                            addActionListener {
+                                result = selection + File.separator + textField.text
+                                TextFile.new(result!!)
+                                d.dispose()
+                            }
+                        })
+                    } else add(Button("Select").apply {
                         selectBtn = this
                         isEnabled = false
                         addActionListener {

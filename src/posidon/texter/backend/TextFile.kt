@@ -101,9 +101,9 @@ class TextFile(path: String, private var content: List<String>) : AnyFile(path) 
 
         fun new(path: String): TextFile? {
             try {
-                val content = getText("code/templates/" + path.split('/').last().split('.').last() + ".txt").split('\n')
-                Files.write(File(path).toPath(), content, StandardOpenOption.CREATE)
-                return TextFile(path, content)
+                //val content = getText("/code/templates/" + path.split('/').last().split('.').last() + ".txt")?.split('\n') ?: listOf("")
+                Files.write(File(path).toPath(), listOf(""), StandardOpenOption.CREATE)
+                return TextFile(path, listOf(""))
             } catch (e: IOException) {
                 println("Couldn't create file")
                 e.printStackTrace()
@@ -111,8 +111,8 @@ class TextFile(path: String, private var content: List<String>) : AnyFile(path) 
             return null
         }
 
-        private fun getText(resourcePath: String): String {
-            return TextFile::class.java.getResource(resourcePath).readText()
+        private fun getText(resourcePath: String): String? {
+            return TextFile::class.java.getResource(resourcePath)?.readText()
         }
     }
 }

@@ -275,10 +275,7 @@ object Window {
                                     jFrame,
                                     FileChooser.Mode.CREATE_FILE
                                 ).apply { get() }
-                                chooser.result?.let {
-                                    TextFile.new(it)
-                                    openFile(it)
-                                }
+                                chooser.result?.let { openFile(it) }
                             }
                         }
                         text = "new"
