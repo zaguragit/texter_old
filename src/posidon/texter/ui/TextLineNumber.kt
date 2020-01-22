@@ -53,7 +53,7 @@ class TextLineNumber(
     private var digitAlignment = 0f
     private var minimumDisplayDigits = 0
     //  Keep history information to reduce the number of times the component
-//  needs to be repainted
+    //  needs to be repainted
     private var lastDigits = 0
     private var lastHeight = 0
     private var lastLine = 0
@@ -64,9 +64,7 @@ class TextLineNumber(
      *
      * @return the alignment of the painted digits
      */
-    fun getDigitAlignment(): Float {
-        return digitAlignment
-    }
+    fun getDigitAlignment(): Float = digitAlignment
 
     /**
      * Specify the horizontal alignment of the digits within the component.
@@ -82,26 +80,11 @@ class TextLineNumber(
         this.digitAlignment = if (digitAlignment > 1.0f) 1.0f else if (digitAlignment < 0.0f) -1.0f else digitAlignment
     }
 
-    /**
-     * Gets the minimum display digits
-     *
-     * @return the minimum display digits
-     */
-    fun getMinimumDisplayDigits(): Int {
-        return minimumDisplayDigits
-    }
-
-    /**
-     * Specify the mimimum number of digits used to calculate the preferred
-     * width of the component. Default is 3.
-     *
-     * @param minimumDisplayDigits  the number digits used in the preferred
-     * width calculation
-     */
-    fun setMinimumDisplayDigits(minimumDisplayDigits: Int) {
-        this.minimumDisplayDigits = minimumDisplayDigits
-        setPreferredWidth()
-    }
+    var minDisplayDigits = minimumDisplayDigits
+        set(value) {
+            field = value
+            setPreferredWidth()
+        }
 
     /**
      * Calculate the width needed to display the maximum line number
@@ -109,7 +92,7 @@ class TextLineNumber(
     private fun setPreferredWidth() {
         val root = component.document.defaultRootElement
         val lines = root.elementCount
-        val digits = max(lines.toString().length, minimumDisplayDigits)
+        val digits = max(lines.toString().length, minDisplayDigits)
         //  Update sizes when number of digits in the line number changes
         if (lastDigits != digits) {
             lastDigits = digits
@@ -242,19 +225,13 @@ class TextLineNumber(
         }
     }
 
-    //
-//  Implement DocumentListener interface
-//
     override fun changedUpdate(e: DocumentEvent) = documentChanged()
     override fun insertUpdate(e: DocumentEvent) = documentChanged()
     override fun removeUpdate(e: DocumentEvent) = documentChanged()
 
-    /*
-	 *  A document change may affect the number of displayed lines of text.
-	 *  Therefore the lines numbers will also change.
-	 */
-    private fun documentChanged() { //  View of the component has not been updated at the time
-    // the DocumentEvent is fired
+    public fun documentChanged() {
+        //  View of the component has not been updated at the time
+        // the DocumentEvent is fired
         SwingUtilities.invokeLater {
             try {
                 val endPos = component.document.length
@@ -268,9 +245,6 @@ class TextLineNumber(
         }
     }
 
-    //
-//  Implement PropertyChangeListener interface
-//
     override fun propertyChange(evt: PropertyChangeEvent) {
         if (evt.newValue is Font) {
             if (updateFont) {
@@ -283,9 +257,6 @@ class TextLineNumber(
     }
 
     companion object {
-        const val LEFT = 0.0f
-        const val CENTER = 0.5f
-        const val RIGHT = 1.0f
         private const val HEIGHT = Int.MAX_VALUE - 1000000
     }
 
@@ -298,8 +269,8 @@ class TextLineNumber(
     init {
         font = component.font
         borderGap = 5
-        setDigitAlignment(RIGHT)
-        setMinimumDisplayDigits(minimumDisplayDigits)
+        setDigitAlignment(1f)
+        minDisplayDigits = minDisplayDigits
         component.document.addDocumentListener(this)
         component.addCaretListener(this)
         component.addPropertyChangeListener("font", this)

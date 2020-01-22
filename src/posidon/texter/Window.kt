@@ -26,6 +26,23 @@ object Window {
 
     var activeTab: FileTab? = null
 
+    var title: String
+        get() = jFrame.title
+        set(value) { jFrame.title = value }
+
+    var folder: String? = null
+        set(value) {
+            field = value
+            if (value == null) {
+                fileTree.isVisible = false
+                splitPane.dividerLocation = splitPane.minimumDividerLocation
+            } else {
+                fileTree.setFolder(value)
+                fileTree.isVisible = true
+                splitPane.dividerLocation = splitPane.minimumDividerLocation
+            }
+        }
+
     val jFrame = JFrame(AppInfo.NAME).apply {
         size = Dimension(AppInfo.INIT_WIDTH, AppInfo.INIT_HEIGHT)
         minimumSize = Dimension(AppInfo.MIN_WIDTH, AppInfo.MIN_HEIGHT)
@@ -81,6 +98,7 @@ object Window {
                 activeTab = null
                 tmp?.file?.colorAll(styledDocument)
                 activeTab = tmp
+                activeTab?.file?.save()
             }
         })
         actionMap.put("copy", object : AbstractAction("copy") {
@@ -92,12 +110,14 @@ object Window {
             override fun actionPerformed(event: ActionEvent?) {
                 val content = Tools.getClipboardContents(Toolkit.getDefaultToolkit().systemClipboard)
                 replaceSelection(content)
+                //textNumbers.documentChanged()
                 val tmp = activeTab
                 activeTab = null
                 tmp?.file?.colorAll(styledDocument)
                 //val stuffToColor = max(content?.split('\n')?.size, selectionEnd)
                 //for (i 0..stuffToColor) tmp?.file?.colorLine(styledDocument, i)
                 activeTab = tmp
+                activeTab?.file?.save()
             }
         })
         inputMap.put(KeyStroke.getKeyStroke("control Z"), "undo")
@@ -128,7 +148,11 @@ object Window {
         jFrame.add(this, BorderLayout.NORTH)
     }
 
-    val scroll = JScrollPane(JPanel().apply { add(textArea); isOpaque = false }).apply {
+    val scroll = JScrollPane(JPanel().apply {
+        isOpaque = false
+        layout = BorderLayout()
+        add(textArea, BorderLayout.CENTER)
+    }).apply {
         border = null
         viewport.isOpaque = false
         verticalScrollBar.unitIncrement = 10
@@ -140,7 +164,7 @@ object Window {
 
     val textNumbers = TextLineNumber(textArea, scroll).apply { isVisible = false }
 
-    private val fileTree = FileTree(File(".")).apply {
+    private val fileTree = FileTree(null).apply {
         setLeafDoubleClickListener { openFile(it) }
         isVisible = false
     }
@@ -332,7 +356,7 @@ object Window {
         updateTheme(Settings.getString(Settings.THEME))
     }
 
-    fun setTabs(textPane: JTextPane, charactersPerTab: Int) {
+    private fun setTabs(textPane: JTextPane, charactersPerTab: Int) {
         val fm = textPane.getFontMetrics(textPane.font)
         val charWidth = fm.charWidth(' ')
         val tabWidth = charWidth * charactersPerTab
@@ -364,21 +388,4 @@ object Window {
         jFrame.isAlwaysOnTop = false
         jFrame.requestFocus()
     }
-
-    var title: String
-        get() = jFrame.title
-        set(value) { jFrame.title = value }
-
-    var folder: String? = null
-        set(value) {
-            field = value
-            if (value == null) {
-                fileTree.isVisible = false
-                splitPane.dividerLocation = splitPane.minimumDividerLocation
-            } else {
-                fileTree.setFolder(value)
-                fileTree.isVisible = true
-                splitPane.dividerLocation = splitPane.minimumDividerLocation
-            }
-        }
 }

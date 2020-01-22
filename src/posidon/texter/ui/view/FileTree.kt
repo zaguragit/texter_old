@@ -18,10 +18,10 @@ import javax.swing.tree.MutableTreeNode
 import javax.swing.tree.TreePath
 
 
-class FileTree(dir: File) : JPanel() {
+class FileTree(dir: File? = null) : JPanel() {
 
     private val scrollPane = JScrollPane()
-    private val tree = JTree(addNodes(null, dir), true)
+    private val tree = JTree(if (dir == null) DefaultMutableTreeNode("") else addNodes(null, dir), true)
     private val renderer = Renderer()
     private val treeUI = DecentTreeUI()
 
