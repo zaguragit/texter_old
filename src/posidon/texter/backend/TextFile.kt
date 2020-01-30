@@ -5,20 +5,12 @@ import java.io.*
 import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
-import javax.swing.text.StyleConstants
 import javax.swing.text.StyledDocument
-import javax.swing.text.TabSet
-import javax.swing.text.TabStop
 import kotlin.streams.toList
 
 class TextFile(path: String, private var content: List<String>) : AnyFile(path) {
 
-    private var syntaxHighlighter: SyntaxHighlighter =
-        when (path.split(File.separator).last().split('.').last()) {
-            "highlighter" -> HighlighterSyntaxHighlighter()
-            "md" -> MarkdownSyntaxHighlighter()
-            else -> CustomSyntax.getHighlighter(path.split(File.separator).last())
-        }
+    private val syntaxHighlighter: SyntaxHighlighter = Highlighter[path.split(File.separator).last()]
 
     var text
         get() = content.joinToString("\n")

@@ -27,41 +27,41 @@ object Settings {
     private val lists: HashMap<String, String> = HashMap()
 
 
-    fun put(key: String, value: Int) {
+    operator fun set(key: String, value: Int) {
         checkKey(key)
         ints[key] = value.toString()
     }
 
-    fun put(key: String, value: Float) {
+    operator fun set(key: String, value: Float) {
         checkKey(key)
         floats[key] = value.toString()
     }
 
-    fun put(key: String, value: Boolean) {
+    operator fun set(key: String, value: Boolean) {
         checkKey(key)
         booleans[key] = if (value) "1" else "0"
     }
 
-    fun put(key: String, value: String) {
+    operator fun set(key: String, value: String) {
         checkKey(key)
         strings[key] = value
     }
 
-    fun put(key: String, value: Array<Int>) {
+    operator fun set(key: String, value: Array<Int>) {
         checkKey(key)
         val stringBuilder = StringBuilder(Type.INT.string)
         for (i in value) stringBuilder.append(' ').append(i)
         lists[key] = stringBuilder.toString()
     }
 
-    fun put(key: String, value: Array<Float>) {
+    operator fun set(key: String, value: Array<Float>) {
         checkKey(key)
         val stringBuilder = StringBuilder(Type.FLOAT.string)
         for (i in value) stringBuilder.append(' ').append(i)
         lists[key] = stringBuilder.toString()
     }
 
-    fun put(key: String, value: Array<Boolean>) {
+    operator fun set(key: String, value: Array<Boolean>) {
         checkKey(key)
         val stringBuilder = StringBuilder(Type.BOOL.string)
         for (i in value) stringBuilder.append(' ').append(if (i) '1' else '0')
@@ -131,31 +131,29 @@ object Settings {
         }
     }
 
-    public fun getInt(key: String, default: Int): Int {
+    operator fun get(key: String, default: Int): Int {
         checkKey(key)
         return if (ints[key] != null) ints[key]!!.toInt() else default
     }
 
-    public fun getFloat(key: String, default: Float): Float {
+    operator fun get(key: String, default: Float): Float {
         checkKey(key)
         return if (floats[key] != null) floats[key]!!.toFloat() else default
     }
 
-    public fun getBool(key: String, default: Boolean): Boolean {
+    operator fun get(key: String, default: Boolean): Boolean {
         checkKey(key)
         return if (booleans[key] != null) booleans[key] != "0" else default
     }
 
-    public fun getString(key: String, default: String): String {
-        return if (getString(key) != null) getString(key)!! else default
-    }
+    operator fun get(key: String, default: String): String = get(key) ?: default
 
-    public fun getString(key: String): String? {
+    operator fun get(key: String): String? {
         checkKey(key)
         return strings[key]
     }
 
-    public fun getInts(key: String, default: Array<Int>): Array<Int> {
+    fun getInts(key: String, default: Array<Int>): Array<Int> {
         checkKey(key)
         if (lists[key] == null) return default
         val stringList = lists[key]!!.split(' ')
@@ -163,7 +161,7 @@ object Settings {
         return Array(stringList.size - 1) { stringList[it].toInt() }
     }
 
-    public fun getFloats(key: String, default: Array<Float>): Array<Float> {
+    fun getFloats(key: String, default: Array<Float>): Array<Float> {
         checkKey(key)
         if (lists[key] == null) return default
         val stringList = lists[key]!!.split(' ')
@@ -171,7 +169,7 @@ object Settings {
         return Array(stringList.size - 1) { stringList[it].toFloat() }
     }
 
-    public fun getBools(key: String, default: Array<Boolean>): Array<Boolean> {
+    fun getBools(key: String, default: Array<Boolean>): Array<Boolean> {
         checkKey(key)
         if (lists[key] == null) return default
         val stringList = lists[key]!!.split(' ')
@@ -196,7 +194,7 @@ object Settings {
         if (!file.exists()) {
             File(dir).mkdirs()
             when (Tools.distro) {
-                "elementary" -> put(THEME, "elementary")
+                "elementary" -> set(THEME, "elementary")
             }
             try {
                 Files.write(file.toPath(), generateText().lines(), StandardOpenOption.CREATE)

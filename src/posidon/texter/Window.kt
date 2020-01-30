@@ -19,7 +19,6 @@ import javax.swing.border.MatteBorder
 import javax.swing.plaf.basic.BasicSplitPaneDivider
 import javax.swing.plaf.basic.BasicSplitPaneUI
 import javax.swing.text.*
-import kotlin.math.max
 
 
 object Window {
@@ -353,7 +352,7 @@ object Window {
 
         jFrame.isLocationByPlatform = true
         jFrame.isVisible = true
-        updateTheme(Settings.getString(Settings.THEME))
+        updateTheme(Settings[Settings.THEME])
     }
 
     private fun setTabs(textPane: JTextPane, charactersPerTab: Int) {

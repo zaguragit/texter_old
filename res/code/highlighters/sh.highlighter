@@ -5,7 +5,7 @@
 declarations ->
 mods -> sudo
 func_breaks ->
-conditions -> if else
+conditions -> if else ifeq ifneq endif elif fi then for do while
 operators -> cd ls cp rm mkdir
 exceptions ->
 values -> true false null

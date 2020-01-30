@@ -18,6 +18,7 @@ This is a code editor built with Kotlin, using the Swing and AWT libraries.
  - Html
  - Java
  - Kotlin
+ - Makefile
  - Markdown
  - Python
  - Shellscript

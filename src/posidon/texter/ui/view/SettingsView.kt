@@ -24,14 +24,14 @@ open class SettingsView(
 
     protected fun save(value: Any) {
         when (type) {
-            Settings.Type.TEXT -> Settings.put(key, value as String)
-            Settings.Type.INT -> Settings.put(key, value as Int)
-            Settings.Type.FLOAT -> Settings.put(key, value as Float)
-            Settings.Type.BOOL -> Settings.put(key, value as Boolean)
+            Settings.Type.TEXT -> Settings[key] = value as String
+            Settings.Type.INT -> Settings[key] = value as Int
+            Settings.Type.FLOAT -> Settings[key] = value as Float
+            Settings.Type.BOOL -> Settings[key] = value as Boolean
             Settings.Type.LIST -> if (value is Array<*>) when {
-                value.isArrayOf<Int>() -> Settings.put(key, value as Array<Int>)
-                value.isArrayOf<Float>() -> Settings.put(key, value as Array<Float>)
-                value.isArrayOf<Boolean>() -> Settings.put(key, value as Array<Boolean>)
+                value.isArrayOf<Int>() -> Settings[key] = value as Array<Int>
+                value.isArrayOf<Float>() -> Settings[key] = value as Array<Float>
+                value.isArrayOf<Boolean>() -> Settings[key] = value as Array<Boolean>
             }
         }
         Settings.apply()

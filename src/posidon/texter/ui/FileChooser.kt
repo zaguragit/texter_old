@@ -7,7 +7,6 @@ import posidon.texter.ui.view.FileTree
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.Insets
-import java.awt.TextArea
 import java.io.File
 import javax.swing.*
 import javax.swing.tree.DefaultMutableTreeNode

@@ -32,7 +32,7 @@ class TextLineNumber(
      * The border gap is used in calculating the left and right insets of the
      * border. Default value is 5.
      *
-     * @param borderGap  the gap in pixels
+     * @param borderGap the gap in pixels
      */
     var borderGap = 0
         set(borderGap) {
@@ -117,7 +117,7 @@ class TextLineNumber(
      */
     public override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
-        if (g is Graphics2D) g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        if (g is Graphics2D) g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
         //	Determine the width of the space available to draw the line number
         val fontMetrics = component.getFontMetrics(component.font)
         val insets = insets
@@ -229,7 +229,7 @@ class TextLineNumber(
     override fun insertUpdate(e: DocumentEvent) = documentChanged()
     override fun removeUpdate(e: DocumentEvent) = documentChanged()
 
-    public fun documentChanged() {
+    private fun documentChanged() {
         //  View of the component has not been updated at the time
         // the DocumentEvent is fired
         SwingUtilities.invokeLater {

@@ -1,4 +1,4 @@
-package posidon.texter.backend.syntaxHighlighters;
+package posidon.texter.backend.syntaxHighlighters
 
 class Highlighter(text: String) {
     val syntax: Syntax
@@ -81,5 +81,31 @@ class Highlighter(text: String) {
             "@num-suffixes",
             "@separators"
         )
+
+        operator fun get(fileName: String): SyntaxHighlighter {
+            when {
+                fileName.split('.').last() == "highlighter" -> HighlighterSyntaxHighlighter()
+                fileName.split('.').last() == "md" -> MarkdownSyntaxHighlighter()
+                fileName.equals("makefile", true) -> return MakefileSyntaxHighlighter()
+            }
+            var extension = fileName.split(".").last()
+            var pathToHighlighter = "/code/highlighters/${extension}.highlighter"
+            var text = Highlighter::class.java.getResource(pathToHighlighter)?.readText()
+            if (text == null) {
+                if (extension.endsWith("ml")) extension = "xml"
+            }
+            pathToHighlighter = "/code/highlighters/${extension}.highlighter"
+            text = Highlighter::class.java.getResource(pathToHighlighter)?.readText()
+            text?.let {
+                val highlighter = Highlighter(it)
+                return when(highlighter.syntax) {
+                    Syntax.BRACKETED -> BracketedSyntaxHighlighter(highlighter)
+                    Syntax.INDENTED -> BracketedSyntaxHighlighter(highlighter)
+                    Syntax.TAGGED -> TagSyntaxHighlighter(highlighter)
+                    else -> DefaultSyntaxHighlighter()
+                }
+            }
+            return DefaultSyntaxHighlighter()
+        }
     }
 }

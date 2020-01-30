@@ -4,7 +4,6 @@ import posidon.texter.Window
 import javax.swing.text.SimpleAttributeSet
 import javax.swing.text.StyleConstants
 import javax.swing.text.StyledDocument
-import kotlin.math.min
 
 class TagSyntaxHighlighter(val highlighter: Highlighter) : SyntaxHighlighter() {
 
