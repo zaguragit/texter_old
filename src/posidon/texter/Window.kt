@@ -81,14 +81,20 @@ object Window {
         isOpaque = false
         actionMap.put("undo", object : AbstractAction("undo") {
             override fun actionPerformed(event: ActionEvent?) {
-                try { activeTab?.undoManager?.undo() } catch (e: Exception) {}
-                activeTab?.file?.save()
+                activeTab?.let {
+                    try { it.undoManager.undo() } catch (e: Exception) {}
+                    it.file.text = document.getText(0, document.length)
+                    it.file.save()
+                }
             }
         })
         actionMap.put("redo", object : AbstractAction("redo") {
             override fun actionPerformed(event: ActionEvent?) {
-                try { activeTab?.undoManager?.redo() } catch (e: Exception) {}
-                activeTab?.file?.save()
+                activeTab?.let {
+                    try { it.undoManager.redo() } catch (e: Exception) {}
+                    it.file.text = document.getText(0, document.length)
+                    it.file.save()
+                }
             }
         })
         actionMap.put("cut", object : AbstractAction("cut") {
@@ -111,12 +117,9 @@ object Window {
             override fun actionPerformed(event: ActionEvent?) {
                 val content = Tools.getClipboardContents(Toolkit.getDefaultToolkit().systemClipboard)
                 replaceSelection(content)
-                //textNumbers.documentChanged()
                 val tmp = activeTab
                 activeTab = null
                 tmp?.file?.colorAll(styledDocument)
-                //val stuffToColor = max(content?.split('\n')?.size, selectionEnd)
-                //for (i 0..stuffToColor) tmp?.file?.colorLine(styledDocument, i)
                 activeTab = tmp
                 activeTab?.file?.save()
             }
