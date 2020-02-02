@@ -148,7 +148,14 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, private val do
         val rootElement: Element = document.defaultRootElement
         val firstLine: Int = rootElement.getElementIndex(offset)
         val lastLine: Int = rootElement.getElementIndex(offset + length)
-        for (i in firstLine..lastLine)
-            if (document.getText(rootElement.getElement(i).startOffset, 1) == "\t") document.remove(rootElement.getElement(i).startOffset, 1)
+        for (i in firstLine..lastLine) {
+            when {
+                document.getText(rootElement.getElement(i).startOffset, 1) == "\t" -> document.remove(rootElement.getElement(i).startOffset, 1)
+                document.getText(rootElement.getElement(i).startOffset, 4) == "    " -> document.remove(rootElement.getElement(i).startOffset, 4)
+                document.getText(rootElement.getElement(i).startOffset, 3) == "   " -> document.remove(rootElement.getElement(i).startOffset, 3)
+                document.getText(rootElement.getElement(i).startOffset, 2) == "  " -> document.remove(rootElement.getElement(i).startOffset, 2)
+                document.getText(rootElement.getElement(i).startOffset, 1) == " " -> document.remove(rootElement.getElement(i).startOffset, 1)
+            }
+        }
     }
 }
