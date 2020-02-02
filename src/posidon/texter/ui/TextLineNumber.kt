@@ -28,12 +28,6 @@ class TextLineNumber(
     //  Properties that can be changed
     var updateFont = true
 
-    /**
-     * The border gap is used in calculating the left and right insets of the
-     * border. Default value is 5.
-     *
-     * @param borderGap the gap in pixels
-     */
     var borderGap = 0
         set(borderGap) {
             field = borderGap
@@ -43,42 +37,13 @@ class TextLineNumber(
             setPreferredWidth()
         }
 
-    /**
-     * The Color used to render the current line digits.
-     *
-     * @param currentLineForeground  the Color used to render the current line
-     */
     var currentLineForeground: Color? = null
         get() = if (field == null) foreground else field
     private var digitAlignment = 0f
-    private var minimumDisplayDigits = 0
-    //  Keep history information to reduce the number of times the component
-    //  needs to be repainted
     private var lastDigits = 0
     private var lastHeight = 0
     private var lastLine = 0
     private var fonts: HashMap<String, FontMetrics?>? = null
-
-    /**
-     * Gets the digit alignment
-     *
-     * @return the alignment of the painted digits
-     */
-    fun getDigitAlignment(): Float = digitAlignment
-
-    /**
-     * Specify the horizontal alignment of the digits within the component.
-     * Common values would be:
-     *
-     *  * TextLineNumber.LEFT
-     *  * TextLineNumber.CENTER
-     *  * TextLineNumber.RIGHT (default)
-     *
-     * @param currentLineForeground  the Color used to render the current line
-     */
-    fun setDigitAlignment(digitAlignment: Float) {
-        this.digitAlignment = if (digitAlignment > 1.0f) 1.0f else if (digitAlignment < 0.0f) -1.0f else digitAlignment
-    }
 
     var minDisplayDigits = minimumDisplayDigits
         set(value) {
@@ -86,9 +51,6 @@ class TextLineNumber(
             setPreferredWidth()
         }
 
-    /**
-     * Calculate the width needed to display the maximum line number
-     */
     private fun setPreferredWidth() {
         val root = component.document.defaultRootElement
         val lines = root.elementCount
@@ -112,9 +74,6 @@ class TextLineNumber(
         scrollPane.setRowHeaderView(if (aFlag) this else null)
     }
 
-    /**
-     * Draw the line numbers
-     */
     public override fun paintComponent(g: Graphics) {
         super.paintComponent(g)
         if (g is Graphics2D) g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
@@ -158,7 +117,7 @@ class TextLineNumber(
 	 *	Get the line number to be drawn. The empty string will be returned
 	 *  when a line of text has wrapped.
 	 */
-    protected fun getTextLineNumber(rowStartOffset: Int): String {
+    private fun getTextLineNumber(rowStartOffset: Int): String {
         val root = component.document.defaultRootElement
         val index = root.getElementIndex(rowStartOffset)
         val line = root.getElement(index)
@@ -205,15 +164,15 @@ class TextLineNumber(
                     fm = component.getFontMetrics(font)
                     fonts!![key] = fm
                 }
-                descent = Math.max(descent, fm!!.descent)
+                descent = max(descent, fm!!.descent)
             }
         }
         return y - descent
     }
 
     //
-//  Implement CaretListener interface
-//
+    //  Implement CaretListener interface
+    //
     override fun caretUpdate(e: CaretEvent) { //  Get the line the caret is positioned on
         val caretPosition = component.caretPosition
         val root = component.document.defaultRootElement
@@ -269,7 +228,7 @@ class TextLineNumber(
     init {
         font = component.font
         borderGap = 5
-        setDigitAlignment(1f)
+        digitAlignment = 1f
         minDisplayDigits = minDisplayDigits
         component.document.addDocumentListener(this)
         component.addCaretListener(this)

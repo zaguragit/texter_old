@@ -8,7 +8,7 @@ import javax.swing.JComponent
 import javax.swing.JLabel
 
 open class SettingsView(
-    val label: String,
+    label: String,
     val key: String,
     val type: Settings.Type
 ) : JComponent() {

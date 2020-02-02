@@ -7,8 +7,8 @@ import javax.swing.text.StyledDocument
 
 class TagSyntaxHighlighter(val highlighter: Highlighter) : SyntaxHighlighter() {
 
-    val tagColor = Window.theme.light_blue
-    val tagParamsColor = Window.theme.yellow
+    private val tagColor = Window.theme.light_blue
+    private val tagParamsColor = Window.theme.yellow
 
     private enum class TagState {
         IN_STRING_DOUBLE,

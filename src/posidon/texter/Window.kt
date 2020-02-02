@@ -12,6 +12,8 @@ import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.event.ActionEvent
+import java.awt.event.KeyEvent
+import java.awt.event.KeyListener
 import java.io.File
 import javax.swing.*
 import javax.swing.border.Border
@@ -126,6 +128,22 @@ object Window {
         inputMap.put(KeyStroke.getKeyStroke("control C"), "copy")
         inputMap.put(KeyStroke.getKeyStroke("control V"), "paste")
         transferHandler = jFrame.transferHandler
+        addKeyListener(object : KeyListener {
+
+            var shiftPressed = false
+
+            override fun keyTyped(e: KeyEvent) {
+                if (e.keyChar == '\t' && shiftPressed) activeTab?.unindentText(selectionStart, selectionEnd - selectionStart)
+            }
+
+            override fun keyPressed(e: KeyEvent) {
+                if (e.keyCode == 16) shiftPressed = true
+            }
+
+            override fun keyReleased(e: KeyEvent) {
+                if (e.keyCode == 16) shiftPressed = false
+            }
+        })
     }
 
     private val toolbar = JToolBar(JToolBar.VERTICAL).apply {
@@ -235,25 +253,21 @@ object Window {
                     activeTab?.file?.let {
                         it.text = document.getText(0, document.length)
                         it.save()
-                        val tmp = activeTab
-                        activeTab = null
-                        it.colorLine(document, textArea.caretPosition)
-                        activeTab = tmp
+                        Tools.doWithoutUndo {
+                            it.colorLine(document, textArea.caretPosition)
+                        }
                     }
                     activeTab?.undoManager?.addEdit(edit.edit)
                 }
             }
             tabs.add(tab)
-            activeTab?.active = false
             tab.active = true
-            activeTab = tab
-            setTabs(textArea, 4)
             jFrame.validate()
         }
     }
 
-    lateinit var actionBtnFiles: Button
-    lateinit var actionBtnOther: Button
+    private lateinit var actionBtnFiles: Button
+    private lateinit var actionBtnOther: Button
     fun init() {
         Button(icon = theme.iconTheme.action_file_menu).apply {
             border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
@@ -353,22 +367,6 @@ object Window {
         jFrame.isLocationByPlatform = true
         jFrame.isVisible = true
         updateTheme(Settings[Settings.THEME])
-    }
-
-    private fun setTabs(textPane: JTextPane, charactersPerTab: Int) {
-        val fm = textPane.getFontMetrics(textPane.font)
-        val charWidth = fm.charWidth(' ')
-        val tabWidth = charWidth * charactersPerTab
-        val tabs = arrayOfNulls<TabStop>(5)
-        for (j in tabs.indices) {
-            val tab = j + 1
-            tabs[j] = TabStop((tab * tabWidth).toFloat())
-        }
-        val tabSet = TabSet(tabs)
-        val attributes = SimpleAttributeSet()
-        StyleConstants.setTabSet(attributes, tabSet)
-        val length = textPane.document.length
-        textPane.styledDocument.setParagraphAttributes(0, length, attributes, false)
     }
 
     fun updateTheme(name: String?) {

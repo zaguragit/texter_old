@@ -1,19 +1,29 @@
 package posidon.texter.backend
 
-import javax.swing.text.*
+import posidon.texter.Window
+import javax.swing.text.AttributeSet
+import javax.swing.text.Document
+import javax.swing.text.DocumentFilter
+import javax.swing.text.Element
 
 class TextFilter : DocumentFilter() {
 
     override fun insertString(fb: FilterBypass, offset: Int, string: String, a: AttributeSet?) {
         var str = string
-        if (str == "\n") str = addWhiteSpace(fb.document, offset)
-        super.insertString(fb, offset, str, a)
+        if (string == "\n") str = addWhiteSpace(fb.document, offset)
+        fb.insertString(offset, str, a)
     }
 
     override fun replace(fb: FilterBypass, offset: Int, length: Int, string: String, a: AttributeSet?) {
-        var str = string
-        if (str == "\n") str = addWhiteSpace(fb.document, offset)
-        super.replace(fb, offset, length, str, a)
+        when {
+            string == "\t" && Window.textArea.selectedText != null -> Window.activeTab!!.indentText(offset, length)
+            string == "\n" -> fb.replace(offset, length, addWhiteSpace(fb.document, offset), a)
+            else -> fb.replace(offset, length, string, a)
+        }
+    }
+
+    override fun remove(fb: FilterBypass, offset: Int, length: Int) {
+        fb.remove(offset, length)
     }
 
     private fun addWhiteSpace(doc: Document, offset: Int): String {

@@ -1,5 +1,6 @@
 package posidon.texter.backend
 
+import posidon.texter.Window
 import java.awt.datatransfer.Clipboard
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.UnsupportedFlavorException
@@ -57,4 +58,11 @@ object Tools {
             } catch (e: IOException) { e.printStackTrace() }
             return ""
         }
+
+    inline fun doWithoutUndo(methods: () -> Unit) {
+        val tmp = Window.activeTab
+        Window.activeTab = null
+        methods()
+        Window.activeTab = tmp
+    }
 }

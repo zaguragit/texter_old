@@ -53,7 +53,7 @@ class SettingsScreen(private val jFrame: JFrame) {
         jFrame.validate()
     }
 
-    fun exit() {
+    private fun exit() {
         jFrame.contentPane = previousContentPane
         jFrame.title = previousTitle
         jFrame.validate()

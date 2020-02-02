@@ -8,7 +8,7 @@ import kotlin.math.max
 
 class MakefileSyntaxHighlighter : SyntaxHighlighter() {
 
-    val variables = ArrayList<String>()
+    private val variables = ArrayList<String>()
 
     companion object {
         val conditions = arrayOf("ifeq", "ifneq", "else", "endif", "if", "elif", "fi", "then", "for", "do", "while")
