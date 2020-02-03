@@ -1,10 +1,8 @@
 package posidon.texter.backend
 
 import posidon.texter.Window
-import javax.swing.text.AttributeSet
-import javax.swing.text.Document
-import javax.swing.text.DocumentFilter
-import javax.swing.text.Element
+import posidon.texter.backend.syntaxHighlighters.SyntaxHighlighter
+import javax.swing.text.*
 
 class TextFilter : DocumentFilter() {
 
@@ -18,6 +16,28 @@ class TextFilter : DocumentFilter() {
         when {
             string == "\t" && Window.textArea.selectedText != null -> Window.activeTab!!.indentText(offset, length)
             string == "\n" -> fb.replace(offset, length, addWhiteSpace(fb.document, offset), a)
+            /*
+            string == "{" -> {
+                fb.replace(offset, length, string, a)
+                fb.document.insertString(offset + 1, "}", SyntaxHighlighter.defaultTextStyle())
+                Window.textArea.caretPosition = offset + 1
+            }
+            string == "(" -> {
+                fb.replace(offset, length, string, a)
+                fb.document.insertString(offset + 1, ")", SyntaxHighlighter.defaultTextStyle())
+                Window.textArea.caretPosition = offset + 1
+            }
+            string == "[" -> {
+                fb.replace(offset, length, string, a)
+                fb.document.insertString(offset + 1, "]", SyntaxHighlighter.defaultTextStyle())
+                Window.textArea.caretPosition = offset + 1
+            }
+            string == "\"" || string == "'" -> {
+                fb.replace(offset, length, string, a)
+                fb.document.insertString(offset + 1, string, SyntaxHighlighter.defaultTextStyle())
+                Window.textArea.caretPosition = offset + 1
+            }
+            */
             else -> fb.replace(offset, length, string, a)
         }
     }

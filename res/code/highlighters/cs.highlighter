@@ -5,7 +5,8 @@
 @binary-prefix 0b
 @string-sides " '
 @separators =,.;:-+*/()[]{}&|!
-declarations -> namespace using class this new var
+declarations -> class this new var
+code_inclusion -> namespace using
 mods -> public private static const
 func_breaks -> return
 conditions -> if else switch for foreach while

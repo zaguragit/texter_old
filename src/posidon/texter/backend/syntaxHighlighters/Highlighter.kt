@@ -1,9 +1,13 @@
 package posidon.texter.backend.syntaxHighlighters
 
+import posidon.texter.backend.Tools
+import java.io.File
+
 class Highlighter(text: String) {
     val syntax: Syntax
 
     val declarations = ArrayList<String>()
+    val codeInclusion = ArrayList<String>()
     val mods = ArrayList<String>()
     val funcBreaks = ArrayList<String>()
     val conditions = ArrayList<String>()
@@ -31,7 +35,6 @@ class Highlighter(text: String) {
                 when(tokens[0]) {
                     "@syntax" -> tmpSyntax = when(tokens[1]) {
                         "bracket", "bracketed" -> Syntax.BRACKETED
-                        "indent", "indented" -> Syntax.INDENTED
                         "tag", "tagged" -> Syntax.TAGGED
                         else -> Syntax.DEFAULT
                     }
@@ -50,6 +53,7 @@ class Highlighter(text: String) {
                 val tokens = line.split(' ')
                 when {
                     line.startsWith("declarations") -> declarations
+                    line.startsWith("code_inclusion") -> codeInclusion
                     line.startsWith("mods") -> mods
                     line.startsWith("func_breaks") -> funcBreaks
                     line.startsWith("conditions") -> conditions
@@ -65,7 +69,6 @@ class Highlighter(text: String) {
 
     enum class Syntax {
         BRACKETED,
-        INDENTED,
         TAGGED,
         DEFAULT
     }
@@ -84,8 +87,8 @@ class Highlighter(text: String) {
 
         operator fun get(fileName: String): SyntaxHighlighter {
             when {
-                fileName.split('.').last() == "highlighter" -> HighlighterSyntaxHighlighter()
-                fileName.split('.').last() == "md" -> MarkdownSyntaxHighlighter()
+                fileName.split('.').last() == "highlighter" -> return HighlighterSyntaxHighlighter()
+                fileName.split('.').last() == "md" -> return MarkdownSyntaxHighlighter()
                 fileName.equals("makefile", true) -> return MakefileSyntaxHighlighter()
             }
             var extension = fileName.split(".").last()
@@ -94,13 +97,12 @@ class Highlighter(text: String) {
             if (text == null) {
                 if (extension.endsWith("ml")) extension = "xml"
             }
-            pathToHighlighter = "/code/highlighters/${extension}.highlighter"
-            text = Highlighter::class.java.getResource(pathToHighlighter)?.readText()
+            text = Highlighter::class.java.getResource("/code/highlighters/${extension}.highlighter")?.readText()
+                ?: with(File(Tools.getDataDir() + "/highlighters/${extension}.highlighter")) { if (exists()) readText() else null }
             text?.let {
                 val highlighter = Highlighter(it)
                 return when(highlighter.syntax) {
                     Syntax.BRACKETED -> BracketedSyntaxHighlighter(highlighter)
-                    Syntax.INDENTED -> BracketedSyntaxHighlighter(highlighter)
                     Syntax.TAGGED -> TagSyntaxHighlighter(highlighter)
                     else -> DefaultSyntaxHighlighter()
                 }

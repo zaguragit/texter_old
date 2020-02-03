@@ -1,0 +1,9 @@
+@syntax bracketed
+@line-comment ;
+@hex-prefix 0x
+@separators ,.:-+*/[]()
+declarations -> dd extern global section
+mods -> bits align
+func_breaks -> ret
+operators -> mov cli call add hlt int jmp push pop pusha popa pushl popl movl
+values ->

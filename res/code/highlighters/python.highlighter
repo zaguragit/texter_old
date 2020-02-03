@@ -1,9 +1,10 @@
-@syntax indented
+@syntax bracketed
 @line-comment #
 @selective-comment ''' '''
 @string-sides " '
 @separators =,.;:-+*/()[]{}&|!
-declarations -> import class def
+declarations -> class def
+code_inclusion -> import
 mods -> with
 func_breaks -> return break continue pass
 conditions -> if else elif for while do

@@ -5,7 +5,7 @@
 @binary-prefix 0b
 @string-sides " '
 @separators =,.;:-+*/()[]{}&|!
-declarations -> var
+declarations -> var function new this
 mods ->
 func_breaks ->
 conditions -> if else

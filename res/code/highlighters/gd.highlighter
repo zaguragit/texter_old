@@ -1,4 +1,4 @@
-@syntax indented
+@syntax bracketed
 @line-comment #
 @selective-comment ''' '''
 @string-sides " '

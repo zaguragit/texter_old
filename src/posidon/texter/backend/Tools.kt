@@ -32,15 +32,12 @@ object Tools {
     }
 
     fun getDataDir(): String {
-        val os = System.getProperty("os.name").toUpperCase()
-        println(os)
+        val os = System.getProperty("os.name").toLowerCase()
         return when {
-            os.contains("WIN") -> System.getenv("APPDATA")
-            os.contains("MAC") -> (System.getProperty("user.home")
-                    + "/Library/Application "
-                    + "Support")
-            os.contains("NUX") -> System.getProperty("user.home") + "/.config/texter"
-            else -> System.getProperty("user.dir")
+            os.contains("nux") -> System.getProperty("user.home") + "/.config/texter"
+            os.contains("win") -> System.getenv("APPDATA") + "/Texter"
+            os.contains("mac") -> System.getProperty("user.home") + "/Library/Application Support/Texter"
+            else -> System.getProperty("user.dir") + "/texter"
         }
     }
 

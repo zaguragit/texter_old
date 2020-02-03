@@ -25,6 +25,11 @@ class BracketedSyntaxHighlighter(private val highlighter: Highlighter) : SyntaxH
                             StyleConstants.setForeground(sas, Window.theme.orange)
                             sas
                         }
+                        in highlighter.codeInclusion -> {
+                            val sas = defaultTextStyle()
+                            StyleConstants.setForeground(sas, Window.theme.cyan)
+                            sas
+                        }
                         in highlighter.mods -> {
                             val sas = defaultTextStyle()
                             StyleConstants.setForeground(sas, Window.theme.purple)
@@ -37,7 +42,7 @@ class BracketedSyntaxHighlighter(private val highlighter: Highlighter) : SyntaxH
                         }
                         in highlighter.conditions -> {
                             val sas = defaultTextStyle()
-                            StyleConstants.setForeground(sas, Window.theme.orange)
+                            StyleConstants.setForeground(sas, Window.theme.lime)
                             sas
                         }
                         in highlighter.operators -> {
@@ -107,40 +112,38 @@ class BracketedSyntaxHighlighter(private val highlighter: Highlighter) : SyntaxH
                 }
             }
 
-            if (highlighter.lineComment != null && highlighter.startComment != null && highlighter.endComment != null) {
-                val lineComment = highlighter.lineComment!!
+            if (highlighter.startComment != null && highlighter.endComment != null) {
                 val startComment = highlighter.startComment!!
                 val endComment = highlighter.endComment!!
                 val lastICommentStart = line.lastIndexOf(startComment)
                 if (lastICommentStart > line.lastIndexOf(endComment)) thisLineInfo.unfinishedMultilineCommentI = lastICommentStart
-                if (line.length >= min(lineComment.length, min(startComment.length, endComment.length))) {
+                if (line.length >= min(startComment.length, endComment.length)) {
                     var commentStart = line.indexOf(startComment)
                     var commentEnd: Int
-                    val commentAttrs = SimpleAttributeSet()
-                    StyleConstants.setForeground(commentAttrs, Window.theme.gray)
+                    val commentAttrs = defaultTextStyle().apply { StyleConstants.setForeground(this, Window.theme.gray) }
                     if (line.contains(startComment)) do {
                         commentEnd = line.indexOf(endComment)
-                        if (commentEnd < commentStart + 2) {
+                        if (commentEnd < commentStart + startComment.length) {
                             thisLineInfo.unstartedMultilineCommentI = commentEnd
-                            commentEnd = line.indexOf(endComment, commentStart + 2)
+                            commentEnd = line.indexOf(endComment, commentStart + startComment.length)
                             doc.setCharacterAttributes(
                                 lineStart + commentStart,
-                                commentEnd - commentStart + 2,
+                                commentEnd - commentStart + startComment.length,
                                 commentAttrs,
                                 false
                             )
                         } else {
                             doc.setCharacterAttributes(
                                 lineStart + commentStart,
-                                commentEnd - commentStart + 2,
+                                commentEnd - commentStart + startComment.length,
                                 commentAttrs,
                                 false
                             )
                         }
-                        if (line.substring(commentEnd + 2).contains(startComment)) {
-                            commentStart = line.indexOf(startComment, commentEnd + 2)
-                            if (line.substring(commentEnd + 2, commentStart).contains(lineComment)) {
-                                val tmp = line.substring(commentEnd + 2).indexOf(lineComment) + commentEnd + 2
+                        if (line.substring(commentEnd + endComment.length).contains(startComment)) {
+                            commentStart = line.indexOf(startComment, commentEnd + endComment.length)
+                            if (highlighter.lineComment != null && line.substring(commentEnd + endComment.length, commentStart).contains(highlighter.lineComment!!)) {
+                                val tmp = line.substring(commentEnd + endComment.length).indexOf(highlighter.lineComment!!) + commentEnd + endComment.length
                                 doc.setCharacterAttributes(
                                     lineStart + tmp,
                                     line.length - tmp,
@@ -149,8 +152,8 @@ class BracketedSyntaxHighlighter(private val highlighter: Highlighter) : SyntaxH
                                 )
                             }
                         } else {
-                            if (line.substring(commentEnd + 2).contains(lineComment)) {
-                                val tmp = line.substring(commentEnd + 2).indexOf(lineComment) + commentEnd + 2
+                            if (highlighter.lineComment != null && line.substring(commentEnd + endComment.length).contains(highlighter.lineComment!!)) {
+                                val tmp = line.substring(commentEnd + endComment.length).indexOf(highlighter.lineComment!!) + commentEnd + endComment.length
                                 doc.setCharacterAttributes(
                                     lineStart + tmp,
                                     line.length - tmp,
@@ -160,9 +163,9 @@ class BracketedSyntaxHighlighter(private val highlighter: Highlighter) : SyntaxH
                             }
                             break
                         }
-                    } while (line.substring(commentStart + 2).contains(endComment))
-                    else if (line.contains(lineComment)) {
-                        commentStart = line.indexOf(lineComment)
+                    } while (line.substring(commentStart + startComment.length).contains(endComment))
+                    else if (highlighter.lineComment != null && line.contains(highlighter.lineComment!!)) {
+                        commentStart = line.indexOf(highlighter.lineComment!!)
                         doc.setCharacterAttributes(
                             lineStart + commentStart,
                             line.length - commentStart,
@@ -171,6 +174,14 @@ class BracketedSyntaxHighlighter(private val highlighter: Highlighter) : SyntaxH
                         )
                     }
                 }
+            } else if (highlighter.lineComment != null && line.contains(highlighter.lineComment!!)) {
+                val commentStart = line.indexOf(highlighter.lineComment!!)
+                doc.setCharacterAttributes(
+                    lineStart + commentStart,
+                    line.length - commentStart,
+                    defaultTextStyle().apply { StyleConstants.setForeground(this, Window.theme.gray) },
+                    false
+                )
             }
 
             lineInfo.add(thisLineInfo)

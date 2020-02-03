@@ -5,7 +5,8 @@
 @binary-prefix 0b
 @string-sides " '
 @separators =,.;:-+*/()[]{}&|!
-declarations -> package import class interface this new enum
+declarations -> class interface this new enum
+code_inclusion -> package import
 mods -> public private protected abstract final static
 func_breaks -> return continue break case super
 conditions -> if else switch for while do

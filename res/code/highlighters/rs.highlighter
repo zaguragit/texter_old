@@ -1,0 +1,15 @@
+@syntax bracketed
+@line-comment //
+@selective-comment /* */
+@hex-prefix 0x
+@binary-prefix 0b
+@string-sides " '
+@separators =,.;:-+*/()[]{}&|!
+declarations -> let fn struct type self
+code_inclusion -> mod use
+mods -> pub const static extern mut
+func_breaks -> return continue break
+conditions -> if else for loop
+operators -> as
+exceptions -> unsafe
+values -> true false

@@ -1,0 +1,15 @@
+@syntax bracketed
+@line-comment //
+@selective-comment /* */
+@hex-prefix 0x
+@binary-prefix 0b
+@string-sides " '
+@separators =,.;:-+*/()[]{}&|!
+//declarations ->
+code_inclusion -> #include
+mods -> static const unsigned
+func_breaks -> return continue break case
+conditions -> if else switch for while do
+//operators ->
+//exceptions ->
+//values ->

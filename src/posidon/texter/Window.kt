@@ -252,15 +252,15 @@ object Window {
             file.colorAll(document)
             document.documentFilter = TextFilter()
             document.addUndoableEditListener { edit ->
-                if (activeTab != null) {
-                    activeTab?.file?.let {
-                        it.text = document.getText(0, document.length)
-                        it.save()
+                activeTab?.let {
+                    it.file.let { file ->
+                        file.text = document.getText(0, document.length)
+                        file.save()
                         Tools.doWithoutUndo {
-                            it.colorLine(document, textArea.caretPosition)
+                            file.colorLine(document, textArea.caretPosition)
                         }
                     }
-                    activeTab?.undoManager?.addEdit(edit.edit)
+                    it.undoManager.addEdit(edit.edit)
                 }
             }
             tabs.add(tab)
