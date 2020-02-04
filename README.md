@@ -12,8 +12,10 @@ This is a code editor built with Kotlin, using the Swing and AWT libraries.
 - Custom, configurable syntax highlighters
 
 ##### Syntax highlighting is available for:
+ - C
  - Css
  - C#
+ - Rust
  - GDScript
  - Html
  - Java
