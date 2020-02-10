@@ -8,7 +8,7 @@
 declarations -> class interface this new enum
 code_inclusion -> package import
 mods -> public private protected abstract final static
-func_breaks -> return continue break case super
+func_breaks -> return continue break case default super
 conditions -> if else switch for while do
 operators -> instanceof
 exceptions -> try catch throw throws assert

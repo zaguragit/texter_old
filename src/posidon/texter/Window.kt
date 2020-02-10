@@ -211,7 +211,7 @@ object Window {
         jFrame.add(this, BorderLayout.CENTER)
     }
 
-    var theme: Theme = Theme()
+    var theme: Theme = Themes.dark
         set(value) {
             field = value
             textArea.foreground = theme.textAreaFG
@@ -236,7 +236,7 @@ object Window {
             textNumbers.background = theme.textAreaNumberBG
             textNumbers.foreground = theme.textAreaNumberFG
             textNumbers.sideBorder = MatteBorder(0, 0, 0, 1, theme.uiHighlight)
-            textNumbers.currentLineForeground = theme.textAreaCaret
+            textNumbers.currentLineForeground = theme.textAreaNumberCaretLineFG
         }
 
     fun openFile(path: String) {

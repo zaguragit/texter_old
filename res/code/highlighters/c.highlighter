@@ -5,10 +5,10 @@
 @binary-prefix 0b
 @string-sides " '
 @separators =,.;:-+*/()[]{}&|!
-//declarations ->
-code_inclusion -> #include
+declarations -> struct typedef enum
+code_inclusion -> #include #define
 mods -> static const unsigned
-func_breaks -> return continue break case
+func_breaks -> return continue break case default
 conditions -> if else switch for while do
 //operators ->
 //exceptions ->
