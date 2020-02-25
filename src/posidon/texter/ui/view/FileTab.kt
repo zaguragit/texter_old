@@ -39,7 +39,7 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, private val do
                 Window.textArea.styledDocument = document
                 Window.textArea.caretPosition = caretPos
                 Window.scroll.viewport.viewPosition = scrollPosition
-                setTabs(Window.textArea, 4)
+                Window.textArea.indentSize = 4
                 Window.activeTab = this@FileTab
                 Window.title = AppInfo.NAME + " - " + file.name
             } else {
@@ -120,7 +120,7 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, private val do
         })
     }
 
-    private fun setTabs(textPane: JTextPane, charactersPerTab: Int) {
+    /*private fun setTabs(textPane: JTextPane, charactersPerTab: Int) {
         val fm = textPane.getFontMetrics(textPane.font)
         val charWidth = fm.charWidth(' ')
         val tabWidth = charWidth * charactersPerTab
@@ -157,5 +157,5 @@ class FileTab(label: String, icon: ImageIcon, val file: TextFile, private val do
                 document.getText(rootElement.getElement(i).startOffset, 1) == " " -> document.remove(rootElement.getElement(i).startOffset, 1)
             }
         }
-    }
+    }*/
 }

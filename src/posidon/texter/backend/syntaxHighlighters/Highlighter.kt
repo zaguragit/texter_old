@@ -92,10 +92,9 @@ class Highlighter(text: String) {
                 fileName.equals("makefile", true) -> return MakefileSyntaxHighlighter()
             }
             var extension = fileName.split(".").last()
-            var pathToHighlighter = "/code/highlighters/${extension}.highlighter"
-            var text = Highlighter::class.java.getResource(pathToHighlighter)?.readText()
-            if (text == null) {
-                if (extension.endsWith("ml")) extension = "xml"
+            var text = Highlighter::class.java.getResource("/code/highlighters/${extension}.highlighter")?.readText()
+            if (text == null || text == "") {
+                if (extension.endsWith("ml") || extension == "svg") extension = "xml"
             }
             text = Highlighter::class.java.getResource("/code/highlighters/${extension}.highlighter")?.readText()
                 ?: with(File(Tools.getDataDir() + "/highlighters/${extension}.highlighter")) { if (exists()) readText() else null }

@@ -14,7 +14,7 @@ class TextFilter : DocumentFilter() {
 
     override fun replace(fb: FilterBypass, offset: Int, length: Int, string: String, a: AttributeSet?) {
         when {
-            string == "\t" && Window.textArea.selectedText != null -> Window.activeTab!!.indentText(offset, length)
+            string == "\t" && Window.textArea.selectedText != null -> Window.textArea.indentText(offset, length)
             string == "\n" -> fb.replace(offset, length, addWhiteSpace(fb.document, offset), a)
             /*
             string == "{" -> {

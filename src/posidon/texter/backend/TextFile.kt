@@ -6,6 +6,7 @@ import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import javax.swing.text.StyledDocument
+import kotlin.concurrent.thread
 import kotlin.streams.toList
 
 class TextFile(path: String, private var content: List<String>) : AnyFile(path) {
@@ -29,9 +30,28 @@ class TextFile(path: String, private var content: List<String>) : AnyFile(path) 
         } catch (e: Exception) { e.printStackTrace() }
     }
 
+    fun colorLineByIndex(doc: StyledDocument, lineI: Int) {
+        try {
+            syntaxHighlighter.colorLine(doc, getLineStart(lineI), content[lineI], lineI)
+        } catch (e: Exception) { e.printStackTrace() }
+    }
+
     fun colorAll(doc: StyledDocument) {
         try {
-            for (lineI in content.indices) {
+            thread {
+                for (lineI in content.indices) {
+                    val lineStart = getLineStart(lineI)
+                    doc.setCharacterAttributes(
+                        lineStart,
+                        content[lineI].length,
+                        SyntaxHighlighter.defaultTextStyle(),
+                        false
+                    )
+                    syntaxHighlighter.colorLine(doc, lineStart, content[lineI], lineI)
+                }
+                println("banana is cooked! cookies arent optional, bitch.")
+            }.start()
+            /*for (lineI in content.indices) {
                 val lineStart = getLineStart(lineI)
                 doc.setCharacterAttributes(
                     lineStart,
@@ -40,7 +60,7 @@ class TextFile(path: String, private var content: List<String>) : AnyFile(path) 
                     false
                 )
                 syntaxHighlighter.colorLine(doc, lineStart, content[lineI], lineI)
-            }
+            }*/
         } catch (e: Exception) { e.printStackTrace() }
     }
 
@@ -89,6 +109,29 @@ class TextFile(path: String, private var content: List<String>) : AnyFile(path) 
                 e.printStackTrace()
             } catch (e: Exception) { e.printStackTrace() }
             return null
+        }
+
+        fun readLines(
+            path: String,
+            onStart: (file: TextFile) -> Unit,
+            onLineRead: (file: TextFile, string: String) -> Unit,
+            onEnd: (file: TextFile) -> Unit
+        ) {
+            try {
+                val buf = BufferedReader(FileReader(path))
+                val file = TextFile(path, ArrayList())
+                onStart(file)
+                (file.content as ArrayList).apply {
+                    buf.forEachLine {
+                        add(it)
+                        onLineRead(file, it)
+                    }
+                }.also { buf.close() }
+                onEnd(file)
+            } catch (e: IOException) {
+                println("Couldn't open file")
+                e.printStackTrace()
+            } catch (e: Exception) { e.printStackTrace() }
         }
 
         fun new(path: String): TextFile? {

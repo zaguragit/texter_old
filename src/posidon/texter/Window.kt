@@ -4,10 +4,12 @@ import posidon.texter.backend.TextFilter
 import posidon.texter.backend.Settings
 import posidon.texter.backend.TextFile
 import posidon.texter.backend.Tools
+import posidon.texter.backend.syntaxHighlighters.SyntaxHighlighter
 import posidon.texter.ui.*
 import posidon.texter.ui.settings.SettingsScreen
 import posidon.texter.ui.view.*
 import posidon.texter.ui.view.Button
+import posidon.texter.ui.view.TextArea
 import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
@@ -21,6 +23,7 @@ import javax.swing.border.MatteBorder
 import javax.swing.plaf.basic.BasicSplitPaneDivider
 import javax.swing.plaf.basic.BasicSplitPaneUI
 import javax.swing.text.*
+import kotlin.concurrent.thread
 
 
 object Window {
@@ -50,21 +53,17 @@ object Window {
         isResizable = true
         defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         transferHandler = object : TransferHandler() {
-            override fun importData(info: TransferSupport?): Boolean {
-                if (info != null && info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) try {
-                    val data = info.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
-                    for (file in data) {
-                        if (file.isDirectory) folder = file.path
-                        else openFile(file.path)
-                    }
-                    return true
-                } catch (ignore: Exception) {}
-                return false
-            }
+            override fun importData(info: TransferSupport): Boolean = try {
+                val data = info.transferable.getTransferData(DataFlavor.javaFileListFlavor) as List<File>
+                for (file in data) {
+                    if (file.isDirectory) folder = file.path
+                    else openFile(file.path)
+                }
+                true
+            } catch (e: Exception) { e.printStackTrace(); false }
 
-            override fun canImport(info: TransferSupport?): Boolean {
-                return info?.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ?: false
-            }
+            override fun canImport(info: TransferSupport?) =
+                info?.isDataFlavorSupported(DataFlavor.javaFileListFlavor) ?: false
         }
         iconImages = ArrayList<Image>().apply {
             add(ImageIcon(Window.javaClass.getResource("/icons/appIcon/128.png")).image)
@@ -73,10 +72,7 @@ object Window {
         }
     }
 
-    val textArea = JTextPane().apply {
-        font = Constants.codeFont
-        isEditable = true
-        border = BorderFactory.createEmptyBorder(12, 12, 12, 12)
+    val textArea = TextArea().apply {
         isVisible = false
         isOpaque = false
         actionMap.put("undo", object : AbstractAction("undo") {
@@ -131,22 +127,6 @@ object Window {
         inputMap.put(KeyStroke.getKeyStroke("control C"), "copy")
         inputMap.put(KeyStroke.getKeyStroke("control V"), "paste")
         transferHandler = jFrame.transferHandler
-        addKeyListener(object : KeyListener {
-
-            var shiftPressed = false
-
-            override fun keyTyped(e: KeyEvent) {
-                if (e.keyChar == '\t' && shiftPressed) activeTab?.unindentText(selectionStart, selectionEnd - selectionStart)
-            }
-
-            override fun keyPressed(e: KeyEvent) {
-                if (e.keyCode == 16) shiftPressed = true
-            }
-
-            override fun keyReleased(e: KeyEvent) {
-                if (e.keyCode == 16) shiftPressed = false
-            }
-        })
     }
 
     private val toolbar = JToolBar(JToolBar.VERTICAL).apply {
@@ -244,6 +224,36 @@ object Window {
             tab.active = true
             return
         }
+        lateinit var document: DefaultStyledDocument
+        var i = 0
+        TextFile.readLines(path, { file ->
+            document = DefaultStyledDocument()
+            val tab = FileTab(file.name, file.icon, file, document)
+            tabs.add(tab)
+            tab.active = true
+        }, { file, line ->
+            if (i == 0) document.insertString(document.length, line, SyntaxHighlighter.defaultTextStyle())
+            else document.insertString(document.length, '\n' + line, SyntaxHighlighter.defaultTextStyle())
+            textArea.caretPosition = 0
+            jFrame.validate()
+            file.colorLineByIndex(document, i++)
+        }, {
+            document.documentFilter = TextFilter()
+            document.addUndoableEditListener { edit ->
+                activeTab?.let {
+                    it.file.let { file ->
+                        file.text = document.getText(0, document.length)
+                        file.save()
+                        Tools.doWithoutUndo {
+                            file.colorLine(document, textArea.caretPosition)
+                        }
+                    }
+                    it.undoManager.addEdit(edit.edit)
+                }
+            }
+            jFrame.validate()
+        })
+        /*
         val file = TextFile.open(path)
         if (file != null) {
             val document = DefaultStyledDocument()
@@ -266,7 +276,7 @@ object Window {
             tabs.add(tab)
             tab.active = true
             jFrame.validate()
-        }
+        }*/
     }
 
     private lateinit var actionBtnFiles: Button
