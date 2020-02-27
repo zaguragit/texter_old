@@ -14,8 +14,6 @@ import java.awt.*
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.awt.event.ActionEvent
-import java.awt.event.KeyEvent
-import java.awt.event.KeyListener
 import java.io.File
 import javax.swing.*
 import javax.swing.border.Border
@@ -23,8 +21,6 @@ import javax.swing.border.MatteBorder
 import javax.swing.plaf.basic.BasicSplitPaneDivider
 import javax.swing.plaf.basic.BasicSplitPaneUI
 import javax.swing.text.*
-import kotlin.concurrent.thread
-
 
 object Window {
 
@@ -253,30 +249,6 @@ object Window {
             }
             jFrame.validate()
         })
-        /*
-        val file = TextFile.open(path)
-        if (file != null) {
-            val document = DefaultStyledDocument()
-            val tab = FileTab(file.name, file.icon, file, document)
-            document.insertString(0, file.text, SimpleAttributeSet())
-            file.colorAll(document)
-            document.documentFilter = TextFilter()
-            document.addUndoableEditListener { edit ->
-                activeTab?.let {
-                    it.file.let { file ->
-                        file.text = document.getText(0, document.length)
-                        file.save()
-                        Tools.doWithoutUndo {
-                            file.colorLine(document, textArea.caretPosition)
-                        }
-                    }
-                    it.undoManager.addEdit(edit.edit)
-                }
-            }
-            tabs.add(tab)
-            tab.active = true
-            jFrame.validate()
-        }*/
     }
 
     private lateinit var actionBtnFiles: Button
@@ -296,10 +268,7 @@ object Window {
                     add(JMenuItem().apply {
                         action = object : AbstractAction() {
                             override fun actionPerformed(a: ActionEvent?) {
-                                val chooser = FileChooser(
-                                    jFrame,
-                                    FileChooser.Mode.PICK_FILE
-                                ).apply { get() }
+                                val chooser = FileChooser(jFrame, FileChooser.Mode.PICK_FILE).apply { get() }
                                 chooser.result?.let { openFile(it) }
                             }
                         }

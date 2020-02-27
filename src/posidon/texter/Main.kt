@@ -7,14 +7,12 @@ import java.io.File
 fun main(args: Array<String>) {
     InstanceManager.start(args)
     Settings.init()
-    //Thread(Runnable {
-        Window.init()
-        for (string in args) {
-            val file = File(string)
-            if (file.isDirectory) Window.folder = string
-            else Window.openFile(string)
-        }
-    //}).start()
+    Window.init()
+    for (string in args) {
+        val file = File(string)
+        if (file.isDirectory) Window.folder = string
+        else Window.openFile(string)
+    }
 }
 
 object AppInfo {
