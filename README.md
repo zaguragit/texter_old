@@ -1,5 +1,7 @@
+
+IMPORTANT: The app is very slow and the code is a bit embarassing. I will completely remake this in the future, and it will compile to GTK and some other platform
+
 ## Texter
-I really couldn't come up with a good name.
 
 This is a code editor built with Kotlin, using the Swing and AWT libraries.
 
@@ -7,9 +9,6 @@ This is a code editor built with Kotlin, using the Swing and AWT libraries.
 - Syntax highlighting for several languages
 - Multiple files can be opened in separate tabs
 - Multiple themes
-
-#### Coming soon:
-- Custom, configurable syntax highlighters
 
 ##### Syntax highlighting is available for:
  - C
